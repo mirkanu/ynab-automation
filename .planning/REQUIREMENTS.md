@@ -7,8 +7,8 @@
 
 ### Infrastructure
 
-- [ ] **INFRA-01**: Next.js app is deployed and running on Railway
-- [ ] **INFRA-02**: PostgreSQL database is provisioned on Railway for dedup tracking
+- [x] **INFRA-01**: Next.js app is deployed and running on Railway
+- [x] **INFRA-02**: PostgreSQL database is provisioned on Railway for dedup tracking
 - [ ] **INFRA-03**: All secrets (Claude API key, YNAB token, Postmark token) are stored as Railway environment variables
 - [ ] **INFRA-04**: Postmark inbound email address is configured to route to the app's webhook endpoint
 
@@ -64,8 +64,8 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | 1 | Pending |
-| INFRA-02 | 1 | Pending |
+| INFRA-01 | 1 | Complete (01-01) |
+| INFRA-02 | 1 | Complete (01-01) |
 | INFRA-03 | 1 | Pending |
 | INFRA-04 | 1 | Pending |
 | EMAIL-01 | 2 | Pending |

@@ -16,24 +16,24 @@
 
 ## Current Position
 
-**Phase:** None yet (roadmap draft, awaiting approval)
-**Plan:** —
-**Status:** Roadmap creation in progress
-**Progress:** 3/3 phases identified
+**Phase:** 01-scaffold-and-deploy
+**Plan:** 02 (next to execute)
+**Status:** In progress
+**Progress:** 1/3 phases (Plan 1/N within phase 01)
 
 ---
 
 ## Performance Metrics
 
-- **Requirement Coverage:** 17/17 v1 requirements mapped ✓
+- **Requirement Coverage:** 17/17 v1 requirements mapped
 - **Phase Coherence:** 3 natural delivery boundaries (Scaffold → Inflow → Parse & Create)
-- **Success Criteria Density:** 5-7 observable criteria per phase ✓
+- **01-01 Duration:** 7 min
 
 ---
 
 ## Accumulated Context
 
-### Key Decisions (from PROJECT.md)
+### Key Decisions
 
 | Decision | Rationale | Status |
 |----------|-----------|--------|
@@ -42,6 +42,9 @@
 | Sender-based YNAB account routing | Manuel and Emily-Kate each have their own account | Pending implementation |
 | Uncategorized in Phase 1 | Simpler to ship; category logic can be layered in Phase 2 | Pending implementation |
 | PostgreSQL for dedup | Postmark may redeliver on failure; idempotency via message ID | Pending implementation |
+| next.config.mjs not .ts | Next.js 14.2 does not support TypeScript config files | Implemented (01-01) |
+| GET on /api/webhook | Railway health checks need 200 response, not 405 | Implemented (01-01) |
+| db:migrate on boot | Ensures ProcessedEmail table exists before app starts | Implemented (01-01) |
 
 ### Out of Scope (v2 or later)
 
@@ -64,17 +67,18 @@
 
 ## Session Continuity
 
-**Last Session:** 2026-03-23 (roadmap creation)
-**Next Steps:** Approve roadmap → `/gsd:plan-phase 1`
+**Last Session:** 2026-03-23 (01-01 scaffold execution)
+**Stopped At:** Completed 01-01-PLAN.md
+**Next Steps:** Execute Plan 02 (Railway deploy + database provisioning)
 
 ---
 
 ## Blockers & Todos
 
-- [ ] User approval of roadmap
-- [ ] Set up Postmark account (if not already done)
-- [ ] Coordinate with existing Railway Josie project
+- [ ] Set up Postmark account (needed for Plan 02 or Phase 02)
+- [ ] Provision PostgreSQL on Railway (needed for Plan 02)
+- [ ] Add env vars to Railway service (DATABASE_URL, ANTHROPIC_API_KEY, YNAB_PERSONAL_ACCESS_TOKEN, POSTMARK_SERVER_TOKEN)
 
 ---
 
-*State initialized with roadmap creation.*
+*State updated after 01-01 execution (2026-03-23).*

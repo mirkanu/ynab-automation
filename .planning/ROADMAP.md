@@ -38,7 +38,7 @@ A forwarded Amazon email becomes a YNAB transaction automatically — no manual 
 **Plans:** 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Scaffold Next.js app with webhook stub, Prisma schema, and Railway config
+- [x] 01-01-PLAN.md — Scaffold Next.js app with webhook stub, Prisma schema, and Railway config
 - [ ] 01-02-PLAN.md — Deploy to Railway, provision PostgreSQL, configure secrets and Postmark
 
 ---
@@ -87,7 +87,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Scaffold & Deploy | 0/2 | In progress | — |
+| 1. Scaffold & Deploy | 1/2 | In progress | — |
 | 2. Email Inflow | 0/? | Not started | — |
 | 3. Parse & Create | 0/? | Not started | — |
 
