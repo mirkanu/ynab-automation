@@ -64,29 +64,30 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | — | Pending |
-| INFRA-02 | — | Pending |
-| INFRA-03 | — | Pending |
-| INFRA-04 | — | Pending |
-| EMAIL-01 | — | Pending |
-| EMAIL-02 | — | Pending |
-| EMAIL-03 | — | Pending |
-| EMAIL-04 | — | Pending |
-| PARSE-01 | — | Pending |
-| PARSE-02 | — | Pending |
-| PARSE-03 | — | Pending |
-| YNAB-01 | — | Pending |
-| YNAB-02 | — | Pending |
-| YNAB-03 | — | Pending |
-| YNAB-04 | — | Pending |
-| YNAB-05 | — | Pending |
-| YNAB-06 | — | Pending |
+| INFRA-01 | 1 | Pending |
+| INFRA-02 | 1 | Pending |
+| INFRA-03 | 1 | Pending |
+| INFRA-04 | 1 | Pending |
+| EMAIL-01 | 2 | Pending |
+| EMAIL-02 | 2 | Pending |
+| EMAIL-03 | 2 | Pending |
+| EMAIL-04 | 2 | Pending |
+| PARSE-01 | 3 | Pending |
+| PARSE-02 | 3 | Pending |
+| PARSE-03 | 3 | Pending |
+| YNAB-01 | 3 | Pending |
+| YNAB-02 | 3 | Pending |
+| YNAB-03 | 3 | Pending |
+| YNAB-04 | 3 | Pending |
+| YNAB-05 | 3 | Pending |
+| YNAB-06 | 3 | Pending |
 
 **Coverage:**
 - v1 requirements: 17 total
-- Mapped to phases: 0
-- Unmapped: 17 ⚠️ (to be mapped during roadmap creation)
+- Mapped to phases: 17
+- Unmapped: 0
 
 ---
+
 *Requirements defined: 2026-03-23*
-*Last updated: 2026-03-23 after initial definition*
+*Roadmap created: 2026-03-23*
