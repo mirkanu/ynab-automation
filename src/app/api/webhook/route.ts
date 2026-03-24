@@ -5,9 +5,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  // TODO Phase 2: validate Postmark webhook payload
-  // TODO Phase 2: check for duplicate messageId in DB
-  // TODO Phase 2: extract original sender from forwarded headers
-  // TODO Phase 2: ignore non-Amazon emails
+  const body = await req.json();
+  console.log('PIPEDREAM_PAYLOAD:', JSON.stringify(body, null, 2));
   return NextResponse.json({ received: true }, { status: 200 });
 }
