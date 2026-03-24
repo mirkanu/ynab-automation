@@ -16,7 +16,7 @@ A forwarded Amazon email becomes a YNAB transaction automatically — no manual 
 
 ### Active
 
-- [ ] Postmark receives forwarded Amazon emails and fires a webhook to the app
+- [ ] Pipedream receives forwarded Amazon emails and fires a webhook to the app
 - [ ] Claude API extracts item description and order amount from email content
 - [ ] Sender identity (Manuel or Emily-Kate) is detected from the forwarding address
 - [ ] Transaction is created in the correct YNAB account based on sender
@@ -37,25 +37,26 @@ A forwarded Amazon email becomes a YNAB transaction automatically — no manual 
 - Manuel and Emily-Kate are the two senders; each maps to a separate YNAB account
 - Existing Railway infrastructure already in use for Josie (n8n + Claude) — same platform
 - YNAB API requires OAuth or personal access token; personal access token is simplest for a private household tool
-- Postmark inbound: emails forwarded to a Postmark inbound address trigger a JSON webhook with parsed headers, body, and sender
+- Pipedream inbound: emails forwarded to empk1lk0u08wjyn@upload.pipedream.net trigger a webhook POST to Railway; no API key needed on our end
 
 ## Constraints
 
 - **Tech stack**: Next.js (API routes for webhook handler) + PostgreSQL on Railway
-- **Email service**: Mailgun — switched from Postmark (Postmark rejected Gmail account signup); same inbound route → webhook model, free tier 1,000 emails/month
+- **Email service**: Pipedream — switched from Postmark/Mailgun (both had signup/plan issues); forwards emails to Railway webhook, no API key needed on our side
+- **Inbound email address**: empk1lk0u08wjyn@upload.pipedream.net
 - **Hosting**: Railway — already provisioned, avoid introducing new platforms
-- **API keys**: Claude API, YNAB personal access token, Mailgun API key — stored as Railway env vars
+- **API keys**: Claude API, YNAB personal access token — stored as Railway env vars (no email service key needed)
 - **Privacy**: Email content contains order details; data should not be logged beyond what's needed for dedup
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Mailgun for inbound email | Switched from Postmark — Postmark rejected Gmail signup; Mailgun accepts Gmail, same inbound route → webhook model, 1k emails/month free | — Pending |
+| Pipedream for inbound email | Switched from Postmark (rejected Gmail) → Mailgun (inbound locked behind paid plan) → Pipedream (free, no domain needed, no API key required on our end) | — Pending |
 | Railway for hosting | Reuse existing infrastructure; avoid Vercel cold starts for webhook reliability | — Pending |
 | Sender-based YNAB account routing | Manuel and Emily-Kate each have their own account; routing by sender keeps transactions organized | — Pending |
 | Uncategorized in Phase 1 | Simpler to ship; category logic can be layered on in Phase 2 once the pipeline is working | — Pending |
 | PostgreSQL for dedup | Postmark may redeliver on failure; idempotency via message ID prevents duplicate transactions | — Pending |
 
 ---
-*Last updated: 2026-03-23 after switching email provider from Postmark to Mailgun*
+*Last updated: 2026-03-24 after switching email provider to Pipedream*
