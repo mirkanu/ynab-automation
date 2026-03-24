@@ -13,7 +13,7 @@ A forwarded Amazon email becomes a YNAB transaction automatically — no manual 
 ## Phases
 
 - [x] **Phase 1: Scaffold & Deploy** — Next.js app running on Railway with database and secrets configured
-- [ ] **Phase 2: Email Inflow** — Pipedream webhooks received, deduplicated, and sender detected
+- [x] **Phase 2: Email Inflow** — Pipedream webhooks received, deduplicated, and sender detected
 - [ ] **Phase 3: Parse & Create** — Claude extracts data; transactions created in correct YNAB accounts
 
 ---
@@ -58,11 +58,11 @@ Plans:
 4. Non-Amazon emails are silently ignored (no transaction, no error)
 5. Webhook consistently returns 200 OK after processing each email
 
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 
 Plans:
-- [ ] 02-01-PLAN.md — Capture real Pipedream payload from Railway logs and document envelope shape
-- [ ] 02-02-PLAN.md — Implement webhook handler with dedup, sender extraction, and Amazon filter
+- [x] 02-01-PLAN.md — Capture real Pipedream payload from Railway logs and document envelope shape
+- [x] 02-02-PLAN.md — Implement webhook handler with dedup, sender extraction, and Amazon filter
 
 ---
 
@@ -92,7 +92,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Scaffold & Deploy | 2/2 | Complete    | 2026-03-24 |
-| 2. Email Inflow | 0/2 | Not started | — |
+| 2. Email Inflow | 2/2 | Complete    | 2026-03-24 |
 | 3. Parse & Create | 0/? | Not started | — |
 
 ---

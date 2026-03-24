@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 02-01-PLAN.md — Pipedream payload documented
-last_updated: "2026-03-24T10:19:36.617Z"
+stopped_at: Completed 02-02-PLAN.md — Email ingestion handler deployed
+last_updated: "2026-03-24T10:32:13Z"
 progress:
   total_phases: 3
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 4
-  completed_plans: 3
-  percent: 75
+  completed_plans: 4
+  percent: 100
 ---
 
 # Amazon to YNAB Automation — Project State
@@ -31,10 +31,10 @@ progress:
 
 ## Current Position
 
-**Phase:** 02-inbound-email
-**Plan:** 02 (next to execute)
-**Status:** In progress
-**Progress:** [████████░░] 75%
+**Phase:** 02-email-inflow
+**Plan:** 02 (complete)
+**Status:** Phase 2 complete — ready for Phase 3
+**Progress:** [██████████] 100% (Phases 1 & 2 complete)
 
 ---
 
@@ -43,6 +43,7 @@ progress:
 - **Requirement Coverage:** 17/17 v1 requirements mapped
 - **Phase Coherence:** 3 natural delivery boundaries (Scaffold → Inflow → Parse & Create)
 - **01-01 Duration:** 7 min
+- **02-02 Duration:** 8 min (488s)
 
 ---
 
@@ -61,6 +62,9 @@ progress:
 | GET on /api/webhook | Railway health checks need 200 response, not 405 | Implemented (01-01) |
 | db:migrate on boot | Ensures ProcessedEmail table exists before app starts | Implemented (01-01) |
 | Amazon sender detection via body HTML scan | Forwarded emails embed original sender in blockquote — top-level from is the forwarding user, not Amazon | Implemented (02-01) |
+| Module-level PrismaClient in route.ts | Plain instance adequate for single Railway service; no global singleton needed | Implemented (02-02) |
+| Non-Amazon emails get no ProcessedEmail record | Avoids filling dedup table with noise from unrelated emails | Implemented (02-02) |
+| vitest over Node built-in test runner | TypeScript support without ts-node/tsx setup overhead | Implemented (02-02) |
 | No plain text body in Pipedream envelope | Only HTML body available; parser must handle HTML extraction or pass HTML to Claude | Implemented (02-01) |
 | Dedup key: trigger.event.headers["message-id"] | Gmail-assigned on forward, unique per delivery event | Implemented (02-01) |
 
@@ -91,9 +95,9 @@ progress:
 
 ## Session Continuity
 
-**Last Session:** 2026-03-24T10:19:36.612Z
-**Stopped At:** Completed 02-01-PLAN.md — Pipedream payload documented
-**Next Steps:** Execute Phase 02 (inbound email parsing and sender detection)
+**Last Session:** 2026-03-24T10:32:13Z
+**Stopped At:** Completed 02-02-PLAN.md — Email ingestion handler deployed
+**Next Steps:** Execute Phase 03 (Claude parses email content; YNAB transactions created)
 
 ---
 
@@ -103,7 +107,7 @@ progress:
 - [x] Provision PostgreSQL on Railway — done; ProcessedEmail table migrated
 - [x] Add env vars to Railway service — done (ANTHROPIC_API_KEY, YNAB_PERSONAL_ACCESS_TOKEN, DATABASE_URL)
 - [x] Phase 02: Determine Pipedream webhook JSON envelope format before building email parser — done (02-01)
-- [ ] Phase 02: Implement email deduplication, sender detection, and non-Amazon filtering
+- [x] Phase 02: Implement email deduplication, sender detection, and non-Amazon filtering — done (02-02)
 
 ---
 

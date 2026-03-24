@@ -15,9 +15,9 @@
 ### Email Ingestion
 
 - [x] **EMAIL-01**: App receives inbound email webhook from Pipedream and responds with 200 OK
-- [ ] **EMAIL-02**: App rejects duplicate emails by checking message ID against PostgreSQL
-- [ ] **EMAIL-03**: App extracts the original sender's email address from the forwarded message to identify Manuel or Emily-Kate
-- [ ] **EMAIL-04**: App ignores non-Amazon emails gracefully (no error, no transaction created)
+- [x] **EMAIL-02**: App rejects duplicate emails by checking message ID against PostgreSQL
+- [x] **EMAIL-03**: App extracts the original sender's email address from the forwarded message to identify Manuel or Emily-Kate
+- [x] **EMAIL-04**: App ignores non-Amazon emails gracefully (no error, no transaction created)
 
 ### Parsing
 
@@ -69,9 +69,9 @@
 | INFRA-03 | 1 | Complete |
 | INFRA-04 | 1 | Complete |
 | EMAIL-01 | 2 | Complete |
-| EMAIL-02 | 2 | Pending |
-| EMAIL-03 | 2 | Pending |
-| EMAIL-04 | 2 | Pending |
+| EMAIL-02 | 2 | Complete (02-02) |
+| EMAIL-03 | 2 | Complete (02-02) |
+| EMAIL-04 | 2 | Complete (02-02) |
 | PARSE-01 | 3 | Pending |
 | PARSE-02 | 3 | Pending |
 | PARSE-03 | 3 | Pending |
