@@ -87,7 +87,7 @@ Plans:
 
 Plans:
 - [ ] 03-01-PLAN.md — Discover YNAB budget/account IDs via API and set Railway env vars (includes Emily-Kate email)
-- [ ] 03-02-PLAN.md — Create Claude parsing lib and YNAB client lib with unit tests
+- [x] 03-02-PLAN.md — Create Claude parsing lib and YNAB client lib with unit tests
 - [ ] 03-03-PLAN.md — Wire libs into webhook handler and run end-to-end smoke test
 
 ---
@@ -117,7 +117,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Scaffold & Deploy | 2/2 | Complete    | 2026-03-24 |
 | 2. Email Inflow | 2/2 | Complete    | 2026-03-24 |
-| 3. Parse & Create | 0/3 | Not started | — |
+| 3. Parse & Create | 2/3 | In progress | — |
 | 4. Error Notification | 0/? | Not started | — |
 
 ---

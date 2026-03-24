@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Completed 02-02-PLAN.md — Email ingestion handler deployed
-last_updated: "2026-03-24T10:44:10.530Z"
+status: in_progress
+stopped_at: Completed 03-02-PLAN.md — Claude parsing lib and YNAB client lib implemented
+last_updated: "2026-03-24T12:18:00Z"
 progress:
   total_phases: 3
   completed_phases: 2
-  total_plans: 4
-  completed_plans: 4
-  percent: 100
+  total_plans: 6
+  completed_plans: 5
+  percent: 83
 ---
 
 # Amazon to YNAB Automation — Project State
@@ -31,10 +31,10 @@ progress:
 
 ## Current Position
 
-**Phase:** 02-email-inflow
-**Plan:** 02 (complete)
-**Status:** Ready to plan
-**Progress:** [██████████] 100% (Phases 1 & 2 complete)
+**Phase:** 03-parse-and-create
+**Plan:** 02 (complete) — 03-03 is next
+**Status:** In progress
+**Progress:** [████████░░] 83% (Phases 1 & 2 complete; Phase 3 plan 2/3 done)
 
 ---
 
@@ -44,6 +44,7 @@ progress:
 - **Phase Coherence:** 3 natural delivery boundaries (Scaffold → Inflow → Parse & Create)
 - **01-01 Duration:** 7 min
 - **02-02 Duration:** 8 min (488s)
+- **03-02 Duration:** 6 min (380s)
 
 ---
 
@@ -67,6 +68,9 @@ progress:
 | vitest over Node built-in test runner | TypeScript support without ts-node/tsx setup overhead | Implemented (02-02) |
 | No plain text body in Pipedream envelope | Only HTML body available; parser must handle HTML extraction or pass HTML to Claude | Implemented (02-01) |
 | Dedup key: trigger.event.headers["message-id"] | Gmail-assigned on forward, unique per delivery event | Implemented (02-01) |
+| parseAmazonEmail returns null on failure, never throws | Prevents webhook handler from crashing on Claude API errors | Implemented (03-02) |
+| vi.hoisted() + function constructor for Anthropic SDK mock | Arrow functions fail as vitest constructors; hoisted fn required for cross-scope mock fn references | Implemented (03-02) |
+| Math.round(amount * 1000) * -1 for YNAB milliunits | Rounds floating point (e.g. 12.99 * 1000 = 12990.000...) before negating | Implemented (03-02) |
 
 ### Out of Scope (v2 or later)
 
@@ -95,9 +99,9 @@ progress:
 
 ## Session Continuity
 
-**Last Session:** 2026-03-24T10:32:13Z
-**Stopped At:** Completed 02-02-PLAN.md — Email ingestion handler deployed
-**Next Steps:** Execute Phase 03 (Claude parses email content; YNAB transactions created)
+**Last Session:** 2026-03-24T12:18:00Z
+**Stopped At:** Completed 03-02-PLAN.md — Claude parsing lib and YNAB client lib implemented
+**Next Steps:** Execute 03-03 (wire libs into webhook route.ts, end-to-end smoke test)
 
 ---
 
@@ -108,7 +112,10 @@ progress:
 - [x] Add env vars to Railway service — done (ANTHROPIC_API_KEY, YNAB_PERSONAL_ACCESS_TOKEN, DATABASE_URL)
 - [x] Phase 02: Determine Pipedream webhook JSON envelope format before building email parser — done (02-01)
 - [x] Phase 02: Implement email deduplication, sender detection, and non-Amazon filtering — done (02-02)
+- [x] Phase 03: Create Claude parsing lib (parseAmazonEmail) — done (03-02)
+- [x] Phase 03: Create YNAB client lib (createYnabTransaction) — done (03-02)
+- [ ] Phase 03: Wire libs into webhook route.ts and smoke test end-to-end (03-03)
 
 ---
 
-*State updated after 02-01 execution (2026-03-24).*
+*State updated after 03-02 execution (2026-03-24).*
