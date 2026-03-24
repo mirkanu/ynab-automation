@@ -106,10 +106,15 @@ export async function POST(req: NextRequest) {
     // Step 7: Create YNAB transaction
     console.log('Step 7: creating YNAB transaction');
     const budgetId = process.env.YNAB_BUDGET_ID ?? '';
+    // Euro-only emails go to the shared Euro Wise account regardless of sender
+    const accountId =
+      parsed.currency === 'EUR'
+        ? (process.env.YNAB_EURO_ACCOUNT_ID ?? '')
+        : senderInfo.accountId;
     try {
       const transactionId = await createYnabTransaction({
         budgetId,
-        accountId: senderInfo.accountId,
+        accountId,
         amount: parsed.amount,
         description: parsed.description,
         senderName: senderInfo.name,

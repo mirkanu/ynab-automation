@@ -6,6 +6,7 @@ export interface ParsedOrder {
   amount: number;       // e.g. 12.99 (in pounds/dollars, NOT milliunits)
   description: string;  // e.g. "AirPods case" or "2 items: AirPods case, USB cable"
   retailer: string;     // e.g. "Amazon", "Costco", "Apple"
+  currency: string;     // "EUR" if amount is exclusively in Euro with no GBP conversion, otherwise "GBP"
 }
 
 /**
@@ -32,9 +33,11 @@ export async function parseOrderEmail(
         {
           role: 'user',
           content:
-            `Extract the total order amount, a brief item description, and the retailer/merchant name from this order confirmation email HTML. ` +
+            `Extract the total order amount, a brief item description, the retailer/merchant name, and the currency from this order confirmation email HTML. ` +
             `For multi-item orders, summarize as '2 items: Item1, Item2' (max 2 item names). ` +
-            `Return JSON: {"amount": 12.99, "description": "brief description", "retailer": "Amazon"}. ` +
+            `For currency: set to "EUR" ONLY if the total amount is exclusively in Euros (€) with no conversion to GBP or another currency shown. ` +
+            `If the email shows a Euro amount AND a GBP/sterling equivalent, or if the amount is in any non-Euro currency, set currency to "GBP". ` +
+            `Return JSON: {"amount": 12.99, "description": "brief description", "retailer": "Amazon", "currency": "GBP"}. ` +
             `HTML:\n\n${html}`,
         },
       ],
@@ -53,23 +56,25 @@ export async function parseOrderEmail(
 
     const parsed = JSON.parse(rawText) as unknown;
 
-    // Validate shape: must have numeric amount, string description, and string retailer
+    // Validate shape: must have numeric amount, string description, string retailer, and string currency
     if (
       typeof parsed !== 'object' ||
       parsed === null ||
       typeof (parsed as Record<string, unknown>).amount !== 'number' ||
       typeof (parsed as Record<string, unknown>).description !== 'string' ||
-      typeof (parsed as Record<string, unknown>).retailer !== 'string'
+      typeof (parsed as Record<string, unknown>).retailer !== 'string' ||
+      typeof (parsed as Record<string, unknown>).currency !== 'string'
     ) {
       return null;
     }
 
-    const order = parsed as { amount: number; description: string; retailer: string };
+    const order = parsed as { amount: number; description: string; retailer: string; currency: string };
 
     return {
       amount: order.amount,
       description: order.description,
       retailer: order.retailer,
+      currency: order.currency,
     };
   } catch (err) {
     // Any failure (API error, JSON parse error, network error) → return null

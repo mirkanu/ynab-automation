@@ -41,9 +41,9 @@ describe('parseOrderEmail', () => {
     vi.clearAllMocks();
   });
 
-  it('returns { amount, description, retailer } for a valid single-item order', async () => {
+  it('returns { amount, description, retailer, currency } for a valid single-item order', async () => {
     mockCreate.mockResolvedValueOnce({
-      content: [{ type: 'text', text: '{"amount": 12.99, "description": "The Pirates\' Treasure", "retailer": "Amazon"}' }],
+      content: [{ type: 'text', text: '{"amount": 12.99, "description": "The Pirates\' Treasure", "retailer": "Amazon", "currency": "GBP"}' }],
     });
 
     const result = await parseOrderEmail(sampleHtml, 'Manuel');
@@ -52,11 +52,12 @@ describe('parseOrderEmail', () => {
     expect(result!.amount).toBe(12.99);
     expect(result!.description).toBe("The Pirates' Treasure");
     expect(result!.retailer).toBe('Amazon');
+    expect(result!.currency).toBe('GBP');
   });
 
   it('amount is a number (not a string)', async () => {
     mockCreate.mockResolvedValueOnce({
-      content: [{ type: 'text', text: '{"amount": 12.99, "description": "Some item", "retailer": "Amazon"}' }],
+      content: [{ type: 'text', text: '{"amount": 12.99, "description": "Some item", "retailer": "Amazon", "currency": "GBP"}' }],
     });
 
     const result = await parseOrderEmail(sampleHtml, 'Manuel');
@@ -85,7 +86,7 @@ describe('parseOrderEmail', () => {
 
   it('handles multi-item orders with a summarized description', async () => {
     mockCreate.mockResolvedValueOnce({
-      content: [{ type: 'text', text: '{"amount": 25.98, "description": "2 items: AirPods case, USB cable", "retailer": "Amazon"}' }],
+      content: [{ type: 'text', text: '{"amount": 25.98, "description": "2 items: AirPods case, USB cable", "retailer": "Amazon", "currency": "GBP"}' }],
     });
 
     const result = await parseOrderEmail(multiItemHtml, 'Manuel');
@@ -103,7 +104,7 @@ describe('parseOrderEmail', () => {
 
   it('strips markdown code fences when Claude wraps JSON in ```json blocks', async () => {
     mockCreate.mockResolvedValueOnce({
-      content: [{ type: 'text', text: '```json\n{"amount": 12.99, "description": "Test item", "retailer": "Amazon"}\n```' }],
+      content: [{ type: 'text', text: '```json\n{"amount": 12.99, "description": "Test item", "retailer": "Amazon", "currency": "GBP"}\n```' }],
     });
 
     const result = await parseOrderEmail(sampleHtml, 'Manuel');
@@ -125,7 +126,7 @@ describe('parseOrderEmail', () => {
 
   it('extracts retailer for non-Amazon orders (Costco)', async () => {
     mockCreate.mockResolvedValueOnce({
-      content: [{ type: 'text', text: '{"amount": 49.99, "description": "24-pack water", "retailer": "Costco"}' }],
+      content: [{ type: 'text', text: '{"amount": 49.99, "description": "24-pack water", "retailer": "Costco", "currency": "GBP"}' }],
     });
 
     const result = await parseOrderEmail('<html><body>Costco order</body></html>', 'Manuel');
@@ -139,6 +140,39 @@ describe('parseOrderEmail', () => {
   it('returns null when retailer field is missing from Claude response', async () => {
     mockCreate.mockResolvedValueOnce({
       content: [{ type: 'text', text: '{"amount": 12.99, "description": "some item"}' }],
+    });
+
+    const result = await parseOrderEmail(sampleHtml, 'Manuel');
+
+    expect(result).toBeNull();
+  });
+
+  it('returns currency "EUR" for a Euro-only order email', async () => {
+    mockCreate.mockResolvedValueOnce({
+      content: [{ type: 'text', text: '{"amount": 29.99, "description": "Wireless headphones", "retailer": "MediaMarkt", "currency": "EUR"}' }],
+    });
+
+    const result = await parseOrderEmail('<html><body>€29.99 order from MediaMarkt</body></html>', 'Manuel');
+
+    expect(result).not.toBeNull();
+    expect(result!.currency).toBe('EUR');
+    expect(result!.retailer).toBe('MediaMarkt');
+  });
+
+  it('returns currency "GBP" when email shows Euro with GBP conversion', async () => {
+    mockCreate.mockResolvedValueOnce({
+      content: [{ type: 'text', text: '{"amount": 25.12, "description": "Book", "retailer": "FNAC", "currency": "GBP"}' }],
+    });
+
+    const result = await parseOrderEmail('<html><body>€29.99 (£25.12) order from FNAC</body></html>', 'Manuel');
+
+    expect(result).not.toBeNull();
+    expect(result!.currency).toBe('GBP');
+  });
+
+  it('returns null when currency field is missing from Claude response', async () => {
+    mockCreate.mockResolvedValueOnce({
+      content: [{ type: 'text', text: '{"amount": 12.99, "description": "some item", "retailer": "Amazon"}' }],
     });
 
     const result = await parseOrderEmail(sampleHtml, 'Manuel');
