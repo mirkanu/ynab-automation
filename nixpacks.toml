@@ -1,0 +1,3 @@
+# Override Nixpacks build to avoid BuildKit cache corruption on tsconfig.tsbuildinfo
+[phases.build]
+cmds = ["npm run build"]
