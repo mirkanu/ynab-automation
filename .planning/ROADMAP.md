@@ -35,7 +35,7 @@ A forwarded Amazon email becomes a YNAB transaction automatically — no manual 
 4. Postmark inbound email address is configured and points to the app's `/api/webhook` endpoint
 5. Webhook endpoint returns 200 OK when called with a test payload
 
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 
 Plans:
 - [x] 01-01-PLAN.md — Scaffold Next.js app with webhook stub, Prisma schema, and Railway config
@@ -87,7 +87,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Scaffold & Deploy | 2/2 | Complete | 2026-03-24 |
+| 1. Scaffold & Deploy | 2/2 | Complete    | 2026-03-24 |
 | 2. Email Inflow | 0/? | Not started | — |
 | 3. Parse & Create | 0/? | Not started | — |
 

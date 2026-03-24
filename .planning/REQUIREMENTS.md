@@ -9,8 +9,8 @@
 
 - [x] **INFRA-01**: Next.js app is deployed and running on Railway
 - [x] **INFRA-02**: PostgreSQL database is provisioned on Railway for dedup tracking
-- [ ] **INFRA-03**: All secrets (Claude API key, YNAB token) are stored as Railway environment variables
-- [ ] **INFRA-04**: Pipedream workflow is configured to POST forwarded emails to the app's webhook endpoint
+- [x] **INFRA-03**: All secrets (Claude API key, YNAB token) are stored as Railway environment variables
+- [x] **INFRA-04**: Pipedream workflow is configured to POST forwarded emails to the app's webhook endpoint
 
 ### Email Ingestion
 
@@ -66,8 +66,8 @@
 |-------------|-------|--------|
 | INFRA-01 | 1 | Complete (01-01) |
 | INFRA-02 | 1 | Complete (01-01) |
-| INFRA-03 | 1 | Pending |
-| INFRA-04 | 1 | Pending |
+| INFRA-03 | 1 | Complete |
+| INFRA-04 | 1 | Complete |
 | EMAIL-01 | 2 | Pending |
 | EMAIL-02 | 2 | Pending |
 | EMAIL-03 | 2 | Pending |
