@@ -111,17 +111,18 @@
 | ERR-02 | 4 | Complete |
 | ERR-03 | 4 | Complete |
 | ERR-04 | 4 | Complete |
-| RETAIL-01 | TBD | Pending |
-| RETAIL-02 | TBD | Pending |
-| RETAIL-03 | TBD | Pending |
-| CAT-01 | TBD | Pending |
-| CAT-02 | TBD | Pending |
-| CAT-03 | TBD | Pending |
-| CAT-04 | TBD | Pending |
+| RETAIL-01 | 5 | Pending |
+| RETAIL-02 | 5 | Pending |
+| RETAIL-03 | 5 | Pending |
+| CAT-01 | 6 | Pending |
+| CAT-02 | 6 | Pending |
+| CAT-03 | 6 | Pending |
+| CAT-04 | 6 | Pending |
 
 **Coverage:**
-- v2.0 requirements: 7
-- Mapped to phases: TBD (roadmap pending)
+- v1 requirements: 21 — all complete
+- v2.0 requirements: 7 — mapped to Phase 5 (3) and Phase 6 (4)
+- Total unmapped: 0
 
 ---
 

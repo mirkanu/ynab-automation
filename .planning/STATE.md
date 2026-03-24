@@ -3,10 +3,10 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Any Retailer + Category Tagging
 status: in_progress
-stopped_at: Milestone v2.0 started — defining requirements
+stopped_at: Roadmap created — v2.0 phases defined (Phase 5 and Phase 6)
 last_updated: "2026-03-24T19:00:00Z"
 progress:
-  total_phases: 0
+  total_phases: 2
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -19,7 +19,7 @@ progress:
 
 ## Project Reference
 
-**Core Value:** A forwarded Amazon email becomes a YNAB transaction automatically — no manual entry, no missed purchases.
+**Core Value:** A forwarded order email becomes a YNAB transaction automatically — no manual entry, no missed purchases.
 
 **Users:** Manuel and Emily-Kate (two household members with separate YNAB accounts)
 
@@ -31,9 +31,19 @@ progress:
 
 ## Current Position
 
-**Phase:** Not started (defining requirements)
-**Status:** Defining requirements for v2.0
-**Progress:** [          ] Phase structure TBD
+**Milestone:** v2.0 — Any Retailer + Category Tagging
+**Phase:** Phase 5 — Retailer Support (not started)
+**Status:** Roadmap approved; ready to plan Phase 5
+**Progress:** [          ] 0/2 v2.0 phases complete
+
+---
+
+## v2.0 Phase Overview
+
+| Phase | Goal | Status |
+|-------|------|--------|
+| 5. Retailer Support | Any order confirmation processed; retailer name as payee | Not started |
+| 6. Category Tagging | First-line category hint assigned to YNAB transaction if matched | Not started |
 
 ---
 
@@ -62,12 +72,11 @@ progress:
 - Inbound email: Pipedream empk1lk0u08wjyn@upload.pipedream.net → /api/webhook
 - Secrets: ANTHROPIC_API_KEY, YNAB_PERSONAL_ACCESS_TOKEN, DATABASE_URL, YNAB_BUDGET_ID, YNAB_MANUEL_ACCOUNT_ID, YNAB_EMILY_ACCOUNT_ID, EMILY_KATE_EMAIL
 
-## Out of Scope (v2 or later)
+## Out of Scope (future)
 
 - Automated email capture (no forwarding needed)
 - Claude-suggested YNAB categories
 - Receipt attachments
-- Non-Amazon emails
 - Web UI / dashboard
 - Multi-budget support
 
@@ -75,6 +84,6 @@ progress:
 
 ## Session Continuity
 
-**Last Session:** 2026-03-24T16:00:00Z
-**Stopped At:** Phase 3 complete, smoke test passed
-**Next Steps:** Plan and execute Phase 4 (Error Notification)
+**Last Session:** 2026-03-24T19:00:00Z
+**Stopped At:** v2.0 roadmap created — Phase 5 and Phase 6 defined
+**Next Steps:** Plan and execute Phase 5 (Retailer Support)

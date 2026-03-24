@@ -15,6 +15,9 @@ A forwarded Amazon email becomes a YNAB transaction automatically — no manual 
 - [x] **Phase 1: Scaffold & Deploy** — Next.js app running on Railway with database and secrets configured
 - [x] **Phase 2: Email Inflow** — Pipedream webhooks received, deduplicated, and sender detected
 - [x] **Phase 3: Parse & Create** — Claude extracts data; transactions created in correct YNAB accounts
+- [x] **Phase 4: Error Notification** — Unknown sender, parse failure, and YNAB errors notify Manuel
+- [ ] **Phase 5: Retailer Support** — Any order confirmation email processed; retailer name used as payee
+- [ ] **Phase 6: Category Tagging** — First-line category hint looked up in YNAB and assigned if matched
 
 ---
 
@@ -111,27 +114,69 @@ Plans:
 
 ---
 
+### Phase 5: Retailer Support
+
+**Goal:** Any forwarded order confirmation email is processed regardless of retailer; Claude extracts the retailer name and uses it as the YNAB payee instead of the hardcoded "Amazon".
+
+**Depends on:** Phase 4 (full v1 pipeline complete)
+
+**Requirements:** RETAIL-01, RETAIL-02, RETAIL-03
+
+**Success Criteria** (what must be TRUE when complete):
+1. Forwarding an Amazon order confirmation creates a transaction with payee "Amazon"
+2. Forwarding a non-Amazon order confirmation (e.g. Costco, Apple) creates a transaction with the correct retailer name as payee
+3. A forwarded email that Claude cannot parse as any order confirmation triggers a notification to Manuel
+4. A forwarded email that has no identifiable amount or description produces no transaction and no silent failure
+
+**Plans:** TBD
+
+---
+
+### Phase 6: Category Tagging
+
+**Goal:** Users can optionally type a YNAB category name on the first line of a forwarded email; the app looks it up, fuzzy-matches it against the YNAB category list, and assigns it to the transaction if found.
+
+**Depends on:** Phase 5 (retailer support; consistent parse pipeline must be in place)
+
+**Requirements:** CAT-01, CAT-02, CAT-03, CAT-04
+
+**Success Criteria** (what must be TRUE when complete):
+1. Typing a valid YNAB category name on the first line of a forwarded email assigns that category to the created transaction
+2. Category matching is case-insensitive and works for partial name matches (e.g. "groceries" matches "Groceries & Dining")
+3. Forwarding an email with no first-line text creates an uncategorized transaction (existing behaviour unchanged)
+4. Typing a category name that has no match in YNAB creates an uncategorized transaction with no error notification
+
+**Plans:** TBD
+
+---
+
 ## Progress Table
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Scaffold & Deploy | 2/2 | Complete    | 2026-03-24 |
-| 2. Email Inflow | 2/2 | Complete    | 2026-03-24 |
-| 3. Parse & Create | 3/3 | Complete    | 2026-03-24 |
-| 4. Error Notification | 2/2 | Complete    | 2026-03-24 |
+| 1. Scaffold & Deploy | 2/2 | Complete | 2026-03-24 |
+| 2. Email Inflow | 2/2 | Complete | 2026-03-24 |
+| 3. Parse & Create | 3/3 | Complete | 2026-03-24 |
+| 4. Error Notification | 2/2 | Complete | 2026-03-24 |
+| 5. Retailer Support | 0/? | Not started | - |
+| 6. Category Tagging | 0/? | Not started | - |
 
 ---
 
 ## Coverage
 
-**Total v1 requirements:** 17
-**Mapped to phases:** 17
+**Total v1 requirements:** 21
+**Mapped to phases:** 21
 **Unmapped:** 0
 
 **Requirement mapping:**
 - Phase 1: INFRA-01, INFRA-02, INFRA-03, INFRA-04 (4 requirements)
 - Phase 2: EMAIL-01, EMAIL-02, EMAIL-03, EMAIL-04 (4 requirements)
 - Phase 3: PARSE-01, PARSE-02, PARSE-03, YNAB-01, YNAB-02, YNAB-03, YNAB-04, YNAB-05, YNAB-06 (9 requirements)
+- Phase 4: ERR-01, ERR-02, ERR-03, ERR-04 (4 requirements — v1 complete)
+- Phase 5: RETAIL-01, RETAIL-02, RETAIL-03 (3 requirements — v2.0)
+- Phase 6: CAT-01, CAT-02, CAT-03, CAT-04 (4 requirements — v2.0)
 
 ✓ All v1 requirements mapped
+✓ All v2.0 requirements mapped
 ✓ No orphaned requirements
