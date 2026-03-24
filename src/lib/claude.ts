@@ -23,7 +23,7 @@ export async function parseAmazonEmail(
     const client = new Anthropic(); // reads ANTHROPIC_API_KEY from env at call time
 
     const msg = await client.messages.create({
-      model: 'claude-haiku-4-5',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 256,
       system:
         'You are a data extraction assistant. Extract order information from Amazon order confirmation emails. Return ONLY valid JSON with no markdown, no explanation.',
@@ -62,8 +62,9 @@ export async function parseAmazonEmail(
       amount: order.amount,
       description: order.description,
     };
-  } catch {
+  } catch (err) {
     // Any failure (API error, JSON parse error, network error) → return null
+    console.error('parseAmazonEmail error:', err);
     return null;
   }
 }

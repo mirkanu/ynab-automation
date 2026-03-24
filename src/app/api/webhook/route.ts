@@ -70,7 +70,9 @@ export async function POST(req: NextRequest) {
 
     // Step 7: Extract HTML body and parse with Claude
     const html = body?.trigger?.event?.body?.html ?? '';
+    console.log('Calling Claude to parse email, html length:', html.length);
     const parsed = await parseAmazonEmail(html, senderInfo.name);
+    console.log('Claude parse result:', parsed);
     if (!parsed) {
       console.error('Claude parsing failed for messageId:', messageId);
       return NextResponse.json({ received: true }, { status: 200 });
