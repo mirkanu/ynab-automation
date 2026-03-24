@@ -5,6 +5,8 @@ import {
   extractOriginalSender,
   isFromAmazon,
 } from '@/lib/email';
+import { parseAmazonEmail } from '@/lib/claude';
+import { createYnabTransaction } from '@/lib/ynab';
 
 const prisma = new PrismaClient();
 
@@ -47,7 +49,46 @@ export async function POST(req: NextRequest) {
       data: { messageId, sender: sender ?? 'unknown' },
     });
 
-    return NextResponse.json({ received: true, sender, messageId }, { status: 200 });
+    // Step 6: Resolve sender to display name and YNAB account ID
+    const SENDER_MAP: Record<string, { name: string; accountId: string }> = {
+      'manuelkuhs@gmail.com': {
+        name: 'Manuel',
+        accountId: process.env.YNAB_MANUEL_ACCOUNT_ID ?? '',
+      },
+      [process.env.EMILY_KATE_EMAIL ?? '']: {
+        name: 'Emily-Kate',
+        accountId: process.env.YNAB_EMILY_ACCOUNT_ID ?? '',
+      },
+    };
+
+    const senderKey = (sender ?? '').toLowerCase();
+    const senderInfo = SENDER_MAP[senderKey];
+    if (!senderInfo) {
+      console.warn('Unrecognised sender — no YNAB transaction created:', sender);
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
+
+    // Step 7: Extract HTML body and parse with Claude
+    const html = body?.trigger?.event?.body?.html ?? '';
+    const parsed = await parseAmazonEmail(html, senderInfo.name);
+    if (!parsed) {
+      console.error('Claude parsing failed for messageId:', messageId);
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
+    console.log('Parsed order:', parsed);
+
+    // Step 8: Create YNAB transaction
+    const budgetId = process.env.YNAB_BUDGET_ID ?? '';
+    const transactionId = await createYnabTransaction({
+      budgetId,
+      accountId: senderInfo.accountId,
+      amount: parsed.amount,
+      description: parsed.description,
+      senderName: senderInfo.name,
+    });
+    console.log('YNAB transaction created:', transactionId, 'for', senderInfo.name);
+
+    return NextResponse.json({ received: true, transactionId }, { status: 200 });
   } catch (error) {
     console.error('Webhook error:', error);
     return NextResponse.json({ received: true }, { status: 200 });
