@@ -4,8 +4,7 @@ export async function GET() {
   return NextResponse.json({ status: 'ok' });
 }
 
-export async function POST(req: NextRequest) {
-  const body = await req.json();
-  console.log('PIPEDREAM_PAYLOAD:', JSON.stringify(body, null, 2));
+export async function POST(_req: NextRequest) {
+  // TODO Phase 2: implement email ingestion
   return NextResponse.json({ received: true }, { status: 200 });
 }
