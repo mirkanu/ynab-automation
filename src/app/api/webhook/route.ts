@@ -3,9 +3,8 @@ import { PrismaClient } from '@prisma/client';
 import {
   extractMessageId,
   extractOriginalSender,
-  isFromAmazon,
 } from '@/lib/email';
-import { parseAmazonEmail } from '@/lib/claude';
+import { parseOrderEmail } from '@/lib/claude';
 import { createYnabTransaction } from '@/lib/ynab';
 import { sendErrorNotification, MANUEL_EMAIL } from '@/lib/notify';
 
@@ -40,41 +39,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true }, { status: 200 });
     }
 
-    // Step 3: Extract sender early (needed for notifications before Amazon check)
+    // Step 3: Extract sender early (needed for notifications)
     const sender = extractOriginalSender(body);
     const senderKey = (sender ?? '').toLowerCase();
 
-    // Step 4: Filter non-Amazon emails — notify sender
-    if (!isFromAmazon(body)) {
-      console.log('Non-Amazon email ignored:', messageId, 'from:', sender);
-      if (sender) {
-        await sendErrorNotification({
-          to: MANUEL_EMAIL,
-          subject: `YNAB automation: email was not from Amazon${senderLabel(senderKey)}`,
-          body:
-            `An email forwarded by ${sender} could not be processed because it did not appear to be an Amazon order confirmation.\n\n` +
-            `Message ID: ${messageId}\n\n` +
-            `If this was meant to be an Amazon order, please forward it again.`,
-        });
-      }
-      return NextResponse.json({ received: true }, { status: 200 });
-    }
-
-    // Step 5: Record as processed
-    console.log('Processing Amazon email from:', sender, 'messageId:', messageId);
-    console.log('Step 5: writing ProcessedEmail record');
+    // Step 4: Record as processed
+    console.log('Processing order email from:', sender, 'messageId:', messageId);
+    console.log('Step 4: writing ProcessedEmail record');
     try {
       await prisma.processedEmail.create({
         data: { messageId, sender: sender ?? 'unknown' },
       });
-      console.log('Step 5: done');
+      console.log('Step 4: done');
     } catch (dbErr) {
-      console.error('Step 5 DB error:', dbErr);
+      console.error('Step 4 DB error:', dbErr);
       throw dbErr;
     }
 
-    // Step 6: Resolve sender to display name and YNAB account ID
-    console.log('Step 6: resolving sender');
+    // Step 5: Resolve sender to display name and YNAB account ID
+    console.log('Step 5: resolving sender');
     const SENDER_MAP: Record<string, { name: string; accountId: string }> = {
       'manuelkuhs@gmail.com': {
         name: 'Manuel',
@@ -87,14 +70,14 @@ export async function POST(req: NextRequest) {
     };
 
     const senderInfo = SENDER_MAP[senderKey];
-    console.log('Step 6: senderKey:', senderKey, 'found:', !!senderInfo);
+    console.log('Step 5: senderKey:', senderKey, 'found:', !!senderInfo);
     if (!senderInfo) {
       console.warn('Unrecognised sender — no YNAB transaction created:', sender);
       await sendErrorNotification({
         to: MANUEL_EMAIL,
         subject: 'YNAB automation: unknown sender',
         body:
-          `An Amazon order email was forwarded from an unrecognised email address and could not be processed.\n\n` +
+          `An order confirmation email was forwarded from an unrecognised email address and could not be processed.\n\n` +
           `Sender: ${sender ?? 'unknown'}\n` +
           `Message ID: ${messageId}\n\n` +
           `Add this sender to the automation if needed.`,
@@ -102,26 +85,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true }, { status: 200 });
     }
 
-    // Step 7: Extract HTML body and parse with Claude
+    // Step 6: Extract HTML body and parse with Claude
     const html = body?.trigger?.event?.body?.html ?? '';
-    console.log('Step 7: calling Claude, html length:', html.length);
-    const parsed = await parseAmazonEmail(html, senderInfo.name);
-    console.log('Step 7: Claude result:', parsed);
+    console.log('Step 6: calling Claude, html length:', html.length);
+    const parsed = await parseOrderEmail(html, senderInfo.name);
+    console.log('Step 6: Claude result:', parsed);
     if (!parsed) {
-      console.error('Step 7: Claude parsing failed for messageId:', messageId);
+      console.error('Step 6: Claude parsing failed for messageId:', messageId);
       await sendErrorNotification({
         to: MANUEL_EMAIL,
-        subject: `YNAB automation: failed to parse Amazon email${senderLabel(senderKey)}`,
+        subject: `YNAB automation: failed to parse order email${senderLabel(senderKey)}`,
         body:
-          `An Amazon order email forwarded by ${sender ?? 'unknown'} could not be parsed automatically. No YNAB transaction was created.\n\n` +
+          `An order confirmation email forwarded by ${sender ?? 'unknown'} could not be parsed automatically. No YNAB transaction was created.\n\n` +
           `Message ID: ${messageId}\n\n` +
           `Please add this transaction to YNAB manually.`,
       });
       return NextResponse.json({ received: true }, { status: 200 });
     }
 
-    // Step 8: Create YNAB transaction
-    console.log('Step 8: creating YNAB transaction');
+    // Step 7: Create YNAB transaction
+    console.log('Step 7: creating YNAB transaction');
     const budgetId = process.env.YNAB_BUDGET_ID ?? '';
     try {
       const transactionId = await createYnabTransaction({
@@ -132,15 +115,15 @@ export async function POST(req: NextRequest) {
         senderName: senderInfo.name,
         payeeName: parsed.retailer,
       });
-      console.log('Step 8: YNAB transaction created:', transactionId, 'for', senderInfo.name);
+      console.log('Step 7: YNAB transaction created:', transactionId, 'for', senderInfo.name);
       return NextResponse.json({ received: true, transactionId }, { status: 200 });
     } catch (ynabErr) {
-      console.error('Step 8: YNAB API error:', ynabErr);
+      console.error('Step 7: YNAB API error:', ynabErr);
       await sendErrorNotification({
         to: MANUEL_EMAIL,
         subject: `YNAB automation: failed to create transaction${senderLabel(senderKey)}`,
         body:
-          `An Amazon order email forwarded by ${sender ?? 'unknown'} was parsed but the YNAB transaction could not be created.\n\n` +
+          `An order confirmation email forwarded by ${sender ?? 'unknown'} was parsed but the YNAB transaction could not be created.\n\n` +
           `Item: ${parsed.description}\n` +
           `Amount: £${parsed.amount.toFixed(2)}\n` +
           `Message ID: ${messageId}\n\n` +
