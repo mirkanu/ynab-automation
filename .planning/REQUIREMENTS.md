@@ -14,7 +14,7 @@
 
 ### Email Ingestion
 
-- [ ] **EMAIL-01**: App receives inbound email webhook from Pipedream and responds with 200 OK
+- [x] **EMAIL-01**: App receives inbound email webhook from Pipedream and responds with 200 OK
 - [ ] **EMAIL-02**: App rejects duplicate emails by checking message ID against PostgreSQL
 - [ ] **EMAIL-03**: App extracts the original sender's email address from the forwarded message to identify Manuel or Emily-Kate
 - [ ] **EMAIL-04**: App ignores non-Amazon emails gracefully (no error, no transaction created)
@@ -68,7 +68,7 @@
 | INFRA-02 | 1 | Complete (01-01) |
 | INFRA-03 | 1 | Complete |
 | INFRA-04 | 1 | Complete |
-| EMAIL-01 | 2 | Pending |
+| EMAIL-01 | 2 | Complete |
 | EMAIL-02 | 2 | Pending |
 | EMAIL-03 | 2 | Pending |
 | EMAIL-04 | 2 | Pending |
