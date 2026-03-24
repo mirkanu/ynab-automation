@@ -7,6 +7,7 @@ export interface YnabTransactionParams {
   amount: number;        // in pounds/dollars (e.g. 12.99) — NOT milliunits
   description: string;
   senderName: string;    // e.g. "Manuel" or "Emily-Kate"
+  payeeName: string;     // e.g. "Amazon", "Costco", "Apple" — dynamic, not hardcoded
 }
 
 /**
@@ -14,7 +15,7 @@ export interface YnabTransactionParams {
  *
  * Amount is converted to milliunits and negated (outflow).
  * Memo is formatted as "{senderName} — {description}" (em dash).
- * Payee is hardcoded to "Amazon". Category is unset (null).
+ * Payee is set to the provided payeeName parameter. Category is unset (null).
  * Date is today (processing date, not the order date).
  *
  * @returns The YNAB transaction ID string on success.
@@ -23,7 +24,7 @@ export interface YnabTransactionParams {
 export async function createYnabTransaction(
   params: YnabTransactionParams,
 ): Promise<string> {
-  const { budgetId, accountId, amount, description, senderName } = params;
+  const { budgetId, accountId, amount, description, senderName, payeeName } = params;
 
   // Convert to milliunits, negate for outflow
   const milliunits = Math.round(amount * 1000) * -1;
@@ -46,7 +47,7 @@ export async function createYnabTransaction(
         account_id: accountId,
         date,
         amount: milliunits,
-        payee_name: 'Amazon',
+        payee_name: payeeName,
         memo,
         cleared: 'uncleared',
         approved: false,

@@ -9,6 +9,7 @@ const BASE_PARAMS: YnabTransactionParams = {
   amount: 12.99,
   description: 'AirPods case',
   senderName: 'Manuel',
+  payeeName: 'Amazon',
 };
 
 // Mock fetch response factory
@@ -89,7 +90,7 @@ describe('createYnabTransaction', () => {
     expect(body.transaction.amount).toBe(-100000);
   });
 
-  it('sets payee_name to "Amazon"', async () => {
+  it('sets payee_name to the provided payeeName (Amazon)', async () => {
     fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-006'));
 
     await createYnabTransaction(BASE_PARAMS);
@@ -97,6 +98,16 @@ describe('createYnabTransaction', () => {
     const [, options] = fetchMock.mock.calls[0];
     const body = JSON.parse(options.body as string) as { transaction: { payee_name: string } };
     expect(body.transaction.payee_name).toBe('Amazon');
+  });
+
+  it('sets payee_name to Costco when payeeName is Costco', async () => {
+    fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-012'));
+
+    await createYnabTransaction({ ...BASE_PARAMS, payeeName: 'Costco' });
+
+    const [, options] = fetchMock.mock.calls[0];
+    const body = JSON.parse(options.body as string) as { transaction: { payee_name: string } };
+    expect(body.transaction.payee_name).toBe('Costco');
   });
 
   it('formats memo as "Manuel: AirPods case - Automatically added from email"', async () => {
