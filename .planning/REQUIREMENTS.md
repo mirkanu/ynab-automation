@@ -9,13 +9,13 @@
 
 - [x] **INFRA-01**: Next.js app is deployed and running on Railway
 - [x] **INFRA-02**: PostgreSQL database is provisioned on Railway for dedup tracking
-- [ ] **INFRA-03**: All secrets (Claude API key, YNAB token, Postmark token) are stored as Railway environment variables
-- [ ] **INFRA-04**: Postmark inbound email address is configured to route to the app's webhook endpoint
+- [ ] **INFRA-03**: All secrets (Claude API key, YNAB token, Mailgun API key) are stored as Railway environment variables
+- [ ] **INFRA-04**: Mailgun inbound route is configured to POST to the app's webhook endpoint
 
 ### Email Ingestion
 
-- [ ] **EMAIL-01**: App receives inbound email webhook from Postmark and responds with 200 OK
-- [ ] **EMAIL-02**: App rejects duplicate emails by checking Postmark message ID against PostgreSQL
+- [ ] **EMAIL-01**: App receives inbound email webhook from Mailgun and responds with 200 OK
+- [ ] **EMAIL-02**: App rejects duplicate emails by checking Mailgun message ID against PostgreSQL
 - [ ] **EMAIL-03**: App extracts the original sender's email address from the forwarded message to identify Manuel or Emily-Kate
 - [ ] **EMAIL-04**: App ignores non-Amazon emails gracefully (no error, no transaction created)
 

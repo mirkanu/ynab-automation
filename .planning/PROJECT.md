@@ -42,20 +42,20 @@ A forwarded Amazon email becomes a YNAB transaction automatically — no manual 
 ## Constraints
 
 - **Tech stack**: Next.js (API routes for webhook handler) + PostgreSQL on Railway
-- **Email service**: Postmark — chosen for reliable inbound parsing and clean webhook payload
+- **Email service**: Mailgun — switched from Postmark (Postmark rejected Gmail account signup); same inbound route → webhook model, free tier 1,000 emails/month
 - **Hosting**: Railway — already provisioned, avoid introducing new platforms
-- **API keys**: Claude API, YNAB personal access token, Postmark server token — stored as Railway env vars
+- **API keys**: Claude API, YNAB personal access token, Mailgun API key — stored as Railway env vars
 - **Privacy**: Email content contains order details; data should not be logged beyond what's needed for dedup
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Postmark for inbound email | Best-in-class inbound parsing, clean webhook, free tier sufficient for household volume | — Pending |
+| Mailgun for inbound email | Switched from Postmark — Postmark rejected Gmail signup; Mailgun accepts Gmail, same inbound route → webhook model, 1k emails/month free | — Pending |
 | Railway for hosting | Reuse existing infrastructure; avoid Vercel cold starts for webhook reliability | — Pending |
 | Sender-based YNAB account routing | Manuel and Emily-Kate each have their own account; routing by sender keeps transactions organized | — Pending |
 | Uncategorized in Phase 1 | Simpler to ship; category logic can be layered on in Phase 2 once the pipeline is working | — Pending |
 | PostgreSQL for dedup | Postmark may redeliver on failure; idempotency via message ID prevents duplicate transactions | — Pending |
 
 ---
-*Last updated: 2026-03-23 after initialization*
+*Last updated: 2026-03-23 after switching email provider from Postmark to Mailgun*
