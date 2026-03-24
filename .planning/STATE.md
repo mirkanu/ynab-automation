@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: milestone
-status: completed
-stopped_at: Completed 05-01-PLAN.md — library contract updates (claude.ts, ynab.ts)
-last_updated: "2026-03-24T20:11:22.132Z"
+status: verifying
+stopped_at: Completed 05-02-PLAN.md — webhook retailer wiring and human verification approved
+last_updated: "2026-03-24T22:27:05.154Z"
 progress:
   total_phases: 6
   completed_phases: 4
@@ -32,8 +32,8 @@ progress:
 ## Current Position
 
 **Milestone:** v2.0 — Any Retailer + Category Tagging
-**Phase:** Phase 5 — Retailer Support (complete — Plans 01 and 02 done; awaiting human verify checkpoint)
-**Status:** Plan 05-02 auto task complete; at human-verify checkpoint
+**Phase:** Phase 5 — Retailer Support (complete — Plans 01 and 02 done; human verification approved)
+**Status:** Phase 5 complete; ready for Phase 6 — Category Tagging
 **Progress:** [████████░░] 82%
 
 ---
@@ -42,7 +42,7 @@ progress:
 
 | Phase | Goal | Status |
 |-------|------|--------|
-| 5. Retailer Support | Any order confirmation processed; retailer name as payee | Awaiting human verify |
+| 5. Retailer Support | Any order confirmation processed; retailer name as payee | Complete |
 | 6. Category Tagging | First-line category hint assigned to YNAB transaction if matched | Not started |
 
 ---
@@ -68,6 +68,7 @@ progress:
 | nixpacks.toml to override Railway build | BuildKit cache corruption on tsconfig.tsbuildinfo | Implemented |
 | Amazon-only filter removed from webhook | Phase 5 goal is any-retailer support; no sender-content gate needed | Implemented |
 | isFromAmazon left in email.ts but not imported | Unused but harmless; clean-up deferred to avoid scope creep | Deferred |
+| Euro-order routing to Euro Wise YNAB account | EUR-denominated orders override accountId to WISE_EUR_ACCOUNT_ID to avoid landing in GBP account | Implemented |
 
 ## Infrastructure
 
@@ -88,6 +89,6 @@ progress:
 
 ## Session Continuity
 
-**Last Session:** 2026-03-24T20:09:30Z
-**Stopped At:** Completed 05-02-PLAN.md Task 1 (auto) — at checkpoint:human-verify
-**Next Steps:** Human verification: forward a non-Amazon order email to Pipedream inbound; verify YNAB payee shows retailer name. Then approve checkpoint to complete Phase 5.
+**Last Session:** 2026-03-24T22:27:05.151Z
+**Stopped At:** Completed 05-02-PLAN.md — webhook retailer wiring and human verification approved
+**Next Steps:** Begin Phase 6 — Category Tagging: extend ParsedOrder with a category field and wire first-line category hint to YNAB transaction.
