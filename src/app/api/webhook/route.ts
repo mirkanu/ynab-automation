@@ -45,11 +45,19 @@ export async function POST(req: NextRequest) {
     console.log('Processing Amazon email from:', sender, 'messageId:', messageId);
 
     // Step 5: Record as processed
-    await prisma.processedEmail.create({
-      data: { messageId, sender: sender ?? 'unknown' },
-    });
+    console.log('Step 5: writing ProcessedEmail record');
+    try {
+      await prisma.processedEmail.create({
+        data: { messageId, sender: sender ?? 'unknown' },
+      });
+      console.log('Step 5: done');
+    } catch (dbErr) {
+      console.error('Step 5 DB error:', dbErr);
+      throw dbErr;
+    }
 
     // Step 6: Resolve sender to display name and YNAB account ID
+    console.log('Step 6: resolving sender');
     const SENDER_MAP: Record<string, { name: string; accountId: string }> = {
       'manuelkuhs@gmail.com': {
         name: 'Manuel',
@@ -63,6 +71,7 @@ export async function POST(req: NextRequest) {
 
     const senderKey = (sender ?? '').toLowerCase();
     const senderInfo = SENDER_MAP[senderKey];
+    console.log('Step 6: senderKey:', senderKey, 'found:', !!senderInfo);
     if (!senderInfo) {
       console.warn('Unrecognised sender — no YNAB transaction created:', sender);
       return NextResponse.json({ received: true }, { status: 200 });
@@ -70,16 +79,16 @@ export async function POST(req: NextRequest) {
 
     // Step 7: Extract HTML body and parse with Claude
     const html = body?.trigger?.event?.body?.html ?? '';
-    console.log('Calling Claude to parse email, html length:', html.length);
+    console.log('Step 7: calling Claude, html length:', html.length);
     const parsed = await parseAmazonEmail(html, senderInfo.name);
-    console.log('Claude parse result:', parsed);
+    console.log('Step 7: Claude result:', parsed);
     if (!parsed) {
-      console.error('Claude parsing failed for messageId:', messageId);
+      console.error('Step 7: Claude parsing failed for messageId:', messageId);
       return NextResponse.json({ received: true }, { status: 200 });
     }
-    console.log('Parsed order:', parsed);
 
     // Step 8: Create YNAB transaction
+    console.log('Step 8: creating YNAB transaction');
     const budgetId = process.env.YNAB_BUDGET_ID ?? '';
     const transactionId = await createYnabTransaction({
       budgetId,
@@ -88,7 +97,7 @@ export async function POST(req: NextRequest) {
       description: parsed.description,
       senderName: senderInfo.name,
     });
-    console.log('YNAB transaction created:', transactionId, 'for', senderInfo.name);
+    console.log('Step 8: YNAB transaction created:', transactionId, 'for', senderInfo.name);
 
     return NextResponse.json({ received: true, transactionId }, { status: 200 });
   } catch (error) {
