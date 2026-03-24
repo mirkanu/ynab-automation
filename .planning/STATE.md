@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
 milestone: v2.0
-milestone_name: Any Retailer + Category Tagging
-status: in_progress
-stopped_at: Roadmap created — v2.0 phases defined (Phase 5 and Phase 6)
-last_updated: "2026-03-24T19:00:00Z"
+milestone_name: milestone
+status: planning
+stopped_at: v2.0 roadmap created — Phase 5 and Phase 6 defined
+last_updated: "2026-03-24T20:02:16.310Z"
 progress:
-  total_phases: 2
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_phases: 6
+  completed_phases: 3
+  total_plans: 11
+  completed_plans: 8
+  percent: 73
 ---
 
 # Amazon to YNAB Automation — Project State
@@ -32,9 +32,9 @@ progress:
 ## Current Position
 
 **Milestone:** v2.0 — Any Retailer + Category Tagging
-**Phase:** Phase 5 — Retailer Support (not started)
-**Status:** Roadmap approved; ready to plan Phase 5
-**Progress:** [          ] 0/2 v2.0 phases complete
+**Phase:** Phase 5 — Retailer Support (in progress — Plan 01 complete)
+**Status:** Plan 05-01 complete; ready for Plan 05-02
+**Progress:** [███████░░░] 73%
 
 ---
 
@@ -60,6 +60,8 @@ progress:
 | db:migrate on boot | Ensures ProcessedEmail table exists before app starts | Implemented |
 | Amazon sender detection via body HTML scan | Forwarded emails embed original sender in blockquote | Implemented |
 | parseAmazonEmail returns null on failure, never throws | Prevents webhook handler from crashing on Claude API errors | Implemented |
+| parseAmazonEmail renamed to parseOrderEmail with backward-compat alias | Route.ts import unaffected during wave 1; plan 02 will update it | Implemented |
+| payeeName required (not optional) in YnabTransactionParams | Callers always have retailer from parsed.retailer; explicit is better than implicit | Implemented |
 | Math.round(amount * 1000) * -1 for YNAB milliunits | Rounds floating point before negating | Implemented |
 | Transactions created as uncleared, no category | User preference; omit category_id to prevent YNAB auto-assign | Implemented |
 | Memo format: "Name: description - Automatically added from email" | User-specified format | Implemented |
@@ -84,6 +86,6 @@ progress:
 
 ## Session Continuity
 
-**Last Session:** 2026-03-24T19:00:00Z
-**Stopped At:** v2.0 roadmap created — Phase 5 and Phase 6 defined
-**Next Steps:** Plan and execute Phase 5 (Retailer Support)
+**Last Session:** 2026-03-24T19:54:19Z
+**Stopped At:** Completed 05-01-PLAN.md — library contract updates (claude.ts, ynab.ts)
+**Next Steps:** Execute Plan 05-02 — webhook wiring to pass retailer through
