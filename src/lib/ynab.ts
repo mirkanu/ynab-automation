@@ -48,7 +48,7 @@ export async function createYnabTransaction(
         amount: milliunits,
         payee_name: 'Amazon',
         memo,
-        cleared: 'cleared',
+        cleared: 'uncleared',
         approved: false,
         category_id: null,
       },
