@@ -34,6 +34,13 @@
 - [ ] **YNAB-05**: Transaction payee is set to "Amazon"
 - [ ] **YNAB-06**: Transaction is created uncategorized (no category assigned)
 
+### Error Handling
+
+- [ ] **ERR-01**: Unknown sender (not Manuel or Emily-Kate) triggers a notification to Manuel
+- [ ] **ERR-02**: Claude parse failure triggers a notification to Manuel
+- [ ] **ERR-03**: YNAB API error triggers a notification to Manuel
+- [ ] **ERR-04**: Notification channel is Telegram or email (decided during Phase 4 planning)
+
 ## v2 Requirements
 
 ### Automation

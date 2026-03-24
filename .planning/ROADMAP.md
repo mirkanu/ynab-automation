@@ -92,6 +92,25 @@ Plans:
 
 ---
 
+### Phase 4: Error Notification
+
+**Goal:** Any email that cannot be processed — unknown sender, non-Amazon content, parse failure, or YNAB API error — triggers a notification to Manuel via Telegram or email so nothing silently disappears.
+
+**Depends on:** Phase 3 (processing pipeline must exist to know what can fail)
+
+**Requirements:** ERR-01, ERR-02, ERR-03, ERR-04
+
+**Success Criteria** (what must be TRUE when complete):
+1. An email from an unknown sender (not Manuel or Emily-Kate) triggers a notification to Manuel
+2. An email that passes Amazon detection but fails Claude parsing triggers a notification
+3. A YNAB API error (transaction creation failure) triggers a notification
+4. A non-Amazon email that reaches the handler triggers a notification (or is silently dropped — TBD)
+5. Happy-path emails produce no notification noise
+
+**Plans:** TBD
+
+---
+
 ## Progress Table
 
 | Phase | Plans Complete | Status | Completed |
@@ -99,6 +118,7 @@ Plans:
 | 1. Scaffold & Deploy | 2/2 | Complete    | 2026-03-24 |
 | 2. Email Inflow | 2/2 | Complete    | 2026-03-24 |
 | 3. Parse & Create | 0/3 | Not started | — |
+| 4. Error Notification | 0/? | Not started | — |
 
 ---
 
