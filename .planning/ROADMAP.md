@@ -128,7 +128,11 @@ Plans:
 3. A forwarded email that Claude cannot parse as any order confirmation triggers a notification to Manuel
 4. A forwarded email that has no identifiable amount or description produces no transaction and no silent failure
 
-**Plans:** TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Update claude.ts (ParsedOrder + retailer field) and ynab.ts (dynamic payeeName) with tests
+- [ ] 05-02-PLAN.md — Wire retailer through webhook handler; remove Amazon filter; human verify end-to-end
 
 ---
 
@@ -158,7 +162,7 @@ Plans:
 | 2. Email Inflow | 2/2 | Complete | 2026-03-24 |
 | 3. Parse & Create | 3/3 | Complete | 2026-03-24 |
 | 4. Error Notification | 2/2 | Complete | 2026-03-24 |
-| 5. Retailer Support | 0/? | Not started | - |
+| 5. Retailer Support | 0/2 | Not started | - |
 | 6. Category Tagging | 0/? | Not started | - |
 
 ---
