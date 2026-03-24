@@ -7,6 +7,7 @@ export interface ParsedOrder {
   description: string;  // e.g. "AirPods case" or "2 items: AirPods case, USB cable"
   retailer: string;     // e.g. "Amazon", "Costco", "Apple"
   currency: string;     // "EUR" if amount is exclusively in Euro with no GBP conversion, otherwise "GBP"
+  date: string;         // Order date in YYYY-MM-DD format, or today's date if not found in email
 }
 
 /**
@@ -33,11 +34,12 @@ export async function parseOrderEmail(
         {
           role: 'user',
           content:
-            `Extract the total order amount, a brief item description, the retailer/merchant name, and the currency from this order confirmation email HTML. ` +
+            `Extract the total order amount, a brief item description, the retailer/merchant name, the currency, and the order date from this order confirmation email HTML. ` +
             `For multi-item orders, summarize as '2 items: Item1, Item2' (max 2 item names). ` +
             `For currency: set to "EUR" ONLY if the total amount is exclusively in Euros (€) with no conversion to GBP or another currency shown. ` +
             `If the email shows a Euro amount AND a GBP/sterling equivalent, or if the amount is in any non-Euro currency, set currency to "GBP". ` +
-            `Return JSON: {"amount": 12.99, "description": "brief description", "retailer": "Amazon", "currency": "GBP"}. ` +
+            `For date: extract the order date from the email and format as YYYY-MM-DD. If no date is found, use today's date: ${new Date().toISOString().split('T')[0]}. ` +
+            `Return JSON: {"amount": 12.99, "description": "brief description", "retailer": "Amazon", "currency": "GBP", "date": "2024-03-15"}. ` +
             `HTML:\n\n${html}`,
         },
       ],
@@ -56,25 +58,27 @@ export async function parseOrderEmail(
 
     const parsed = JSON.parse(rawText) as unknown;
 
-    // Validate shape: must have numeric amount, string description, string retailer, and string currency
+    // Validate shape: must have numeric amount, string description, string retailer, string currency, and string date
     if (
       typeof parsed !== 'object' ||
       parsed === null ||
       typeof (parsed as Record<string, unknown>).amount !== 'number' ||
       typeof (parsed as Record<string, unknown>).description !== 'string' ||
       typeof (parsed as Record<string, unknown>).retailer !== 'string' ||
-      typeof (parsed as Record<string, unknown>).currency !== 'string'
+      typeof (parsed as Record<string, unknown>).currency !== 'string' ||
+      typeof (parsed as Record<string, unknown>).date !== 'string'
     ) {
       return null;
     }
 
-    const order = parsed as { amount: number; description: string; retailer: string; currency: string };
+    const order = parsed as { amount: number; description: string; retailer: string; currency: string; date: string };
 
     return {
       amount: order.amount,
       description: order.description,
       retailer: order.retailer,
       currency: order.currency,
+      date: order.date,
     };
   } catch (err) {
     // Any failure (API error, JSON parse error, network error) → return null

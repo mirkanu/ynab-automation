@@ -10,6 +10,7 @@ const BASE_PARAMS: YnabTransactionParams = {
   description: 'AirPods case',
   senderName: 'Manuel',
   payeeName: 'Amazon',
+  date: '2024-03-15',
 };
 
 // Mock fetch response factory
@@ -158,14 +159,13 @@ describe('createYnabTransaction', () => {
     await expect(createYnabTransaction(BASE_PARAMS)).rejects.toThrow('422');
   });
 
-  it('date is today in YYYY-MM-DD format', async () => {
+  it('uses the provided date in the YNAB transaction', async () => {
     fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-011'));
 
-    const today = new Date().toISOString().split('T')[0];
-    await createYnabTransaction(BASE_PARAMS);
+    await createYnabTransaction({ ...BASE_PARAMS, date: '2024-03-15' });
 
     const [, options] = fetchMock.mock.calls[0];
     const body = JSON.parse(options.body as string) as { transaction: { date: string } };
-    expect(body.transaction.date).toBe(today);
+    expect(body.transaction.date).toBe('2024-03-15');
   });
 });

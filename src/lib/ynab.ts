@@ -8,6 +8,7 @@ export interface YnabTransactionParams {
   description: string;
   senderName: string;    // e.g. "Manuel" or "Emily-Kate"
   payeeName: string;     // e.g. "Amazon", "Costco", "Apple" — dynamic, not hardcoded
+  date: string;          // YYYY-MM-DD order date from the email
 }
 
 /**
@@ -24,13 +25,10 @@ export interface YnabTransactionParams {
 export async function createYnabTransaction(
   params: YnabTransactionParams,
 ): Promise<string> {
-  const { budgetId, accountId, amount, description, senderName, payeeName } = params;
+  const { budgetId, accountId, amount, description, senderName, payeeName, date } = params;
 
   // Convert to milliunits, negate for outflow
   const milliunits = Math.round(amount * 1000) * -1;
-
-  // Today's date in YYYY-MM-DD format
-  const date = new Date().toISOString().split('T')[0];
 
   const memo = `${senderName}: ${description} - Automatically added from email`;
 

@@ -119,6 +119,7 @@ export async function POST(req: NextRequest) {
         description: parsed.description,
         senderName: senderInfo.name,
         payeeName: parsed.retailer,
+        date: parsed.date,
       });
       console.log('Step 7: YNAB transaction created:', transactionId, 'for', senderInfo.name);
       return NextResponse.json({ received: true, transactionId }, { status: 200 });
