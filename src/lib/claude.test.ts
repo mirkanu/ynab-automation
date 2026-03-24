@@ -13,7 +13,7 @@ vi.mock('@anthropic-ai/sdk', () => {
   return { default: MockAnthropic };
 });
 
-import { parseAmazonEmail } from './claude';
+import { parseOrderEmail } from './claude';
 
 const sampleHtml = `
   <html><body>
@@ -36,29 +36,30 @@ const multiItemHtml = `
   </body></html>
 `;
 
-describe('parseAmazonEmail', () => {
+describe('parseOrderEmail', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('returns { amount: number, description: string } for a valid single-item order', async () => {
+  it('returns { amount, description, retailer } for a valid single-item order', async () => {
     mockCreate.mockResolvedValueOnce({
-      content: [{ type: 'text', text: '{"amount": 12.99, "description": "The Pirates\' Treasure"}' }],
+      content: [{ type: 'text', text: '{"amount": 12.99, "description": "The Pirates\' Treasure", "retailer": "Amazon"}' }],
     });
 
-    const result = await parseAmazonEmail(sampleHtml, 'Manuel');
+    const result = await parseOrderEmail(sampleHtml, 'Manuel');
 
     expect(result).not.toBeNull();
     expect(result!.amount).toBe(12.99);
     expect(result!.description).toBe("The Pirates' Treasure");
+    expect(result!.retailer).toBe('Amazon');
   });
 
   it('amount is a number (not a string)', async () => {
     mockCreate.mockResolvedValueOnce({
-      content: [{ type: 'text', text: '{"amount": 12.99, "description": "Some item"}' }],
+      content: [{ type: 'text', text: '{"amount": 12.99, "description": "Some item", "retailer": "Amazon"}' }],
     });
 
-    const result = await parseAmazonEmail(sampleHtml, 'Manuel');
+    const result = await parseOrderEmail(sampleHtml, 'Manuel');
 
     expect(result).not.toBeNull();
     expect(typeof result!.amount).toBe('number');
@@ -69,7 +70,7 @@ describe('parseAmazonEmail', () => {
       content: [{ type: 'text', text: 'This is not valid JSON at all!' }],
     });
 
-    const result = await parseAmazonEmail(sampleHtml, 'Manuel');
+    const result = await parseOrderEmail(sampleHtml, 'Manuel');
 
     expect(result).toBeNull();
   });
@@ -77,17 +78,17 @@ describe('parseAmazonEmail', () => {
   it('returns null (does not throw) when Claude API throws an error', async () => {
     mockCreate.mockRejectedValueOnce(new Error('API rate limit exceeded'));
 
-    const result = await parseAmazonEmail(sampleHtml, 'Manuel');
+    const result = await parseOrderEmail(sampleHtml, 'Manuel');
 
     expect(result).toBeNull();
   });
 
   it('handles multi-item orders with a summarized description', async () => {
     mockCreate.mockResolvedValueOnce({
-      content: [{ type: 'text', text: '{"amount": 25.98, "description": "2 items: AirPods case, USB cable"}' }],
+      content: [{ type: 'text', text: '{"amount": 25.98, "description": "2 items: AirPods case, USB cable", "retailer": "Amazon"}' }],
     });
 
-    const result = await parseAmazonEmail(multiItemHtml, 'Manuel');
+    const result = await parseOrderEmail(multiItemHtml, 'Manuel');
 
     expect(result).not.toBeNull();
     expect(result!.amount).toBe(25.98);
@@ -102,10 +103,10 @@ describe('parseAmazonEmail', () => {
 
   it('strips markdown code fences when Claude wraps JSON in ```json blocks', async () => {
     mockCreate.mockResolvedValueOnce({
-      content: [{ type: 'text', text: '```json\n{"amount": 12.99, "description": "Test item"}\n```' }],
+      content: [{ type: 'text', text: '```json\n{"amount": 12.99, "description": "Test item", "retailer": "Amazon"}\n```' }],
     });
 
-    const result = await parseAmazonEmail(sampleHtml, 'Manuel');
+    const result = await parseOrderEmail(sampleHtml, 'Manuel');
 
     expect(result).not.toBeNull();
     expect(result!.amount).toBe(12.99);
@@ -117,7 +118,30 @@ describe('parseAmazonEmail', () => {
       content: [{ type: 'text', text: '{"price": 12.99}' }],  // missing amount and description
     });
 
-    const result = await parseAmazonEmail(sampleHtml, 'Manuel');
+    const result = await parseOrderEmail(sampleHtml, 'Manuel');
+
+    expect(result).toBeNull();
+  });
+
+  it('extracts retailer for non-Amazon orders (Costco)', async () => {
+    mockCreate.mockResolvedValueOnce({
+      content: [{ type: 'text', text: '{"amount": 49.99, "description": "24-pack water", "retailer": "Costco"}' }],
+    });
+
+    const result = await parseOrderEmail('<html><body>Costco order</body></html>', 'Manuel');
+
+    expect(result).not.toBeNull();
+    expect(result!.retailer).toBe('Costco');
+    expect(result!.amount).toBe(49.99);
+    expect(result!.description).toBe('24-pack water');
+  });
+
+  it('returns null when retailer field is missing from Claude response', async () => {
+    mockCreate.mockResolvedValueOnce({
+      content: [{ type: 'text', text: '{"amount": 12.99, "description": "some item"}' }],
+    });
+
+    const result = await parseOrderEmail(sampleHtml, 'Manuel');
 
     expect(result).toBeNull();
   });
