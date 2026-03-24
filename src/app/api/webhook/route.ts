@@ -7,8 +7,20 @@ import {
 } from '@/lib/email';
 import { parseAmazonEmail } from '@/lib/claude';
 import { createYnabTransaction } from '@/lib/ynab';
+import { sendErrorNotification, MANUEL_EMAIL } from '@/lib/notify';
 
 const prisma = new PrismaClient();
+
+const EMILY_KATE_EMAIL = process.env.EMILY_KATE_EMAIL ?? '';
+
+/** Returns To/CC routing for error notifications based on sender email. */
+function notificationRecipients(senderKey: string): { to: string; cc?: string } {
+  if (senderKey === 'manuelkuhs@gmail.com') {
+    return { to: MANUEL_EMAIL };
+  }
+  // Emily-Kate (or any other recognised sender) → To sender, CC Manuel
+  return { to: EMILY_KATE_EMAIL || MANUEL_EMAIL, cc: MANUEL_EMAIL };
+}
 
 export async function GET() {
   return NextResponse.json({ status: 'ok' });
@@ -34,17 +46,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true }, { status: 200 });
     }
 
-    // Step 3: Filter non-Amazon emails
+    // Step 3: Extract sender early (needed for notifications before Amazon check)
+    const sender = extractOriginalSender(body);
+    const senderKey = (sender ?? '').toLowerCase();
+
+    // Step 4: Filter non-Amazon emails — notify sender
     if (!isFromAmazon(body)) {
-      console.log('Non-Amazon email ignored:', messageId);
+      console.log('Non-Amazon email ignored:', messageId, 'from:', sender);
+      if (sender) {
+        const { to, cc } = notificationRecipients(senderKey);
+        await sendErrorNotification({
+          to,
+          cc,
+          subject: 'YNAB automation: email was not from Amazon',
+          body:
+            `An email you forwarded could not be processed because it did not appear to be an Amazon order confirmation.\n\n` +
+            `Message ID: ${messageId}\n\n` +
+            `If you meant to forward an Amazon order, please try again.`,
+        });
+      }
       return NextResponse.json({ received: true }, { status: 200 });
     }
 
-    // Step 4: Extract sender (forwarding user for YNAB routing)
-    const sender = extractOriginalSender(body);
-    console.log('Processing Amazon email from:', sender, 'messageId:', messageId);
-
     // Step 5: Record as processed
+    console.log('Processing Amazon email from:', sender, 'messageId:', messageId);
     console.log('Step 5: writing ProcessedEmail record');
     try {
       await prisma.processedEmail.create({
@@ -69,11 +94,19 @@ export async function POST(req: NextRequest) {
       },
     };
 
-    const senderKey = (sender ?? '').toLowerCase();
     const senderInfo = SENDER_MAP[senderKey];
     console.log('Step 6: senderKey:', senderKey, 'found:', !!senderInfo);
     if (!senderInfo) {
       console.warn('Unrecognised sender — no YNAB transaction created:', sender);
+      await sendErrorNotification({
+        to: MANUEL_EMAIL,
+        subject: 'YNAB automation: unknown sender',
+        body:
+          `An Amazon order email was forwarded from an unrecognised email address and could not be processed.\n\n` +
+          `Sender: ${sender ?? 'unknown'}\n` +
+          `Message ID: ${messageId}\n\n` +
+          `Add this sender to the automation if needed.`,
+      });
       return NextResponse.json({ received: true }, { status: 200 });
     }
 
@@ -84,22 +117,48 @@ export async function POST(req: NextRequest) {
     console.log('Step 7: Claude result:', parsed);
     if (!parsed) {
       console.error('Step 7: Claude parsing failed for messageId:', messageId);
+      const { to, cc } = notificationRecipients(senderKey);
+      await sendErrorNotification({
+        to,
+        cc,
+        subject: 'YNAB automation: failed to parse Amazon email',
+        body:
+          `An Amazon order email could not be parsed automatically. No YNAB transaction was created.\n\n` +
+          `Message ID: ${messageId}\n\n` +
+          `You may need to add this transaction to YNAB manually.`,
+      });
       return NextResponse.json({ received: true }, { status: 200 });
     }
 
     // Step 8: Create YNAB transaction
     console.log('Step 8: creating YNAB transaction');
     const budgetId = process.env.YNAB_BUDGET_ID ?? '';
-    const transactionId = await createYnabTransaction({
-      budgetId,
-      accountId: senderInfo.accountId,
-      amount: parsed.amount,
-      description: parsed.description,
-      senderName: senderInfo.name,
-    });
-    console.log('Step 8: YNAB transaction created:', transactionId, 'for', senderInfo.name);
-
-    return NextResponse.json({ received: true, transactionId }, { status: 200 });
+    try {
+      const transactionId = await createYnabTransaction({
+        budgetId,
+        accountId: senderInfo.accountId,
+        amount: parsed.amount,
+        description: parsed.description,
+        senderName: senderInfo.name,
+      });
+      console.log('Step 8: YNAB transaction created:', transactionId, 'for', senderInfo.name);
+      return NextResponse.json({ received: true, transactionId }, { status: 200 });
+    } catch (ynabErr) {
+      console.error('Step 8: YNAB API error:', ynabErr);
+      const { to, cc } = notificationRecipients(senderKey);
+      await sendErrorNotification({
+        to,
+        cc,
+        subject: 'YNAB automation: failed to create transaction',
+        body:
+          `An Amazon order email was parsed successfully but the YNAB transaction could not be created.\n\n` +
+          `Item: ${parsed.description}\n` +
+          `Amount: £${parsed.amount.toFixed(2)}\n` +
+          `Message ID: ${messageId}\n\n` +
+          `Please add this transaction to YNAB manually.`,
+      });
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
   } catch (error) {
     console.error('Webhook error:', error);
     return NextResponse.json({ received: true }, { status: 200 });
