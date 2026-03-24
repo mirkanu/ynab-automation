@@ -48,7 +48,7 @@
 
 ### Retailer Support
 
-- [ ] **RETAIL-01**: App processes forwarded order confirmation emails from any retailer, not just Amazon (removes Amazon-only filter)
+- [x] **RETAIL-01**: App processes forwarded order confirmation emails from any retailer, not just Amazon (removes Amazon-only filter)
 - [x] **RETAIL-02**: Claude extracts the retailer/merchant name from the email and uses it as the YNAB payee (replaces hardcoded "Amazon")
 - [x] **RETAIL-03**: If Claude cannot parse a forwarded email as an order confirmation (no amount or description extracted), Manuel is notified
 
@@ -111,7 +111,7 @@
 | ERR-02 | 4 | Complete |
 | ERR-03 | 4 | Complete |
 | ERR-04 | 4 | Complete |
-| RETAIL-01 | 5 | Pending |
+| RETAIL-01 | 5 | Complete |
 | RETAIL-02 | 5 | Complete |
 | RETAIL-03 | 5 | Complete |
 | CAT-01 | 6 | Pending |

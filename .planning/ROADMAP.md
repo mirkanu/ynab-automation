@@ -16,7 +16,7 @@ A forwarded Amazon email becomes a YNAB transaction automatically — no manual 
 - [x] **Phase 2: Email Inflow** — Pipedream webhooks received, deduplicated, and sender detected
 - [x] **Phase 3: Parse & Create** — Claude extracts data; transactions created in correct YNAB accounts
 - [x] **Phase 4: Error Notification** — Unknown sender, parse failure, and YNAB errors notify Manuel
-- [ ] **Phase 5: Retailer Support** — Any order confirmation email processed; retailer name used as payee
+- [x] **Phase 5: Retailer Support** — Any order confirmation email processed; retailer name used as payee (completed 2026-03-24)
 - [ ] **Phase 6: Category Tagging** — First-line category hint looked up in YNAB and assigned if matched
 
 ---
@@ -128,7 +128,7 @@ Plans:
 3. A forwarded email that Claude cannot parse as any order confirmation triggers a notification to Manuel
 4. A forwarded email that has no identifiable amount or description produces no transaction and no silent failure
 
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 - [ ] 05-01-PLAN.md — Update claude.ts (ParsedOrder + retailer field) and ynab.ts (dynamic payeeName) with tests
@@ -162,7 +162,7 @@ Plans:
 | 2. Email Inflow | 2/2 | Complete | 2026-03-24 |
 | 3. Parse & Create | 3/3 | Complete | 2026-03-24 |
 | 4. Error Notification | 2/2 | Complete | 2026-03-24 |
-| 5. Retailer Support | 1/2 | In Progress|  |
+| 5. Retailer Support | 2/2 | Complete   | 2026-03-24 |
 | 6. Category Tagging | 0/? | Not started | - |
 
 ---
