@@ -14,7 +14,7 @@ A forwarded Amazon email becomes a YNAB transaction automatically — no manual 
 
 - [x] **Phase 1: Scaffold & Deploy** — Next.js app running on Railway with database and secrets configured
 - [x] **Phase 2: Email Inflow** — Pipedream webhooks received, deduplicated, and sender detected
-- [ ] **Phase 3: Parse & Create** — Claude extracts data; transactions created in correct YNAB accounts
+- [x] **Phase 3: Parse & Create** — Claude extracts data; transactions created in correct YNAB accounts
 
 ---
 
@@ -117,8 +117,8 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Scaffold & Deploy | 2/2 | Complete    | 2026-03-24 |
 | 2. Email Inflow | 2/2 | Complete    | 2026-03-24 |
-| 3. Parse & Create | 2/3 | In progress | — |
-| 4. Error Notification | 0/? | Not started | — |
+| 3. Parse & Create | 3/3 | Complete    | 2026-03-24 |
+| 4. Error Notification | 2/2 | Complete    | 2026-03-24 |
 
 ---
 
