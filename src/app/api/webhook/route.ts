@@ -11,15 +11,9 @@ import { sendErrorNotification, MANUEL_EMAIL } from '@/lib/notify';
 
 const prisma = new PrismaClient();
 
-const EMILY_KATE_EMAIL = process.env.EMILY_KATE_EMAIL ?? '';
-
-/** Returns To/CC routing for error notifications based on sender email. */
-function notificationRecipients(senderKey: string): { to: string; cc?: string } {
-  if (senderKey === 'manuelkuhs@gmail.com') {
-    return { to: MANUEL_EMAIL };
-  }
-  // Emily-Kate (or any other recognised sender) → To sender, CC Manuel
-  return { to: EMILY_KATE_EMAIL || MANUEL_EMAIL, cc: MANUEL_EMAIL };
+/** Returns a subject prefix identifying the sender when it's Emily-Kate. */
+function senderLabel(senderKey: string): string {
+  return senderKey === 'manuelkuhs@gmail.com' ? '' : ' (Emily-Kate)';
 }
 
 export async function GET() {
@@ -54,15 +48,13 @@ export async function POST(req: NextRequest) {
     if (!isFromAmazon(body)) {
       console.log('Non-Amazon email ignored:', messageId, 'from:', sender);
       if (sender) {
-        const { to, cc } = notificationRecipients(senderKey);
         await sendErrorNotification({
-          to,
-          cc,
-          subject: 'YNAB automation: email was not from Amazon',
+          to: MANUEL_EMAIL,
+          subject: `YNAB automation: email was not from Amazon${senderLabel(senderKey)}`,
           body:
-            `An email you forwarded could not be processed because it did not appear to be an Amazon order confirmation.\n\n` +
+            `An email forwarded by ${sender} could not be processed because it did not appear to be an Amazon order confirmation.\n\n` +
             `Message ID: ${messageId}\n\n` +
-            `If you meant to forward an Amazon order, please try again.`,
+            `If this was meant to be an Amazon order, please forward it again.`,
         });
       }
       return NextResponse.json({ received: true }, { status: 200 });
@@ -117,15 +109,13 @@ export async function POST(req: NextRequest) {
     console.log('Step 7: Claude result:', parsed);
     if (!parsed) {
       console.error('Step 7: Claude parsing failed for messageId:', messageId);
-      const { to, cc } = notificationRecipients(senderKey);
       await sendErrorNotification({
-        to,
-        cc,
-        subject: 'YNAB automation: failed to parse Amazon email',
+        to: MANUEL_EMAIL,
+        subject: `YNAB automation: failed to parse Amazon email${senderLabel(senderKey)}`,
         body:
-          `An Amazon order email could not be parsed automatically. No YNAB transaction was created.\n\n` +
+          `An Amazon order email forwarded by ${sender ?? 'unknown'} could not be parsed automatically. No YNAB transaction was created.\n\n` +
           `Message ID: ${messageId}\n\n` +
-          `You may need to add this transaction to YNAB manually.`,
+          `Please add this transaction to YNAB manually.`,
       });
       return NextResponse.json({ received: true }, { status: 200 });
     }
@@ -145,13 +135,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true, transactionId }, { status: 200 });
     } catch (ynabErr) {
       console.error('Step 8: YNAB API error:', ynabErr);
-      const { to, cc } = notificationRecipients(senderKey);
       await sendErrorNotification({
-        to,
-        cc,
-        subject: 'YNAB automation: failed to create transaction',
+        to: MANUEL_EMAIL,
+        subject: `YNAB automation: failed to create transaction${senderLabel(senderKey)}`,
         body:
-          `An Amazon order email was parsed successfully but the YNAB transaction could not be created.\n\n` +
+          `An Amazon order email forwarded by ${sender ?? 'unknown'} was parsed but the YNAB transaction could not be created.\n\n` +
           `Item: ${parsed.description}\n` +
           `Amount: £${parsed.amount.toFixed(2)}\n` +
           `Message ID: ${messageId}\n\n` +
