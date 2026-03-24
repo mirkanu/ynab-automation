@@ -99,15 +99,14 @@ describe('createYnabTransaction', () => {
     expect(body.transaction.payee_name).toBe('Amazon');
   });
 
-  it('formats memo as "Manuel \u2014 AirPods case" (em dash)', async () => {
+  it('formats memo as "Manuel: AirPods case - Automatically added from email"', async () => {
     fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-007'));
 
     await createYnabTransaction(BASE_PARAMS);
 
     const [, options] = fetchMock.mock.calls[0];
     const body = JSON.parse(options.body as string) as { transaction: { memo: string } };
-    // Em dash is U+2014
-    expect(body.transaction.memo).toBe('Manuel \u2014 AirPods case');
+    expect(body.transaction.memo).toBe('Manuel: AirPods case - Automatically added from email');
   });
 
   it('sets category_id to null', async () => {

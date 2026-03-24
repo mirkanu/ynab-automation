@@ -100,6 +100,18 @@ describe('parseAmazonEmail', () => {
     expect(mentionsMultiple).toBe(true);
   });
 
+  it('strips markdown code fences when Claude wraps JSON in ```json blocks', async () => {
+    mockCreate.mockResolvedValueOnce({
+      content: [{ type: 'text', text: '```json\n{"amount": 12.99, "description": "Test item"}\n```' }],
+    });
+
+    const result = await parseAmazonEmail(sampleHtml, 'Manuel');
+
+    expect(result).not.toBeNull();
+    expect(result!.amount).toBe(12.99);
+    expect(result!.description).toBe('Test item');
+  });
+
   it('returns null when response JSON is missing required fields', async () => {
     mockCreate.mockResolvedValueOnce({
       content: [{ type: 'text', text: '{"price": 12.99}' }],  // missing amount and description

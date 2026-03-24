@@ -44,7 +44,13 @@ export async function parseAmazonEmail(
       return null;
     }
 
-    const parsed = JSON.parse(textContent.text) as unknown;
+    // Strip markdown code fences Claude sometimes adds despite prompt instructions
+    let rawText = textContent.text.trim();
+    if (rawText.startsWith('```')) {
+      rawText = rawText.replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '').trim();
+    }
+
+    const parsed = JSON.parse(rawText) as unknown;
 
     // Validate shape: must have numeric amount and string description
     if (

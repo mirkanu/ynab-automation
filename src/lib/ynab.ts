@@ -31,8 +31,7 @@ export async function createYnabTransaction(
   // Today's date in YYYY-MM-DD format
   const date = new Date().toISOString().split('T')[0];
 
-  // Memo: em dash (U+2014) between sender name and description
-  const memo = `${senderName} \u2014 ${description}`;
+  const memo = `${senderName}: ${description} - Automatically added from email`;
 
   const url = `https://api.youneedabudget.com/v1/budgets/${budgetId}/transactions`;
 
