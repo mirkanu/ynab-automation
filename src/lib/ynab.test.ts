@@ -109,14 +109,14 @@ describe('createYnabTransaction', () => {
     expect(body.transaction.memo).toBe('Manuel: AirPods case - Automatically added from email');
   });
 
-  it('sets category_id to null', async () => {
+  it('omits category_id from the request body to prevent YNAB auto-assign', async () => {
     fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-008'));
 
     await createYnabTransaction(BASE_PARAMS);
 
     const [, options] = fetchMock.mock.calls[0];
-    const body = JSON.parse(options.body as string) as { transaction: { category_id: unknown } };
-    expect(body.transaction.category_id).toBeNull();
+    const body = JSON.parse(options.body as string) as { transaction: Record<string, unknown> };
+    expect(body.transaction.category_id).toBeUndefined();
   });
 
   it('sets account_id from params.accountId', async () => {

@@ -50,7 +50,6 @@ export async function createYnabTransaction(
         memo,
         cleared: 'uncleared',
         approved: false,
-        category_id: null,
       },
     }),
   });
