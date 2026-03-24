@@ -1,6 +1,6 @@
 # Amazon to YNAB Automation — Project State
 
-**Updated:** 2026-03-23
+**Updated:** 2026-03-24
 
 ## Project Reference
 
@@ -16,10 +16,10 @@
 
 ## Current Position
 
-**Phase:** 01-scaffold-and-deploy
-**Plan:** 02 (next to execute)
-**Status:** In progress
-**Progress:** 1/3 phases (Plan 1/N within phase 01)
+**Phase:** 02-inbound-email
+**Plan:** 01 (next to execute)
+**Status:** Phase 01 complete — ready for Phase 02
+**Progress:** 1/3 phases complete (Phase 01 all plans done)
 
 ---
 
@@ -37,11 +37,11 @@
 
 | Decision | Rationale | Status |
 |----------|-----------|--------|
-| Postmark for inbound email | Best-in-class inbound parsing, clean webhook, free tier sufficient | Pending implementation |
-| Railway for hosting | Reuse existing infrastructure; avoid Vercel cold starts | Pending implementation |
+| Pipedream for inbound email | User chose Pipedream over Postmark/Mailgun — free, no server-side API key needed | Implemented (01-02) |
+| Railway for hosting | Reuse existing infrastructure; avoid Vercel cold starts | Implemented (01-02) |
 | Sender-based YNAB account routing | Manuel and Emily-Kate each have their own account | Pending implementation |
 | Uncategorized in Phase 1 | Simpler to ship; category logic can be layered in Phase 2 | Pending implementation |
-| PostgreSQL for dedup | Postmark may redeliver on failure; idempotency via message ID | Pending implementation |
+| PostgreSQL for dedup | Pipedream may redeliver on failure; idempotency via message ID | Implemented (01-02) |
 | next.config.mjs not .ts | Next.js 14.2 does not support TypeScript config files | Implemented (01-01) |
 | GET on /api/webhook | Railway health checks need 200 response, not 405 | Implemented (01-01) |
 | db:migrate on boot | Ensures ProcessedEmail table exists before app starts | Implemented (01-01) |
@@ -59,25 +59,29 @@
 
 ### Infrastructure Notes
 
-- Railway project already exists (Josie n8n + Claude)
-- PostgreSQL can be added to same Railway environment
-- Postmark account needs to be set up with inbound webhook routing
+- Railway project: ynab-automation-production.up.railway.app — live and healthy
+- PostgreSQL provisioned on Railway; DATABASE_URL auto-set; ProcessedEmail table migrated
+- Inbound email: Pipedream address empk1lk0u08wjyn@upload.pipedream.net → /api/webhook
+- Secrets confirmed: ANTHROPIC_API_KEY (sk-ant-api03-*), YNAB_PERSONAL_ACCESS_TOKEN, DATABASE_URL
+- Phase 2 note: Pipedream POSTs a JSON envelope — parse its format in Phase 2 before building parser
 
 ---
 
 ## Session Continuity
 
-**Last Session:** 2026-03-23 (01-01 scaffold execution)
-**Stopped At:** Completed 01-01-PLAN.md
-**Next Steps:** Execute Plan 02 (Railway deploy + database provisioning)
+**Last Session:** 2026-03-24 (01-02 deploy + checkpoint resolution)
+**Stopped At:** Completed 01-02-PLAN.md — Phase 01 fully done
+**Next Steps:** Execute Phase 02 (inbound email parsing and sender detection)
 
 ---
 
 ## Blockers & Todos
 
-- [ ] Set up Postmark account (needed for Plan 02 or Phase 02)
-- [ ] Provision PostgreSQL on Railway (needed for Plan 02)
-- [ ] Add env vars to Railway service (DATABASE_URL, ANTHROPIC_API_KEY, YNAB_PERSONAL_ACCESS_TOKEN, POSTMARK_SERVER_TOKEN)
+- [x] Set up inbound email routing — done via Pipedream (empk1lk0u08wjyn@upload.pipedream.net)
+- [x] Provision PostgreSQL on Railway — done; ProcessedEmail table migrated
+- [x] Add env vars to Railway service — done (ANTHROPIC_API_KEY, YNAB_PERSONAL_ACCESS_TOKEN, DATABASE_URL)
+- [ ] Phase 02: Determine Pipedream webhook JSON envelope format before building email parser
+- [ ] Phase 02: Implement email deduplication, sender detection, and non-Amazon filtering
 
 ---
 
