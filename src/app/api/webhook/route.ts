@@ -3,9 +3,10 @@ import { PrismaClient } from '@prisma/client';
 import {
   extractMessageId,
   extractOriginalSender,
+  extractCategoryHint,
 } from '@/lib/email';
 import { parseOrderEmail } from '@/lib/claude';
-import { createYnabTransaction } from '@/lib/ynab';
+import { createYnabTransaction, getCategories, findCategory } from '@/lib/ynab';
 import { sendErrorNotification, MANUEL_EMAIL } from '@/lib/notify';
 
 const prisma = new PrismaClient();
@@ -87,6 +88,7 @@ export async function POST(req: NextRequest) {
 
     // Step 6: Extract HTML body and parse with Claude
     const html = body?.trigger?.event?.body?.html ?? '';
+    const categoryHint = extractCategoryHint(html);
     console.log('Step 6: calling Claude, html length:', html.length);
     const parsed = await parseOrderEmail(html, senderInfo.name);
     console.log('Step 6: Claude result:', parsed);
@@ -103,9 +105,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true }, { status: 200 });
     }
 
+    // Step 6b: Resolve category hint to YNAB category ID (if hint was present)
+    const budgetId = process.env.YNAB_BUDGET_ID ?? '';
+    let categoryId: string | undefined;
+    if (categoryHint) {
+      try {
+        const categories = await getCategories(budgetId);
+        const matched = findCategory(categories, categoryHint);
+        if (matched) {
+          categoryId = matched.id;
+          console.log('Step 6b: matched category:', matched.name, matched.id);
+        } else {
+          console.log('Step 6b: no category match for hint:', categoryHint);
+        }
+      } catch (err) {
+        // Non-fatal: log and continue without category
+        console.error('Step 6b: getCategories failed, continuing without category:', err);
+      }
+    }
+
     // Step 7: Create YNAB transaction
     console.log('Step 7: creating YNAB transaction');
-    const budgetId = process.env.YNAB_BUDGET_ID ?? '';
     // Euro-only emails go to the shared Euro Wise account regardless of sender
     const accountId =
       parsed.currency === 'EUR'
@@ -120,6 +140,7 @@ export async function POST(req: NextRequest) {
         senderName: senderInfo.name,
         payeeName: parsed.retailer,
         date: parsed.date,
+        categoryId,
       });
       console.log('Step 7: YNAB transaction created:', transactionId, 'for', senderInfo.name);
       return NextResponse.json({ received: true, transactionId }, { status: 200 });
