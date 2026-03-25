@@ -3,6 +3,7 @@ import {
   extractMessageId,
   extractOriginalSender,
   isFromAmazon,
+  extractCategoryHint,
 } from './email';
 
 // Minimal valid Pipedream payload matching PAYLOAD.md structure
@@ -92,6 +93,76 @@ describe('extractOriginalSender', () => {
   it('does NOT return the Amazon sender — returns the forwarder', () => {
     const result = extractOriginalSender(validPayload);
     expect(result).not.toContain('amazon');
+  });
+});
+
+// Helper: wrap content in a minimal Gmail-style HTML structure
+function gmailHtml(preQuote: string, quoted = '<p>Order details...</p>') {
+  return `<html><body><div dir="ltr">${preQuote}</div><blockquote class="gmail_quote">${quoted}</blockquote></body></html>`;
+}
+
+describe('extractCategoryHint', () => {
+  it('returns null for empty string', () => {
+    expect(extractCategoryHint('')).toBeNull();
+  });
+
+  it('returns null when no text precedes the blockquote', () => {
+    const html = gmailHtml('');
+    expect(extractCategoryHint(html)).toBeNull();
+  });
+
+  it('returns the category hint typed by the user before the blockquote', () => {
+    const html = gmailHtml('<p>Groceries</p>');
+    expect(extractCategoryHint(html)).toBe('Groceries');
+  });
+
+  it('trims surrounding whitespace from the hint', () => {
+    const html = gmailHtml('<p>  groceries  </p>');
+    expect(extractCategoryHint(html)).toBe('groceries');
+  });
+
+  it('skips blank lines and returns the first non-empty line', () => {
+    const html = gmailHtml('<p></p><p>Dining Out</p>');
+    expect(extractCategoryHint(html)).toBe('Dining Out');
+  });
+
+  it('returns null when only text before blockquote is a Gmail signature', () => {
+    const html = `<html><body><div class="gmail_signature" data-smartmail="gmail_signature"><div dir="ltr">Kind regards, Manuel</div></div><blockquote class="gmail_quote"><p>Order...</p></blockquote></body></html>`;
+    expect(extractCategoryHint(html)).toBeNull();
+  });
+
+  it('returns hint when user typed text appears before an auto-signature', () => {
+    const html = gmailHtml('<p>Groceries</p><p>Kind regards, Manuel</p>');
+    expect(extractCategoryHint(html)).toBe('Groceries');
+  });
+
+  it('returns null when only pre-blockquote text is "-- " sig delimiter', () => {
+    const html = gmailHtml('<p>--</p>');
+    expect(extractCategoryHint(html)).toBeNull();
+  });
+
+  it('returns null when only pre-blockquote text is "Sent from my iPhone"', () => {
+    const html = gmailHtml('<p>Sent from my iPhone</p>');
+    expect(extractCategoryHint(html)).toBeNull();
+  });
+
+  it('returns null when only pre-blockquote text is "Best regards, ..."', () => {
+    const html = gmailHtml('<p>Best regards, Emily</p>');
+    expect(extractCategoryHint(html)).toBeNull();
+  });
+
+  it('returns null when only pre-blockquote text is "Thanks,"', () => {
+    const html = gmailHtml('<p>Thanks,</p>');
+    expect(extractCategoryHint(html)).toBeNull();
+  });
+
+  it('does not return text inside the blockquote', () => {
+    const html = `<html><body><blockquote><p>Clothing</p></blockquote></body></html>`;
+    expect(extractCategoryHint(html)).toBeNull();
+  });
+
+  it('returns null when there is no blockquote and no meaningful text', () => {
+    expect(extractCategoryHint('<html><body></body></html>')).toBeNull();
   });
 });
 

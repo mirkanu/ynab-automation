@@ -81,6 +81,57 @@ export function extractOriginalSender(payload: unknown): string | null {
   }
 }
 
+// Signature line patterns that should be ignored when extracting a category hint
+const SIGNATURE_LINE_PATTERNS = [
+  /^--\s*$/,                                  // standard email sig delimiter
+  /^(kind|best|warm|with|many)\s+regards/i,   // "Kind regards, ..."
+  /^thanks,?$/i,                              // "Thanks" or "Thanks,"
+  /^sent from /i,                             // "Sent from my iPhone"
+];
+
+/**
+ * Extracts a user-typed category hint from the top of a forwarded email body.
+ *
+ * Looks for text the user typed BEFORE the forwarded email blockquote.
+ * Skips auto-inserted Gmail signatures and common signature line patterns.
+ * Returns the first non-empty, non-signature line, trimmed — or null if none.
+ *
+ * @param html - The full HTML body of the email
+ * @returns The category hint string, or null if no hint was found
+ */
+export function extractCategoryHint(html: string): string | null {
+  if (!html) return null;
+
+  // 1. Strip Gmail signature blocks (inserted before the blockquote by Gmail)
+  const withoutSig = html.replace(
+    /<div[^>]+class="gmail_signature"[^>]*>[\s\S]*?<\/div>/gi,
+    '',
+  );
+
+  // 2. Take only the content before the first <blockquote (the forwarded email)
+  const blockquoteIdx = withoutSig.indexOf('<blockquote');
+  const preQuote = blockquoteIdx >= 0 ? withoutSig.slice(0, blockquoteIdx) : withoutSig;
+
+  // 3. Convert block-level elements to newlines, then strip remaining tags
+  const plainText = preQuote
+    .replace(/<\/?(p|div|br|li|tr|h[1-6])[^>]*>/gi, '\n')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n{2,}/g, '\n');
+
+  // 4. Walk lines; skip blank lines; stop at signature patterns; return first real line
+  const lines = plainText.split('\n');
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line) continue;
+    if (SIGNATURE_LINE_PATTERNS.some((p) => p.test(line))) return null;
+    return line;
+  }
+
+  return null;
+}
+
 // Amazon domain patterns to match against body HTML
 const AMAZON_DOMAIN_PATTERNS = [
   /@amazon\.co\.uk/i,
