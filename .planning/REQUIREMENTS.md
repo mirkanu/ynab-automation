@@ -9,18 +9,18 @@
 
 ### Configuration
 
-- [ ] **CFG-01**: Senders and their YNAB accounts are defined via a `SENDERS` JSON env var (array of objects with email, name, accountId, optional notificationLabel)
-- [ ] **CFG-02**: Currency-to-account overrides are defined via a `CURRENCY_ACCOUNTS` JSON env var (e.g. `{"EUR":"uuid"}`) — replaces hardcoded YNAB_EURO_ACCOUNT_ID
-- [ ] **CFG-03**: Admin notification recipient is defined via `ADMIN_EMAIL` env var — replaces MANUEL_EMAIL
-- [ ] **CFG-04**: App validates config at startup and fails fast with a clear error if SENDERS JSON is malformed or missing required fields
-- [ ] **CFG-05**: `notificationLabel` on a sender config is appended to notification email subjects when set (e.g. `" (Emily-Kate)"`) — allows household members to distinguish whose transaction failed
+- [x] **CFG-01**: Senders and their YNAB accounts are defined via a `SENDERS` JSON env var (array of objects with email, name, accountId, optional notificationLabel)
+- [x] **CFG-02**: Currency-to-account overrides are defined via a `CURRENCY_ACCOUNTS` JSON env var (e.g. `{"EUR":"uuid"}`) — replaces hardcoded YNAB_EURO_ACCOUNT_ID
+- [x] **CFG-03**: Admin notification recipient is defined via `ADMIN_EMAIL` env var — replaces MANUEL_EMAIL
+- [x] **CFG-04**: App validates config at startup and fails fast with a clear error if SENDERS JSON is malformed or missing required fields
+- [x] **CFG-05**: `notificationLabel` on a sender config is appended to notification email subjects when set (e.g. `" (Emily-Kate)"`) — allows household members to distinguish whose transaction failed
 
 ### Code hygiene
 
-- [ ] **HYG-01**: No personal email addresses in source code, comments, or tests
-- [ ] **HYG-02**: No personal names (Manuel, Emily-Kate, Emily) in source code, comments, or tests — use generic names in tests (e.g. Alice, Bob)
-- [ ] **HYG-03**: No personal-prefixed env var names (`YNAB_MANUEL_ACCOUNT_ID`, `YNAB_EMILY_ACCOUNT_ID`, `EMILY_KATE_EMAIL`, `MANUEL_EMAIL`) in code or .env.example
-- [ ] **HYG-04**: `senderLabel()` function removed and replaced with config-driven label logic
+- [x] **HYG-01**: No personal email addresses in source code, comments, or tests
+- [x] **HYG-02**: No personal names (Manuel, Emily-Kate, Emily) in source code, comments, or tests — use generic names in tests (e.g. Alice, Bob)
+- [x] **HYG-03**: No personal-prefixed env var names (`YNAB_MANUEL_ACCOUNT_ID`, `YNAB_EMILY_ACCOUNT_ID`, `EMILY_KATE_EMAIL`, `MANUEL_EMAIL`) in code or .env.example
+- [x] **HYG-04**: `senderLabel()` function removed and replaced with config-driven label logic
 
 ### Documentation
 

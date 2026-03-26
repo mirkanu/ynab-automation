@@ -11,5 +11,5 @@
 
 | Phase | Goal | Status |
 |-------|------|--------|
-| 7. Config-driven routing | Replace hardcoded sender map with SENDERS JSON env var; remove all personal references from code and tests | Not started |
+| 7. Config-driven routing | Replace hardcoded sender map with SENDERS JSON env var; remove all personal references from code and tests | Complete |
 | 8. Publishing readiness | Rewrite README as setup guide; migrate Railway to new env vars; make repo public | Not started |
