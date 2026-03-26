@@ -2,6 +2,8 @@
 
 Automatically creates YNAB transactions from forwarded order confirmation emails. Forward any order confirmation email to a dedicated address — a transaction appears in YNAB within seconds, no manual entry needed.
 
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/ynab-automation)
+
 > **Note:** This project was planned and coded exclusively using [Claude Code](https://claude.ai/claude-code) with the [GSD (Get Shit Done)](https://github.com/punkpeye/get-shit-done) workflow system. No code was written by hand.
 
 ---
@@ -14,15 +16,13 @@ You don't need to write any code or use a terminal to run this. Everything deplo
 
 **Steps at a glance:**
 
-1. **Fork this repo** — click Fork on GitHub (top right). You now have your own copy.
-2. **Create a Railway account** — [railway.app](https://railway.app/). Connect it to your GitHub account.
-3. **Deploy the app on Railway** — New Project → Deploy from GitHub repo → select your fork. Railway builds and hosts it automatically.
-4. **Add a PostgreSQL database** — in the same Railway project, click "+ New" → Database → PostgreSQL. Railway wires up `DATABASE_URL` for you.
-5. **Create accounts and get credentials** for the services in the [Prerequisites](#prerequisites) table below. This is the only tedious part — you need API keys from Anthropic, YNAB, and Resend, and an inbound email address from Pipedream.
-6. **Set environment variables** in Railway (your service → Variables tab). Use the table in [Setup Guide → Step 4](#4-set-railway-environment-variables) below.
-7. **Set up Pipedream** — create a workflow with an Email trigger, add an HTTP action that POSTs to `https://your-app.railway.app/api/webhook`. Forward a test order email and check Railway logs.
+1. **Click the "Deploy on Railway" button** above. Sign in to Railway, click through the prompts — Railway will fork the repo to your GitHub account, provision a PostgreSQL database, and deploy the app automatically.
+2. **Create accounts and get API keys** for the services in the [Prerequisites](#prerequisites) table below (Anthropic, YNAB, Pipedream, Resend).
+3. **Open the setup wizard** — once deployed, visit your Railway app's public URL in a browser. The app detects it's unconfigured and shows an interactive wizard that fetches your YNAB accounts and builds the configuration for you.
+4. **Paste the generated values** into Railway's Variables tab (your service → Variables). Railway redeploys automatically.
+5. **Set up Pipedream** — create a workflow with an Email trigger, add an HTTP action that POSTs to `https://your-app.railway.app/api/webhook`. Forward a test order email and check Railway logs.
 
-> **Want Claude Code to help?** If you have [Claude Code](https://claude.ai/claude-code) installed locally (or via SSH on any machine), you can clone your fork, install [GSD](https://github.com/punkpeye/get-shit-done), and ask it to walk through the setup steps with you. It can help craft your `SENDERS` JSON, look up your YNAB account IDs via the API, and validate your configuration — but the accounts and API keys still need to be created manually on each service's website first.
+> **Note:** The setup wizard (step 3) is coming soon. Until then, follow the [manual setup guide](#setup-guide) below.
 
 ---
 
