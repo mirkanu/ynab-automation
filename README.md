@@ -6,27 +6,165 @@ Automatically creates YNAB transactions from forwarded order confirmation emails
 
 ---
 
+## What It Does
+
+YNAB Automation bridges your email inbox and your budget. When you receive an order confirmation from any online retailer, forward it to a Pipedream inbound address. The app parses the email using Claude, extracts the amount, payee, currency, and order date, and creates a transaction in the correct YNAB account — all within a few seconds.
+
+---
+
 ## How It Works
 
-1. Receive an order confirmation email from any retailer (Amazon, eBay, Costco, Apple, etc.)
-2. Forward it to your Pipedream inbound address
-3. Pipedream fires a webhook to the Railway-hosted app
-4. Claude extracts the amount, description, retailer, currency, and order date from the email HTML
-5. A YNAB transaction is created in the correct account with the retailer as payee
+```
+Forward email → Pipedream (inbound email) → Railway webhook → Claude (parse) → YNAB API
+```
 
-Optionally, type a YNAB category name on the **first line** of the forwarded email before sending — it will be matched (case-insensitive, partial) against your YNAB category list and assigned to the transaction.
+1. You forward an order confirmation email to your Pipedream inbound address
+2. Pipedream fires a webhook to the Railway-hosted Next.js app
+3. Claude extracts the amount, retailer, currency, and order date from the email HTML
+4. The app looks up the sender in the `SENDERS` config and routes the transaction to the correct YNAB account
+5. A YNAB transaction is created with the retailer as payee and the order date as the transaction date
 
 ---
 
 ## Features
 
 - **Any retailer** — Amazon, eBay, Costco, Apple, or anywhere else; Claude infers the retailer from the email
-- **Multi-user routing** — separate YNAB accounts for each household member, routed by sender email
-- **Euro support** — EUR-denominated orders automatically routed to a separate Euro account
-- **Category tagging** — type a category hint on the first line of your forward; matched and assigned if found
-- **Deduplication** — message ID tracked in PostgreSQL; Pipedream retries are safe
+- **Multi-user routing** — configure separate YNAB accounts for each household member, routed by sender email
+- **Currency routing** — transactions in foreign currencies are automatically routed to a designated account (e.g. a Euro account)
+- **Category tagging** — type a category hint on the first line of a forwarded email to assign a YNAB category
+- **Deduplication** — message IDs tracked in PostgreSQL; Pipedream retries are safe
 - **Error notifications** — unknown sender, parse failure, or YNAB API error sends an email alert via Resend
 - **Order date accuracy** — date extracted from the email itself, not the processing date
+
+---
+
+## Prerequisites
+
+You will need accounts and credentials for the following services:
+
+| Service | Purpose | Notes |
+|---------|---------|-------|
+| [Railway](https://railway.app/) | App hosting + PostgreSQL | Free tier sufficient to start |
+| [YNAB](https://www.ynab.com/) | Budget API | Requires a personal access token |
+| [Anthropic](https://www.anthropic.com/) | Claude API (email parsing) | Pay-as-you-go; cost is minimal |
+| [Pipedream](https://pipedream.com/) | Inbound email → webhook | Free tier sufficient |
+| [Resend](https://resend.com/) | Error notification emails | Free tier sufficient |
+
+---
+
+## Setup Guide
+
+### 1. Fork and clone the repo
+
+```bash
+git clone https://github.com/your-username/ynab-automation.git
+cd ynab-automation
+npm install
+```
+
+### 2. Deploy to Railway
+
+1. Create a new project at [railway.app](https://railway.app/)
+2. Add a **PostgreSQL** service to the project (Railway provisions `DATABASE_URL` automatically)
+3. Add a new service from your GitHub repo
+4. Railway will build and deploy the Next.js app automatically
+
+See the [Railway documentation](https://docs.railway.app/) for full deployment instructions.
+
+### 3. Configure Pipedream
+
+1. Create a new workflow in [Pipedream](https://pipedream.com/)
+2. Add an **Email** trigger — Pipedream will give you a unique inbound email address
+3. Add an **HTTP / Webhook** action that POSTs the full email payload to your Railway webhook URL:
+   ```
+   https://your-app.railway.app/api/webhook
+   ```
+4. Deploy the workflow
+
+Forward any order confirmation email to the Pipedream inbound address to trigger the workflow.
+
+### 4. Set Railway environment variables
+
+In your Railway service settings, set the following environment variables:
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DATABASE_URL` | Yes | Auto-set by Railway PostgreSQL add-on |
+| `ANTHROPIC_API_KEY` | Yes | Your Anthropic API key |
+| `YNAB_PERSONAL_ACCESS_TOKEN` | Yes | Your YNAB personal access token |
+| `YNAB_BUDGET_ID` | Yes | The ID of your YNAB budget (from the YNAB web app URL) |
+| `SENDERS` | Yes | JSON array of sender configs (see below) |
+| `RESEND_API_KEY` | Yes | Your Resend API key |
+| `ADMIN_EMAIL` | Yes | Email address that receives error notifications |
+| `CURRENCY_ACCOUNTS` | No | JSON object mapping currency codes to YNAB account IDs |
+
+### 5. Set the SENDERS environment variable
+
+`SENDERS` is a JSON array where each entry maps a sender's email address to their YNAB account. Set the value as a raw JSON string in Railway.
+
+**Format:**
+
+```json
+[
+  {
+    "email": "alice@example.com",
+    "name": "Alice",
+    "accountId": "ynab-account-uuid-alice",
+    "notificationLabel": "Alice"
+  },
+  {
+    "email": "bob@example.com",
+    "name": "Bob",
+    "accountId": "ynab-account-uuid-bob"
+  }
+]
+```
+
+- `email` — the address this person forwards from
+- `name` — display name (used internally)
+- `accountId` — the YNAB account UUID to post transactions to (find this in the YNAB API or budget settings)
+- `notificationLabel` — optional; if set, appears in error notification subjects (e.g. `failed to parse order email (Alice)`)
+
+See `config.example.json` for the full annotated structure.
+
+### 6. Test the integration
+
+1. Forward an order confirmation email to your Pipedream inbound address
+2. Check Railway logs — you should see the webhook received and processed
+3. Open YNAB and verify the transaction appears in the correct account with the correct amount, payee, and date
+
+---
+
+## Optional: Category Tagging
+
+When forwarding an email, type a YNAB category name on the **first line** of the forwarded message body before sending:
+
+```
+Groceries
+---------- Forwarded message ----------
+...
+```
+
+The app performs a case-insensitive partial match against your YNAB category list. If a match is found, the transaction is assigned that category. If no match is found, the transaction is created without a category (no error).
+
+---
+
+## Optional: Currency Accounts
+
+If you have transactions in multiple currencies (e.g. you hold a Euro account alongside a default account), set the `CURRENCY_ACCOUNTS` environment variable to route foreign-currency transactions to a dedicated YNAB account.
+
+**Format:**
+
+```json
+{
+  "EUR": "ynab-euro-account-uuid",
+  "GBP": "ynab-gbp-account-uuid"
+}
+```
+
+When Claude detects that a transaction's currency matches a key in `CURRENCY_ACCOUNTS`, the transaction is routed to that account instead of the sender's default account.
+
+If `CURRENCY_ACCOUNTS` is not set, all transactions go to the sender's default account.
 
 ---
 
@@ -43,32 +181,6 @@ Optionally, type a YNAB category name on the **first line** of the forwarded ema
 | YNAB | [YNAB REST API](https://api.youneedabudget.com/) |
 | Notifications | [Resend](https://resend.com/) |
 | Tests | [Vitest](https://vitest.dev/) |
-
----
-
-## Environment Variables
-
-```env
-# Database (auto-set by Railway PostgreSQL add-on)
-DATABASE_URL=
-
-# Claude API (Anthropic)
-ANTHROPIC_API_KEY=
-
-# YNAB
-YNAB_PERSONAL_ACCESS_TOKEN=
-YNAB_BUDGET_ID=
-YNAB_MANUEL_ACCOUNT_ID=
-YNAB_EMILY_ACCOUNT_ID=
-YNAB_EURO_ACCOUNT_ID=
-
-# Sender identification
-EMILY_KATE_EMAIL=
-
-# Error notifications (Resend)
-RESEND_API_KEY=
-MANUEL_EMAIL=
-```
 
 ---
 
@@ -89,6 +201,7 @@ npm run build     # production build
 src/
   app/api/webhook/route.ts   # main webhook handler
   lib/
+    config.ts                # SENDERS + CURRENCY_ACCOUNTS config loading
     email.ts                 # Pipedream payload parsing + category hint extraction
     claude.ts                # Claude API integration (order parsing)
     ynab.ts                  # YNAB API client
@@ -96,6 +209,7 @@ src/
     db.ts                    # Prisma client singleton
 prisma/
   schema.prisma              # ProcessedEmail model (dedup tracking)
+config.example.json          # annotated config structure reference
 ```
 
 ---

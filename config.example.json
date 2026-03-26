@@ -1,0 +1,25 @@
+{
+  "_comment": "This file documents the config structure. Set SENDERS and CURRENCY_ACCOUNTS as env vars using the formats shown below.",
+  "SENDERS_example": [
+    {
+      "email": "alice@example.com",
+      "name": "Alice",
+      "accountId": "ynab-account-uuid-alice",
+      "notificationLabel": "Alice"
+    },
+    {
+      "email": "bob@example.com",
+      "name": "Bob",
+      "accountId": "ynab-account-uuid-bob"
+    }
+  ],
+  "CURRENCY_ACCOUNTS_example": {
+    "EUR": "ynab-euro-account-uuid"
+  },
+  "_notes": [
+    "notificationLabel is optional — if set, it appears in error notification subjects e.g. 'YNAB automation: failed to parse order email (Alice)'",
+    "CURRENCY_ACCOUNTS is optional — omit if all your transactions are in one currency",
+    "When setting env vars, use the value of SENDERS_example as the SENDERS value (a raw JSON array string)",
+    "Remove the _comment, _notes, and _example suffixes — those are documentation only"
+  ]
+}
