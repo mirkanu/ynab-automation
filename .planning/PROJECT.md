@@ -1,47 +1,54 @@
 # Amazon to YNAB Automation
 
-## Current State — v2.0 Shipped (2026-03-25)
+## Current State — v3.0 Shipped (2026-03-26)
 
-A forwarded order confirmation email (any retailer) becomes a YNAB transaction automatically — no manual entry, no missed purchases.
+A forwarded order confirmation email (any retailer) becomes a YNAB transaction automatically — no manual entry, no missed purchases. Now deployable by anyone via a one-click Railway button and interactive setup wizard.
 
 **Live at:** https://ynab-automation-production.up.railway.app
+**Public repo:** https://github.com/mirkanu/ynab-automation
 **Stack:** Next.js (API routes) + PostgreSQL on Railway
 **Inbound email:** empk1lk0u08wjyn@upload.pipedream.net (Pipedream)
 
 ### What's Working
 
-- Any order confirmation email forwarded by Manuel or Emily-Kate → YNAB transaction in correct account
+- Any order confirmation email forwarded → YNAB transaction in correct account
 - Retailer auto-detected by Claude and set as YNAB payee (Amazon, eBay, Costco, Apple, etc.)
-- Euro-denominated orders routed to Euro Wise YNAB account
+- Multi-sender routing via SENDERS JSON env var; currency routing via CURRENCY_ACCOUNTS
 - Order date extracted from email (not today's date)
-- Optional category: type a YNAB category name on the first line of the forward → it's matched and assigned
-- Gmail signatures and quoted email content excluded from category hint detection
+- Optional category: type a YNAB category name on the first line of the forward → matched and assigned
 - Deduplication via message ID in PostgreSQL
-- Error notifications to Manuel via Resend email (unknown sender, parse fail, YNAB fail)
-
-### Known Outstanding
-
-- Phase 06-02 human verify (3-case category tagging test) — deferred, code complete
+- Error notifications via Resend email (unknown sender, parse fail, YNAB fail)
+- Interactive setup wizard at app URL when unconfigured; auto-applies vars to Railway via API
+- Railway deploy button in README; config.example.json for format reference
 
 ---
 
 ## Next Milestone Goals
 
-_(not yet defined — run `/gsd:new-milestone` to start v3.0 planning)_
+_(not yet defined — run `/gsd:new-milestone` to start planning)_
 
 ---
+
+<details>
+<summary>v3.0 Milestone Context (archived)</summary>
+
+**Goal:** Make the automation usable by anyone, not just Manuel and Emily-Kate. All personal references removed; sender routing driven by JSON config; published as open-source with an interactive setup wizard.
+
+**Key Decisions:**
+| Decision | Rationale |
+|----------|-----------|
+| SENDERS as JSON env var | Works natively on Railway/PaaS; supports any number of senders |
+| CURRENCY_ACCOUNTS as JSON env var | Same pattern; optional; clean generalisation of Euro routing |
+| loadConfig() at handler entry | Config errors surface per-request with clear message |
+| YNAB API called from browser | CORS supported; token never hits the Next.js server |
+| Railway API auto-apply | Uses built-in RAILWAY_PROJECT/ENV/SERVICE_ID env vars |
+
+</details>
 
 <details>
 <summary>v2.0 Milestone Context (archived)</summary>
 
 **Goal:** Expand automation beyond Amazon to any retailer, and allow optional YNAB category tagging from the forwarded email.
-
-**Users:** Manuel and Emily-Kate (two household members, separate YNAB accounts)
-
-**Key Constraints:**
-- Reuse existing Railway infrastructure (already running Josie n8n + Claude); no new platforms
-- Pipedream for inbound email (free, no server-side API key needed)
-- PostgreSQL on Railway for dedup
 
 **Key Decisions:**
 | Decision | Rationale |
@@ -53,13 +60,8 @@ _(not yet defined — run `/gsd:new-milestone` to start v3.0 planning)_
 | Gmail signature stripping | Auto-signatures would be returned as the category hint |
 | `getCategories` failure non-fatal | Single lookup failure should not block transaction creation |
 
-**Infrastructure:**
-- Railway: ynab-automation-production.up.railway.app
-- PostgreSQL: DATABASE_URL set; ProcessedEmail table migrated on boot
-- Secrets: ANTHROPIC_API_KEY, YNAB_PERSONAL_ACCESS_TOKEN, DATABASE_URL, YNAB_BUDGET_ID, YNAB_MANUEL_ACCOUNT_ID, YNAB_EMILY_ACCOUNT_ID, YNAB_EURO_ACCOUNT_ID, EMILY_KATE_EMAIL, RESEND_API_KEY, MANUEL_EMAIL
-
 </details>
 
 ---
 
-*Last updated: 2026-03-25 — v2.0 archived*
+*Last updated: 2026-03-26 — v3.0 archived*
