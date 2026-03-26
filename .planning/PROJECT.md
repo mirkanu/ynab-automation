@@ -4,7 +4,7 @@
 
 A forwarded order confirmation email (any retailer) becomes a YNAB transaction automatically — no manual entry, no missed purchases. Now deployable by anyone via a one-click Railway button and interactive setup wizard.
 
-**Live at:** https://ynab-automation-production.up.railway.app
+**Live at:** https://ynab-test-production.up.railway.app
 **Public repo:** https://github.com/mirkanu/ynab-automation
 **Stack:** Next.js (API routes) + PostgreSQL on Railway
 **Inbound email:** empk1lk0u08wjyn@upload.pipedream.net (Pipedream)
