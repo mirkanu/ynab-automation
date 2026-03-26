@@ -52,7 +52,7 @@ export function extractMessageId(payload: unknown): string | null {
 
 /**
  * Extracts the original sender (the person who forwarded the email to Pipedream).
- * This is the forwarding user (Manuel or Emily-Kate), not Amazon.
+ * This is the forwarding user who forwarded the email, not the original retailer sender.
  * Path: trigger.event.headers.from.value[0].address
  * Falls back to trigger.event.headers.from.text if value array is absent.
  * Returns the email address string, or null if not found.
