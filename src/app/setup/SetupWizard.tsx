@@ -501,7 +501,8 @@ export default function SetupWizard() {
           <input style={S.input} type="password" placeholder="Paste your token here"
             value={railwayToken} onChange={e => { setRailwayToken(e.target.value); setApplyStatus('idle'); setApplyError(''); }} />
           <p style={S.hint}>
-            Generate one at <a href="https://railway.app/account/tokens" target="_blank" rel="noreferrer" style={{ color: '#2563eb' }}>railway.app/account/tokens</a> — any name will do
+            Generate one at <a href="https://railway.app/account/tokens" target="_blank" rel="noreferrer" style={{ color: '#2563eb' }}>railway.app/account/tokens</a> — any name will do.
+            When asked for a workspace, select your <strong>personal account</strong> (shown as &quot;[your name]&apos;s projects&quot;), not &quot;No workspace&quot;.
           </p>
           {applyStatus === 'error' && <div style={S.error}>{applyError}</div>}
         </div>
