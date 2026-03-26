@@ -19,8 +19,9 @@ interface CurrencyRoute {
 }
 
 type Step = 0 | 1 | 2 | 3 | 4;
+type ApplyStatus = 'idle' | 'loading' | 'success' | 'error';
 
-// ── Styles (shared constants) ──────────────────────────────────────────────
+// ── Styles ─────────────────────────────────────────────────────────────────
 
 const S = {
   page: {
@@ -71,6 +72,7 @@ const S = {
     border: 'none', cursor: 'pointer', padding: '0.25rem 0',
   },
   btnCopy: {
+    flexShrink: 0,
     fontSize: '0.75rem', padding: '0.25rem 0.625rem',
     backgroundColor: '#f3f4f6', color: '#374151',
     border: '1px solid #e5e7eb', borderRadius: '4px', cursor: 'pointer',
@@ -90,7 +92,8 @@ const S = {
     fontSize: '0.75rem', backgroundColor: '#f9fafb',
     border: '1px solid #e5e7eb', borderRadius: '6px',
     padding: '0.625rem 0.875rem', wordBreak: 'break-all' as const,
-    color: '#111827', margin: 0, flex: 1,
+    color: '#111827', margin: 0, flex: 1, minWidth: 0,
+    overflowWrap: 'break-word' as const,
   },
   row: { display: 'flex', gap: '0.5rem', alignItems: 'flex-start', marginBottom: '0.75rem' },
   stepLabel: { fontSize: '0.75rem', fontWeight: 600, color: '#9ca3af', letterSpacing: '0.05em', textTransform: 'uppercase' as const, marginBottom: '0.25rem' },
@@ -143,6 +146,12 @@ export default function SetupWizard() {
   const [adminEmail, setAdminEmail] = useState('');
   const [resendKey, setResendKey] = useState('');
 
+  // Apply to Railway
+  const [railwayToken, setRailwayToken] = useState('');
+  const [applyStatus, setApplyStatus] = useState<ApplyStatus>('idle');
+  const [applyError, setApplyError] = useState('');
+  const [showCopyFallback, setShowCopyFallback] = useState(false);
+
   // Copy feedback
   const [copied, setCopied] = useState<string | null>(null);
 
@@ -184,6 +193,41 @@ export default function SetupWizard() {
     }
   }
 
+  // ── Railway apply ──
+
+  async function applyToRailway() {
+    setApplyStatus('loading');
+    setApplyError('');
+
+    const variables: Record<string, string> = {
+      YNAB_PERSONAL_ACCESS_TOKEN: ynabToken,
+      YNAB_BUDGET_ID: budgetId,
+      SENDERS: sendersJson,
+      ANTHROPIC_API_KEY: anthropicKey,
+      ADMIN_EMAIL: adminEmail,
+    };
+    if (hasCurrency) variables.CURRENCY_ACCOUNTS = currencyJson;
+    if (resendKey.trim()) variables.RESEND_API_KEY = resendKey.trim();
+
+    try {
+      const res = await fetch('/api/setup/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ railwayToken, variables }),
+      });
+      const data = await res.json() as { success?: boolean; error?: string };
+      if (!res.ok || data.error) {
+        setApplyError(data.error ?? 'Unknown error');
+        setApplyStatus('error');
+      } else {
+        setApplyStatus('success');
+      }
+    } catch (e) {
+      setApplyError((e as Error).message);
+      setApplyStatus('error');
+    }
+  }
+
   // ── Copy to clipboard ──
 
   async function copyValue(key: string, value: string) {
@@ -197,7 +241,6 @@ export default function SetupWizard() {
   function updateSender(i: number, field: keyof Sender, value: string) {
     setSenders(prev => prev.map((s, idx) => idx === i ? { ...s, [field]: value } : s));
   }
-
   function addSender() { setSenders(prev => [...prev, blankSender()]); }
   function removeSender(i: number) { setSenders(prev => prev.filter((_, idx) => idx !== i)); }
 
@@ -232,13 +275,12 @@ export default function SetupWizard() {
           This wizard configures the app so forwarded order emails automatically create YNAB transactions.
           It runs entirely in your browser — nothing is sent to any server.
         </p>
-        <p style={{ ...S.subtitle, marginBottom: '1.75rem' }}>
-          <strong>You&apos;ll need:</strong>
-        </p>
+        <p style={{ ...S.subtitle, marginBottom: '1.75rem' }}><strong>You&apos;ll need:</strong></p>
         <ul style={{ fontSize: '0.875rem', color: '#374151', lineHeight: 1.8, paddingLeft: '1.25rem', margin: '0 0 1.75rem' }}>
           <li>Your <strong>YNAB personal access token</strong> — <a href="https://app.ynab.com/settings/developer" target="_blank" rel="noreferrer" style={{ color: '#2563eb' }}>app.ynab.com → Account Settings → Developer Settings</a></li>
           <li>An <strong>Anthropic API key</strong> — <a href="https://console.anthropic.com/" target="_blank" rel="noreferrer" style={{ color: '#2563eb' }}>console.anthropic.com</a></li>
           <li>An <strong>Admin email address</strong> (yours) for error notifications</li>
+          <li>A <strong>Railway API token</strong> — <a href="https://railway.app/account/tokens" target="_blank" rel="noreferrer" style={{ color: '#2563eb' }}>railway.app/account/tokens</a> (to apply settings automatically)</li>
           <li><em>Optional:</em> A <strong>Resend API key</strong> for email error alerts — <a href="https://resend.com" target="_blank" rel="noreferrer" style={{ color: '#2563eb' }}>resend.com</a></li>
         </ul>
         <button style={S.btnPrimary} onClick={() => setStep(1)}>Let&apos;s start →</button>
@@ -256,18 +298,10 @@ export default function SetupWizard() {
         <div style={{ marginBottom: '1rem' }}>
           <label style={S.label}>YNAB Personal Access Token</label>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <input
-              style={S.input}
-              type="password"
-              placeholder="Paste your token here"
-              value={ynabToken}
-              onChange={e => setYnabToken(e.target.value)}
-            />
-            <button
-              style={{ ...S.btnPrimary, whiteSpace: 'nowrap' as const }}
-              onClick={connectYnab}
-              disabled={!ynabToken.trim() || ynabLoading}
-            >
+            <input style={S.input} type="password" placeholder="Paste your token here"
+              value={ynabToken} onChange={e => setYnabToken(e.target.value)} />
+            <button style={{ ...S.btnPrimary, whiteSpace: 'nowrap' as const }}
+              onClick={connectYnab} disabled={!ynabToken.trim() || ynabLoading}>
               {ynabLoading ? '…' : 'Connect'}
             </button>
           </div>
@@ -280,11 +314,7 @@ export default function SetupWizard() {
         {budgets.length > 0 && (
           <div style={{ marginBottom: '1rem' }}>
             <label style={S.label}>Select your budget</label>
-            <select
-              style={S.select}
-              value={budgetId}
-              onChange={e => selectBudget(e.target.value)}
-            >
+            <select style={S.select} value={budgetId} onChange={e => selectBudget(e.target.value)}>
               <option value="">— pick a budget —</option>
               {budgets.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
             </select>
@@ -299,9 +329,7 @@ export default function SetupWizard() {
 
         <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem' }}>
           <button style={S.btnSecondary} onClick={() => setStep(0)}>← Back</button>
-          <button style={S.btnPrimary} onClick={() => setStep(2)} disabled={!step1Valid()}>
-            Next →
-          </button>
+          <button style={S.btnPrimary} onClick={() => setStep(2)} disabled={!step1Valid()}>Next →</button>
         </div>
       </>
     );
@@ -322,35 +350,30 @@ export default function SetupWizard() {
                 <button style={{ ...S.btnGhost, color: '#dc2626' }} onClick={() => removeSender(i)}>Remove</button>
               )}
             </div>
-
             <div style={{ marginBottom: '0.625rem' }}>
               <label style={S.label}>Email address</label>
               <input style={S.input} type="email" placeholder="their@email.com"
                 value={s.email} onChange={e => updateSender(i, 'email', e.target.value)} />
               <p style={S.hint}>The address they forward from (not the retailer&apos;s address)</p>
             </div>
-
             <div style={{ marginBottom: '0.625rem' }}>
               <label style={S.label}>Display name</label>
               <input style={S.input} type="text" placeholder="Alice"
                 value={s.name} onChange={e => updateSender(i, 'name', e.target.value)} />
             </div>
-
             <div style={{ marginBottom: '0.625rem' }}>
               <label style={S.label}>YNAB account</label>
-              <select style={S.select} value={s.accountId}
-                onChange={e => updateSender(i, 'accountId', e.target.value)}>
+              <select style={S.select} value={s.accountId} onChange={e => updateSender(i, 'accountId', e.target.value)}>
                 <option value="">— select account —</option>
                 {accounts.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
               </select>
               <p style={S.hint}>Transactions for this person land in this account</p>
             </div>
-
             <div>
               <label style={S.label}>Notification label <span style={{ fontWeight: 400, color: '#9ca3af' }}>(optional)</span></label>
               <input style={S.input} type="text" placeholder="Alice"
                 value={s.notificationLabel} onChange={e => updateSender(i, 'notificationLabel', e.target.value)} />
-              <p style={S.hint}>If set, appended to error notification subjects: &quot;failed to parse order email (Alice)&quot;</p>
+              <p style={S.hint}>Appended to error notification subjects: &quot;failed to parse order email (Alice)&quot;</p>
             </div>
           </div>
         ))}
@@ -372,8 +395,7 @@ export default function SetupWizard() {
                 <div key={i} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem', alignItems: 'center' }}>
                   <input style={{ ...S.input, width: '80px' }} placeholder="EUR"
                     value={r.currency} onChange={e => updateCurrencyRoute(i, 'currency', e.target.value)} />
-                  <select style={S.select} value={r.accountId}
-                    onChange={e => updateCurrencyRoute(i, 'accountId', e.target.value)}>
+                  <select style={S.select} value={r.accountId} onChange={e => updateCurrencyRoute(i, 'accountId', e.target.value)}>
                     <option value="">— account —</option>
                     {accounts.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
                   </select>
@@ -426,23 +448,20 @@ export default function SetupWizard() {
 
         <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem' }}>
           <button style={S.btnSecondary} onClick={() => setStep(2)}>← Back</button>
-          <button style={S.btnPrimary} onClick={() => setStep(4)} disabled={!step3Valid()}>
-            Generate config →
-          </button>
+          <button style={S.btnPrimary} onClick={() => setStep(4)} disabled={!step3Valid()}>Next →</button>
         </div>
       </>
     );
   }
 
   function EnvRow({ label, value, hint }: { label: string; value: string; hint?: string }) {
-    const key = label;
     return (
       <div style={{ marginBottom: '1rem' }}>
         <label style={S.label}>{label}</label>
         <div style={S.row}>
           <pre style={S.codeBlock}>{value}</pre>
-          <button style={S.btnCopy} onClick={() => copyValue(key, value)}>
-            {copied === key ? '✓ Copied' : 'Copy'}
+          <button style={S.btnCopy} onClick={() => copyValue(label, value)}>
+            {copied === label ? '✓ Copied' : 'Copy'}
           </button>
         </div>
         {hint && <p style={S.hint}>{hint}</p>}
@@ -451,47 +470,73 @@ export default function SetupWizard() {
   }
 
   function renderStep4() {
+    if (applyStatus === 'success') {
+      return (
+        <>
+          <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🎉</div>
+          <h1 style={S.h1}>All done!</h1>
+          <p style={S.subtitle}>
+            Your settings have been applied. Railway is redeploying the service now — this takes about a minute.
+            Once complete, this wizard will be replaced by the running app.
+          </p>
+          <a href="https://railway.app/dashboard" target="_blank" rel="noreferrer"
+            style={{ ...S.btnPrimary, textDecoration: 'none', display: 'inline-block' }}>
+            Watch the deployment →
+          </a>
+        </>
+      );
+    }
+
     return (
       <>
-        <div style={S.stepLabel}>All done</div>
-        <h1 style={S.h1}>Your configuration</h1>
+        <div style={S.stepLabel}>Almost there</div>
+        <h1 style={S.h1}>Apply to Railway</h1>
         <p style={S.subtitle}>
-          Copy each value below into your Railway service&apos;s <strong>Variables</strong> tab.
-          Railway will redeploy automatically — once it restarts, this wizard is replaced by the running app.
+          Enter your Railway API token and click Apply — the wizard will write all settings directly to this service.
+          Railway will redeploy automatically.
         </p>
 
-        <div style={{
-          backgroundColor: '#eff6ff', border: '1px solid #bfdbfe',
-          borderRadius: '8px', padding: '0.875rem 1rem', marginBottom: '1.5rem',
-          fontSize: '0.8125rem', color: '#1d4ed8', lineHeight: 1.6,
-        }}>
-          <strong>How to add variables in Railway:</strong><br />
-          Open your Railway project → click your service → <strong>Variables</strong> tab → <strong>Raw Editor</strong> → paste each value below as a new line: <code>VARIABLE_NAME=value</code>
+        <div style={{ marginBottom: '1.25rem' }}>
+          <label style={S.label}>Railway API Token</label>
+          <input style={S.input} type="password" placeholder="Paste your token here"
+            value={railwayToken} onChange={e => { setRailwayToken(e.target.value); setApplyStatus('idle'); setApplyError(''); }} />
+          <p style={S.hint}>
+            Generate one at <a href="https://railway.app/account/tokens" target="_blank" rel="noreferrer" style={{ color: '#2563eb' }}>railway.app/account/tokens</a> — any name will do
+          </p>
+          {applyStatus === 'error' && <div style={S.error}>{applyError}</div>}
         </div>
 
-        <EnvRow label="SENDERS" value={sendersJson} />
-        {hasCurrency && <EnvRow label="CURRENCY_ACCOUNTS" value={currencyJson} hint="Routes transactions in specific currencies to dedicated accounts" />}
-        <EnvRow label="ADMIN_EMAIL" value={adminEmail} />
-        <EnvRow label="ANTHROPIC_API_KEY" value={anthropicKey} />
-        {resendKey.trim() && <EnvRow label="RESEND_API_KEY" value={resendKey} />}
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <button style={S.btnSecondary} onClick={() => setStep(3)}>← Back</button>
+          <button
+            style={{ ...S.btnPrimary, opacity: (!railwayToken.trim() || applyStatus === 'loading') ? 0.6 : 1 }}
+            onClick={applyToRailway}
+            disabled={!railwayToken.trim() || applyStatus === 'loading'}
+          >
+            {applyStatus === 'loading' ? 'Applying…' : 'Apply settings →'}
+          </button>
+        </div>
 
         <hr style={S.divider} />
 
-        <p style={{ fontSize: '0.8125rem', color: '#6b7280', lineHeight: 1.6 }}>
-          <strong>Already set by Railway:</strong> <code>DATABASE_URL</code> (auto-provisioned by the PostgreSQL add-on),{' '}
-          <code>YNAB_PERSONAL_ACCESS_TOKEN</code> and <code>YNAB_BUDGET_ID</code> — set these manually if you haven&apos;t already.
-        </p>
+        <button style={S.btnGhost} onClick={() => setShowCopyFallback(v => !v)}>
+          {showCopyFallback ? '▾ Hide manual values' : '▸ Copy values manually instead'}
+        </button>
 
-        <div style={{ marginTop: '1.5rem' }}>
-          <a
-            href="https://railway.app/dashboard"
-            target="_blank"
-            rel="noreferrer"
-            style={{ ...S.btnPrimary, textDecoration: 'none', display: 'inline-block' }}
-          >
-            Open Railway dashboard →
-          </a>
-        </div>
+        {showCopyFallback && (
+          <div style={{ marginTop: '1rem' }}>
+            <p style={{ ...S.hint, margin: '0 0 1rem' }}>
+              Add these in your Railway service → Variables tab → Raw Editor.
+            </p>
+            <EnvRow label="YNAB_PERSONAL_ACCESS_TOKEN" value={ynabToken} />
+            <EnvRow label="YNAB_BUDGET_ID" value={budgetId} />
+            <EnvRow label="SENDERS" value={sendersJson} />
+            {hasCurrency && <EnvRow label="CURRENCY_ACCOUNTS" value={currencyJson} />}
+            <EnvRow label="ANTHROPIC_API_KEY" value={anthropicKey} />
+            <EnvRow label="ADMIN_EMAIL" value={adminEmail} />
+            {resendKey.trim() && <EnvRow label="RESEND_API_KEY" value={resendKey} />}
+          </div>
+        )}
       </>
     );
   }
