@@ -47,7 +47,7 @@ describe('parseOrderEmail', () => {
       content: [{ type: 'text', text: '{"amount": 12.99, "description": "The Pirates\' Treasure", "retailer": "Amazon", "currency": "GBP", "date": "2024-03-15"}' }],
     });
 
-    const result = await parseOrderEmail(sampleHtml, 'Manuel');
+    const result = await parseOrderEmail(sampleHtml, 'Alice');
 
     expect(result).not.toBeNull();
     expect(result!.amount).toBe(12.99);
@@ -62,7 +62,7 @@ describe('parseOrderEmail', () => {
       content: [{ type: 'text', text: '{"amount": 12.99, "description": "Some item", "retailer": "Amazon", "currency": "GBP", "date": "2024-03-15"}' }],
     });
 
-    const result = await parseOrderEmail(sampleHtml, 'Manuel');
+    const result = await parseOrderEmail(sampleHtml, 'Alice');
 
     expect(result).not.toBeNull();
     expect(typeof result!.amount).toBe('number');
@@ -73,7 +73,7 @@ describe('parseOrderEmail', () => {
       content: [{ type: 'text', text: 'This is not valid JSON at all!' }],
     });
 
-    const result = await parseOrderEmail(sampleHtml, 'Manuel');
+    const result = await parseOrderEmail(sampleHtml, 'Alice');
 
     expect(result).toBeNull();
   });
@@ -81,7 +81,7 @@ describe('parseOrderEmail', () => {
   it('returns null (does not throw) when Claude API throws an error', async () => {
     mockCreate.mockRejectedValueOnce(new Error('API rate limit exceeded'));
 
-    const result = await parseOrderEmail(sampleHtml, 'Manuel');
+    const result = await parseOrderEmail(sampleHtml, 'Alice');
 
     expect(result).toBeNull();
   });
@@ -91,7 +91,7 @@ describe('parseOrderEmail', () => {
       content: [{ type: 'text', text: '{"amount": 25.98, "description": "2 items: AirPods case, USB cable", "retailer": "Amazon", "currency": "GBP", "date": "2024-03-15"}' }],
     });
 
-    const result = await parseOrderEmail(multiItemHtml, 'Manuel');
+    const result = await parseOrderEmail(multiItemHtml, 'Alice');
 
     expect(result).not.toBeNull();
     expect(result!.amount).toBe(25.98);
@@ -109,7 +109,7 @@ describe('parseOrderEmail', () => {
       content: [{ type: 'text', text: '```json\n{"amount": 12.99, "description": "Test item", "retailer": "Amazon", "currency": "GBP", "date": "2024-03-15"}\n```' }],
     });
 
-    const result = await parseOrderEmail(sampleHtml, 'Manuel');
+    const result = await parseOrderEmail(sampleHtml, 'Alice');
 
     expect(result).not.toBeNull();
     expect(result!.amount).toBe(12.99);
@@ -121,7 +121,7 @@ describe('parseOrderEmail', () => {
       content: [{ type: 'text', text: '{"price": 12.99}' }],  // missing amount and description
     });
 
-    const result = await parseOrderEmail(sampleHtml, 'Manuel');
+    const result = await parseOrderEmail(sampleHtml, 'Alice');
 
     expect(result).toBeNull();
   });
@@ -131,7 +131,7 @@ describe('parseOrderEmail', () => {
       content: [{ type: 'text', text: '{"amount": 49.99, "description": "24-pack water", "retailer": "Costco", "currency": "GBP", "date": "2024-03-15"}' }],
     });
 
-    const result = await parseOrderEmail('<html><body>Costco order</body></html>', 'Manuel');
+    const result = await parseOrderEmail('<html><body>Costco order</body></html>', 'Alice');
 
     expect(result).not.toBeNull();
     expect(result!.retailer).toBe('Costco');
@@ -144,7 +144,7 @@ describe('parseOrderEmail', () => {
       content: [{ type: 'text', text: '{"amount": 12.99, "description": "some item"}' }],
     });
 
-    const result = await parseOrderEmail(sampleHtml, 'Manuel');
+    const result = await parseOrderEmail(sampleHtml, 'Alice');
 
     expect(result).toBeNull();
   });
@@ -154,7 +154,7 @@ describe('parseOrderEmail', () => {
       content: [{ type: 'text', text: '{"amount": 29.99, "description": "Wireless headphones", "retailer": "MediaMarkt", "currency": "EUR", "date": "2024-03-15"}' }],
     });
 
-    const result = await parseOrderEmail('<html><body>€29.99 order from MediaMarkt</body></html>', 'Manuel');
+    const result = await parseOrderEmail('<html><body>€29.99 order from MediaMarkt</body></html>', 'Alice');
 
     expect(result).not.toBeNull();
     expect(result!.currency).toBe('EUR');
@@ -166,7 +166,7 @@ describe('parseOrderEmail', () => {
       content: [{ type: 'text', text: '{"amount": 25.12, "description": "Book", "retailer": "FNAC", "currency": "GBP", "date": "2024-03-15"}' }],
     });
 
-    const result = await parseOrderEmail('<html><body>€29.99 (£25.12) order from FNAC</body></html>', 'Manuel');
+    const result = await parseOrderEmail('<html><body>€29.99 (£25.12) order from FNAC</body></html>', 'Alice');
 
     expect(result).not.toBeNull();
     expect(result!.currency).toBe('GBP');
@@ -177,7 +177,7 @@ describe('parseOrderEmail', () => {
       content: [{ type: 'text', text: '{"amount": 12.99, "description": "some item", "retailer": "Amazon"}' }],
     });
 
-    const result = await parseOrderEmail(sampleHtml, 'Manuel');
+    const result = await parseOrderEmail(sampleHtml, 'Alice');
 
     expect(result).toBeNull();
   });
@@ -187,7 +187,7 @@ describe('parseOrderEmail', () => {
       content: [{ type: 'text', text: '{"amount": 12.99, "description": "The Pirates\' Treasure", "retailer": "Amazon", "currency": "GBP", "date": "2024-03-15"}' }],
     });
 
-    const result = await parseOrderEmail(sampleHtml, 'Manuel');
+    const result = await parseOrderEmail(sampleHtml, 'Alice');
 
     expect(result).not.toBeNull();
     expect(result!.date).toBe('2024-03-15');
@@ -198,7 +198,7 @@ describe('parseOrderEmail', () => {
       content: [{ type: 'text', text: '{"amount": 12.99, "description": "some item", "retailer": "Amazon", "currency": "GBP"}' }],
     });
 
-    const result = await parseOrderEmail(sampleHtml, 'Manuel');
+    const result = await parseOrderEmail(sampleHtml, 'Alice');
 
     expect(result).toBeNull();
   });

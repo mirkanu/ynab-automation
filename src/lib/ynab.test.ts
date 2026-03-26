@@ -14,7 +14,7 @@ const BASE_PARAMS: YnabTransactionParams = {
   accountId: 'acc-123',
   amount: 12.99,
   description: 'AirPods case',
-  senderName: 'Manuel',
+  senderName: 'Alice',
   payeeName: 'Amazon',
   date: '2024-03-15',
 };
@@ -117,14 +117,14 @@ describe('createYnabTransaction', () => {
     expect(body.transaction.payee_name).toBe('Costco');
   });
 
-  it('formats memo as "Manuel: AirPods case - Automatically added from email"', async () => {
+  it('formats memo as "Alice: AirPods case - Automatically added from email"', async () => {
     fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-007'));
 
     await createYnabTransaction(BASE_PARAMS);
 
     const [, options] = fetchMock.mock.calls[0];
     const body = JSON.parse(options.body as string) as { transaction: { memo: string } };
-    expect(body.transaction.memo).toBe('Manuel: AirPods case - Automatically added from email');
+    expect(body.transaction.memo).toBe('Alice: AirPods case - Automatically added from email');
   });
 
   it('omits category_id from the request body to prevent YNAB auto-assign', async () => {

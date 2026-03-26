@@ -15,7 +15,7 @@ export interface ParsedOrder {
  * from an order confirmation email HTML body.
  *
  * @param html - Raw HTML string (trigger.event.body.html from Pipedream)
- * @param senderName - Display name of the person who forwarded (e.g. "Manuel")
+ * @param senderName - Display name of the person who forwarded (e.g. "Alice")
  * @returns ParsedOrder with amount (number), description, and retailer, or null on any failure
  */
 export async function parseOrderEmail(

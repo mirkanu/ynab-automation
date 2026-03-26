@@ -12,8 +12,8 @@ const validPayload = {
     event: {
       headers: {
         from: {
-          value: [{ address: 'manuelkuhs@gmail.com', name: '' }],
-          text: 'manuelkuhs@gmail.com',
+          value: [{ address: 'alice@example.com', name: '' }],
+          text: 'alice@example.com',
         },
         'message-id': '<8A6ECA90-6F2A-432C-977E-F6622E6BF878@gmail.com>',
         subject: "Fwd: Ordered: 'The Pirates' Treasure'",
@@ -72,9 +72,9 @@ describe('extractMessageId', () => {
 });
 
 describe('extractOriginalSender', () => {
-  it('returns the forwarding user email (Manuel) from a valid payload', () => {
+  it('returns the forwarding user email from a valid payload', () => {
     const result = extractOriginalSender(validPayload);
-    expect(result).toBe('manuelkuhs@gmail.com');
+    expect(result).toBe('alice@example.com');
   });
 
   it('returns null when from header is absent', () => {
@@ -127,12 +127,12 @@ describe('extractCategoryHint', () => {
   });
 
   it('returns null when only text before blockquote is a Gmail signature', () => {
-    const html = `<html><body><div class="gmail_signature" data-smartmail="gmail_signature"><div dir="ltr">Kind regards, Manuel</div></div><blockquote class="gmail_quote"><p>Order...</p></blockquote></body></html>`;
+    const html = `<html><body><div class="gmail_signature" data-smartmail="gmail_signature"><div dir="ltr">Kind regards, Alice</div></div><blockquote class="gmail_quote"><p>Order...</p></blockquote></body></html>`;
     expect(extractCategoryHint(html)).toBeNull();
   });
 
   it('returns hint when user typed text appears before an auto-signature', () => {
-    const html = gmailHtml('<p>Groceries</p><p>Kind regards, Manuel</p>');
+    const html = gmailHtml('<p>Groceries</p><p>Kind regards, Alice</p>');
     expect(extractCategoryHint(html)).toBe('Groceries');
   });
 
@@ -147,7 +147,7 @@ describe('extractCategoryHint', () => {
   });
 
   it('returns null when only pre-blockquote text is "Best regards, ..."', () => {
-    const html = gmailHtml('<p>Best regards, Emily</p>');
+    const html = gmailHtml('<p>Best regards, Bob</p>');
     expect(extractCategoryHint(html)).toBeNull();
   });
 

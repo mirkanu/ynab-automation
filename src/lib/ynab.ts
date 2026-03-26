@@ -11,7 +11,7 @@ export interface YnabTransactionParams {
   accountId: string;
   amount: number;        // in pounds/dollars (e.g. 12.99) — NOT milliunits
   description: string;
-  senderName: string;    // e.g. "Manuel" or "Emily-Kate"
+  senderName: string;    // e.g. "Alice" or "Bob"
   payeeName: string;     // e.g. "Amazon", "Costco", "Apple" — dynamic, not hardcoded
   date: string;          // YYYY-MM-DD order date from the email
   categoryId?: string;   // YNAB category UUID — omit or undefined for uncategorized
