@@ -7,14 +7,10 @@ import {
 } from '@/lib/email';
 import { parseOrderEmail } from '@/lib/claude';
 import { createYnabTransaction, getCategories, findCategory } from '@/lib/ynab';
-import { sendErrorNotification, MANUEL_EMAIL } from '@/lib/notify';
+import { sendErrorNotification } from '@/lib/notify';
+import { loadConfig, getSenderByEmail, getAccountForCurrency, notificationSuffix } from '@/lib/config';
 
 const prisma = new PrismaClient();
-
-/** Returns a subject prefix identifying the sender when it's Emily-Kate. */
-function senderLabel(senderKey: string): string {
-  return senderKey === 'manuelkuhs@gmail.com' ? '' : ' (Emily-Kate)';
-}
 
 export async function GET() {
   return NextResponse.json({ status: 'ok' });
@@ -22,6 +18,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const config = loadConfig();
     const body = await req.json();
 
     // Step 1: Extract message ID
@@ -59,23 +56,12 @@ export async function POST(req: NextRequest) {
 
     // Step 5: Resolve sender to display name and YNAB account ID
     console.log('Step 5: resolving sender');
-    const SENDER_MAP: Record<string, { name: string; accountId: string }> = {
-      'manuelkuhs@gmail.com': {
-        name: 'Manuel',
-        accountId: process.env.YNAB_MANUEL_ACCOUNT_ID ?? '',
-      },
-      [process.env.EMILY_KATE_EMAIL ?? '']: {
-        name: 'Emily-Kate',
-        accountId: process.env.YNAB_EMILY_ACCOUNT_ID ?? '',
-      },
-    };
-
-    const senderInfo = SENDER_MAP[senderKey];
+    const senderInfo = getSenderByEmail(config, senderKey);
     console.log('Step 5: senderKey:', senderKey, 'found:', !!senderInfo);
     if (!senderInfo) {
       console.warn('Unrecognised sender — no YNAB transaction created:', sender);
       await sendErrorNotification({
-        to: MANUEL_EMAIL,
+        to: config.adminEmail,
         subject: 'YNAB automation: unknown sender',
         body:
           `An order confirmation email was forwarded from an unrecognised email address and could not be processed.\n\n` +
@@ -95,8 +81,8 @@ export async function POST(req: NextRequest) {
     if (!parsed) {
       console.error('Step 6: Claude parsing failed for messageId:', messageId);
       await sendErrorNotification({
-        to: MANUEL_EMAIL,
-        subject: `YNAB automation: failed to parse order email${senderLabel(senderKey)}`,
+        to: config.adminEmail,
+        subject: `YNAB automation: failed to parse order email${notificationSuffix(senderInfo)}`,
         body:
           `An order confirmation email forwarded by ${sender ?? 'unknown'} could not be parsed automatically. No YNAB transaction was created.\n\n` +
           `Message ID: ${messageId}\n\n` +
@@ -126,11 +112,7 @@ export async function POST(req: NextRequest) {
 
     // Step 7: Create YNAB transaction
     console.log('Step 7: creating YNAB transaction');
-    // Euro-only emails go to the shared Euro Wise account regardless of sender
-    const accountId =
-      parsed.currency === 'EUR'
-        ? (process.env.YNAB_EURO_ACCOUNT_ID ?? '')
-        : senderInfo.accountId;
+    const accountId = getAccountForCurrency(config, senderInfo.accountId, parsed.currency);
     try {
       const transactionId = await createYnabTransaction({
         budgetId,
@@ -147,8 +129,8 @@ export async function POST(req: NextRequest) {
     } catch (ynabErr) {
       console.error('Step 7: YNAB API error:', ynabErr);
       await sendErrorNotification({
-        to: MANUEL_EMAIL,
-        subject: `YNAB automation: failed to create transaction${senderLabel(senderKey)}`,
+        to: config.adminEmail,
+        subject: `YNAB automation: failed to create transaction${notificationSuffix(senderInfo)}`,
         body:
           `An order confirmation email forwarded by ${sender ?? 'unknown'} was parsed but the YNAB transaction could not be created.\n\n` +
           `Item: ${parsed.description}\n` +
