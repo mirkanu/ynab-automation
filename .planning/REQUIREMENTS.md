@@ -43,4 +43,28 @@ _(deferred from this milestone — none identified)_
 - YNAB budget/category browser in admin — already handled by setup wizard
 
 ## Traceability
-_(filled by roadmapper)_
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| DEPL-01 | Phase 10 | Pending |
+| DEPL-02 | Phase 10 | Pending |
+| AUTH-01 | Phase 11 | Pending |
+| AUTH-02 | Phase 11 | Pending |
+| AUTH-03 | Phase 11 | Pending |
+| AUTH-04 | Phase 11 | Pending |
+| LOG-01 | Phase 12 | Pending |
+| LOG-02 | Phase 12 | Pending |
+| LOG-03 | Phase 12 | Pending |
+| LOG-04 | Phase 12 | Pending |
+| LOG-05 | Phase 13 | Pending |
+| LOG-06 | Phase 13 | Pending |
+| DASH-01 | Phase 13 | Pending |
+| DASH-02 | Phase 13 | Pending |
+| DASH-03 | Phase 13 | Pending |
+| SET-01 | Phase 14 | Pending |
+| SET-02 | Phase 14 | Pending |
+| SET-03 | Phase 14 | Pending |
+| SET-04 | Phase 14 | Pending |
+| SET-05 | Phase 14 | Pending |
+| TEST-01 | Phase 15 | Pending |
+| TEST-02 | Phase 15 | Pending |

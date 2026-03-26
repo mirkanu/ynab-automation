@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Admin Backend UI
-status: defining_requirements
-stopped_at: v4.0 started — defining requirements
+status: ready_to_plan
+stopped_at: Roadmap created — Phase 10 ready to plan
 last_updated: "2026-03-26T00:00:00.000Z"
 progress:
-  total_phases: 0
+  total_phases: 6
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -17,17 +17,57 @@ progress:
 
 **Updated:** 2026-03-26
 
+## Project Reference
+
+See: .planning/PROJECT.md (updated 2026-03-26)
+
+**Core value:** Forwarded order confirmation email → YNAB transaction, fully automated
+**Current focus:** Phase 10 — Deployment Retirement
+
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-03-26 — Milestone v4.0 started
+Phase: 10 of 15 (Deployment Retirement)
+Plan: — (not yet planned)
+Status: Ready to plan
+Last activity: 2026-03-26 — v4.0 roadmap created, Phase 10 ready to plan
 
-## Shipped
+Progress: [░░░░░░░░░░] 0%
 
-| Milestone | Summary |
-|-----------|---------|
-| v1.0 | Core pipeline (2026-03-24) |
-| v2.0 | Any retailer + category tagging (2026-03-25) |
-| v3.0 | Generic & publishable + setup wizard (2026-03-26) |
+## Performance Metrics
+
+**Velocity:**
+- Total plans completed: 0
+- Average duration: —
+- Total execution time: —
+
+**By Phase:**
+
+| Phase | Plans | Total | Avg/Plan |
+|-------|-------|-------|----------|
+| - | - | - | - |
+
+*Updated after each plan completion*
+
+## Accumulated Context
+
+### Decisions
+
+Decisions are logged in PROJECT.md Key Decisions table.
+Recent decisions affecting current work:
+
+- v3.0: Railway API auto-apply via built-in RAILWAY_PROJECT/ENV/SERVICE_ID env vars (reusable for SET-05)
+- v3.0: loadConfig() at handler entry — config errors surface per-request
+
+### Pending Todos
+
+None yet.
+
+### Blockers/Concerns
+
+None yet.
+
+## Session Continuity
+
+Last session: 2026-03-26
+Stopped at: Roadmap created for v4.0 — ready to plan Phase 10
+Resume file: None
