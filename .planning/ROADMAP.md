@@ -21,7 +21,7 @@ Phases 1-9 covered core pipeline, any-retailer support, category tagging, config
 **Milestone Goal:** Password-protected admin UI for configuration, monitoring, and testing — making the app fully self-serviceable without touching environment variables or raw logs.
 
 - [x] **Phase 10: Deployment Retirement** - Decommission old Railway deployment and update docs (completed 2026-03-26)
-- [ ] **Phase 11: Admin Authentication** - Password-protected /admin routes with cookie sessions
+- [x] **Phase 11: Admin Authentication** - Password-protected /admin routes with cookie sessions (completed 2026-03-26)
 - [ ] **Phase 12: Activity Log Infrastructure** - DB schema and write path for full pipeline logging
 - [ ] **Phase 13: Admin UI Shell + Dashboard + Log Viewer** - Shell, stats dashboard, and log viewer with filters
 - [ ] **Phase 14: Settings Editor** - In-UI editing of all env vars with Railway API sync
@@ -51,7 +51,7 @@ Plans:
   4. Clicking logout clears the session and returns the user to /admin/login
 **Plans**: 1 plan
 Plans:
-- [ ] 11-01-PLAN.md — Install iron-session, create middleware, login/logout flow, admin layout and dashboard placeholder
+- [x] 11-01-PLAN.md — Install iron-session, create middleware, login/logout flow, admin layout and dashboard placeholder (completed 2026-03-26)
 
 ### Phase 12: Activity Log Infrastructure
 **Goal**: Every email processed by the pipeline is durably recorded in the database with full trace data
@@ -102,7 +102,7 @@ Plans:
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 10. Deployment Retirement | 1/1 | Complete    | 2026-03-26 | - |
-| 11. Admin Authentication | v4.0 | 0/1 | Not started | - |
+| 11. Admin Authentication | v4.0 | 1/1 | Complete | 2026-03-26 |
 | 12. Activity Log Infrastructure | v4.0 | 0/TBD | Not started | - |
 | 13. Admin UI Shell + Dashboard + Log Viewer | v4.0 | 0/TBD | Not started | - |
 | 14. Settings Editor | v4.0 | 0/TBD | Not started | - |
