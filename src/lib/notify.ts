@@ -1,7 +1,5 @@
 import { Resend } from 'resend';
 
-const MANUEL_EMAIL = process.env.MANUEL_EMAIL ?? 'manuelkuhs@gmail.com';
-
 export interface NotificationOptions {
   to: string;
   cc?: string;
@@ -27,5 +25,3 @@ export async function sendErrorNotification(opts: NotificationOptions): Promise<
     console.error('sendErrorNotification failed:', err);
   }
 }
-
-export { MANUEL_EMAIL };
