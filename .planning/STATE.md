@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v3.0
-milestone_name: Generic & Publishable
-status: archived
-stopped_at: v3.0 archived — ready for next milestone
-last_updated: "2026-03-26T11:30:00.000Z"
+milestone: v4.0
+milestone_name: Admin Backend UI
+status: defining_requirements
+stopped_at: v4.0 started — defining requirements
+last_updated: "2026-03-26T00:00:00.000Z"
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 3
-  completed_plans: 3
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Amazon to YNAB Automation — Project State
@@ -19,9 +19,10 @@ progress:
 
 ## Current Position
 
-**Milestone:** v3.0 — archived
-**Status:** Ready for next milestone
-**Next Steps:** Run `/gsd:new-milestone` to define v4.0
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-03-26 — Milestone v4.0 started
 
 ## Shipped
 

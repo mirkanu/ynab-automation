@@ -23,9 +23,19 @@ A forwarded order confirmation email (any retailer) becomes a YNAB transaction a
 
 ---
 
-## Next Milestone Goals
+## Current Milestone: v4.0 Admin Backend UI
 
-_(not yet defined — run `/gsd:new-milestone` to start planning)_
+**Goal:** Add a password-protected admin UI for configuration, monitoring, and testing — making the app fully self-serviceable without touching environment variables or raw logs.
+
+**Target features:**
+- Retire old Railway deployment; new instance is the only active one
+- Password-protected `/admin` route (single ADMIN_PASSWORD env var, cookie session)
+- Full activity log: raw email received, Claude parse output, YNAB transaction result, errors
+- Settings editor: all env vars (SENDERS, CURRENCY_ACCOUNTS, API keys) editable in UI
+- Dashboard stats: emails this week, success rate, last transaction
+- Live test tool: paste email content, preview Claude parse without hitting YNAB
+- Transaction replay: re-run any logged email through the pipeline from the log view
+- Webhook URL helper: inbound email endpoint displayed prominently for easy copy
 
 ---
 
@@ -64,4 +74,4 @@ _(not yet defined — run `/gsd:new-milestone` to start planning)_
 
 ---
 
-*Last updated: 2026-03-26 — v3.0 archived*
+*Last updated: 2026-03-26 — v4.0 started*
