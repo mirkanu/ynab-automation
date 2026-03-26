@@ -49,7 +49,9 @@ Plans:
   2. Entering the correct ADMIN_PASSWORD grants access and sets a persistent cookie
   3. The session survives a page refresh without requiring re-login
   4. Clicking logout clears the session and returns the user to /admin/login
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 11-01-PLAN.md — Install iron-session, create middleware, login/logout flow, admin layout and dashboard placeholder
 
 ### Phase 12: Activity Log Infrastructure
 **Goal**: Every email processed by the pipeline is durably recorded in the database with full trace data
@@ -100,7 +102,7 @@ Plans:
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 10. Deployment Retirement | 1/1 | Complete    | 2026-03-26 | - |
-| 11. Admin Authentication | v4.0 | 0/TBD | Not started | - |
+| 11. Admin Authentication | v4.0 | 0/1 | Not started | - |
 | 12. Activity Log Infrastructure | v4.0 | 0/TBD | Not started | - |
 | 13. Admin UI Shell + Dashboard + Log Viewer | v4.0 | 0/TBD | Not started | - |
 | 14. Settings Editor | v4.0 | 0/TBD | Not started | - |
