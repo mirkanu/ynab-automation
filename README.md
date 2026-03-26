@@ -6,6 +6,26 @@ Automatically creates YNAB transactions from forwarded order confirmation emails
 
 ---
 
+## Quickest Path (No Coding Required)
+
+You don't need to write any code or use a terminal to run this. Everything deploys through web dashboards.
+
+> **Does this need Claude Code running somewhere?** No. Claude Code is the tool used to *build* this app — it's not part of how it runs. At runtime, the app is a standard web service on Railway that calls the Anthropic API to parse emails. Once deployed, it runs entirely on Railway's servers, 24/7, with no local tooling needed.
+
+**Steps at a glance:**
+
+1. **Fork this repo** — click Fork on GitHub (top right). You now have your own copy.
+2. **Create a Railway account** — [railway.app](https://railway.app/). Connect it to your GitHub account.
+3. **Deploy the app on Railway** — New Project → Deploy from GitHub repo → select your fork. Railway builds and hosts it automatically.
+4. **Add a PostgreSQL database** — in the same Railway project, click "+ New" → Database → PostgreSQL. Railway wires up `DATABASE_URL` for you.
+5. **Create accounts and get credentials** for the services in the [Prerequisites](#prerequisites) table below. This is the only tedious part — you need API keys from Anthropic, YNAB, and Resend, and an inbound email address from Pipedream.
+6. **Set environment variables** in Railway (your service → Variables tab). Use the table in [Setup Guide → Step 4](#4-set-railway-environment-variables) below.
+7. **Set up Pipedream** — create a workflow with an Email trigger, add an HTTP action that POSTs to `https://your-app.railway.app/api/webhook`. Forward a test order email and check Railway logs.
+
+> **Want Claude Code to help?** If you have [Claude Code](https://claude.ai/claude-code) installed locally (or via SSH on any machine), you can clone your fork, install [GSD](https://github.com/punkpeye/get-shit-done), and ask it to walk through the setup steps with you. It can help craft your `SENDERS` JSON, look up your YNAB account IDs via the API, and validate your configuration — but the accounts and API keys still need to be created manually on each service's website first.
+
+---
+
 ## What It Does
 
 YNAB Automation bridges your email inbox and your budget. When you receive an order confirmation from any online retailer, forward it to a Pipedream inbound address. The app parses the email using Claude, extracts the amount, payee, currency, and order date, and creates a transaction in the correct YNAB account — all within a few seconds.
