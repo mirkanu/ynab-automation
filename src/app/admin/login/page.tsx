@@ -1,0 +1,79 @@
+'use client';
+
+import { useActionState } from 'react';
+import { loginAction } from './actions';
+
+export default function LoginPage() {
+  const [state, formAction, pending] = useActionState(loginAction, undefined);
+
+  return (
+    <div style={{
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '100vh',
+      backgroundColor: '#f9fafb',
+    }}>
+      <div style={{
+        background: 'white',
+        padding: '2rem',
+        borderRadius: '0.5rem',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        width: '100%',
+        maxWidth: '20rem',
+      }}>
+        <h1 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem', color: '#111827' }}>
+          Admin Login
+        </h1>
+        <form action={formAction}>
+          <div style={{ marginBottom: '1rem' }}>
+            <label
+              htmlFor="password"
+              style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: '#374151', marginBottom: '0.25rem' }}
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              style={{
+                width: '100%',
+                padding: '0.5rem 0.75rem',
+                border: '1px solid #d1d5db',
+                borderRadius: '0.375rem',
+                fontSize: '0.875rem',
+                boxSizing: 'border-box',
+              }}
+            />
+          </div>
+          {state?.error && (
+            <p style={{ color: '#dc2626', fontSize: '0.875rem', marginBottom: '1rem' }}>
+              {state.error}
+            </p>
+          )}
+          <button
+            type="submit"
+            disabled={pending}
+            style={{
+              width: '100%',
+              padding: '0.5rem 1rem',
+              backgroundColor: pending ? '#9ca3af' : '#111827',
+              color: 'white',
+              border: 'none',
+              borderRadius: '0.375rem',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              cursor: pending ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {pending ? 'Logging in…' : 'Log in'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
