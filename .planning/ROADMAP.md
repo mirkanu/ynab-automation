@@ -36,7 +36,9 @@ Phases 1-9 covered core pipeline, any-retailer support, category tagging, config
 **Success Criteria** (what must be TRUE):
   1. The old Railway service no longer receives or processes any traffic
   2. README and all documentation reference only the current deployment URL with no dead links
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 10-01-PLAN.md — Update docs to new deployment URL + decommission old Railway service
 
 ### Phase 11: Admin Authentication
 **Goal**: Users can securely access the /admin area and their session persists without re-login
@@ -97,7 +99,7 @@ Phases 1-9 covered core pipeline, any-retailer support, category tagging, config
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 10. Deployment Retirement | v4.0 | 0/TBD | Not started | - |
+| 10. Deployment Retirement | v4.0 | 0/1 | Not started | - |
 | 11. Admin Authentication | v4.0 | 0/TBD | Not started | - |
 | 12. Activity Log Infrastructure | v4.0 | 0/TBD | Not started | - |
 | 13. Admin UI Shell + Dashboard + Log Viewer | v4.0 | 0/TBD | Not started | - |
