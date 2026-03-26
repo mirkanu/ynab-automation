@@ -38,7 +38,7 @@ Phases 1-9 covered core pipeline, any-retailer support, category tagging, config
   2. README and all documentation reference only the current deployment URL with no dead links
 **Plans**: 1 plan
 Plans:
-- [ ] 10-01-PLAN.md — Update docs to new deployment URL + decommission old Railway service
+- [x] 10-01-PLAN.md — Update docs to new deployment URL + decommission old Railway service (completed 2026-03-26)
 
 ### Phase 11: Admin Authentication
 **Goal**: Users can securely access the /admin area and their session persists without re-login
