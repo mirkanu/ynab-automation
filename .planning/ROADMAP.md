@@ -20,7 +20,7 @@ Phases 1-9 covered core pipeline, any-retailer support, category tagging, config
 
 **Milestone Goal:** Password-protected admin UI for configuration, monitoring, and testing — making the app fully self-serviceable without touching environment variables or raw logs.
 
-- [ ] **Phase 10: Deployment Retirement** - Decommission old Railway deployment and update docs
+- [x] **Phase 10: Deployment Retirement** - Decommission old Railway deployment and update docs (completed 2026-03-26)
 - [ ] **Phase 11: Admin Authentication** - Password-protected /admin routes with cookie sessions
 - [ ] **Phase 12: Activity Log Infrastructure** - DB schema and write path for full pipeline logging
 - [ ] **Phase 13: Admin UI Shell + Dashboard + Log Viewer** - Shell, stats dashboard, and log viewer with filters
@@ -99,7 +99,7 @@ Plans:
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 10. Deployment Retirement | v4.0 | 0/1 | Not started | - |
+| 10. Deployment Retirement | 1/1 | Complete   | 2026-03-26 | - |
 | 11. Admin Authentication | v4.0 | 0/TBD | Not started | - |
 | 12. Activity Log Infrastructure | v4.0 | 0/TBD | Not started | - |
 | 13. Admin UI Shell + Dashboard + Log Viewer | v4.0 | 0/TBD | Not started | - |

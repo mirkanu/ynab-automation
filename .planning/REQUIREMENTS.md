@@ -1,8 +1,8 @@
 # Requirements: v4.0 — Admin Backend UI
 
 ## Deployment Retirement
-- [ ] **DEPL-01**: Old Railway deployment is decommissioned (service deleted or redirected)
-- [ ] **DEPL-02**: README and docs updated to reference only the new deployment URL
+- [x] **DEPL-01**: Old Railway deployment is decommissioned (service deleted or redirected)
+- [x] **DEPL-02**: README and docs updated to reference only the new deployment URL
 
 ## Admin Authentication
 - [ ] **AUTH-01**: `/admin` routes protected by single ADMIN_PASSWORD env var
@@ -46,8 +46,8 @@ _(deferred from this milestone — none identified)_
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DEPL-01 | Phase 10 | Pending |
-| DEPL-02 | Phase 10 | Pending |
+| DEPL-01 | Phase 10 | Complete |
+| DEPL-02 | Phase 10 | Complete |
 | AUTH-01 | Phase 11 | Pending |
 | AUTH-02 | Phase 11 | Pending |
 | AUTH-03 | Phase 11 | Pending |

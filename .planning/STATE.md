@@ -2,14 +2,15 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Admin Backend UI
-status: ready_to_plan
-stopped_at: Roadmap created — Phase 10 ready to plan
-last_updated: "2026-03-26T00:00:00.000Z"
+status: planning
+stopped_at: "Checkpoint: Task 2 awaiting human action — delete old Railway service ynab-automation-production"
+last_updated: "2026-03-26T17:40:59.314Z"
+last_activity: 2026-03-26 — v4.0 roadmap created, Phase 10 ready to plan
 progress:
   total_phases: 6
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
   percent: 0
 ---
 
@@ -47,6 +48,7 @@ Progress: [░░░░░░░░░░] 0%
 | - | - | - | - |
 
 *Updated after each plan completion*
+| Phase 10-deployment-retirement P01 | 3 | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -57,6 +59,7 @@ Recent decisions affecting current work:
 
 - v3.0: Railway API auto-apply via built-in RAILWAY_PROJECT/ENV/SERVICE_ID env vars (reusable for SET-05)
 - v3.0: loadConfig() at handler entry — config errors surface per-request
+- [Phase 10-deployment-retirement]: ynab-test-production.up.railway.app is now the sole active deployment; ynab-automation-production retired
 
 ### Pending Todos
 
@@ -68,6 +71,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-26
-Stopped at: Roadmap created for v4.0 — ready to plan Phase 10
+Last session: 2026-03-26T17:40:59.310Z
+Stopped at: Checkpoint: Task 2 awaiting human action — delete old Railway service ynab-automation-production
 Resume file: None
