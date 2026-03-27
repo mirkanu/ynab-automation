@@ -3,6 +3,8 @@ import LogFilters from '../components/LogFilters';
 import LogRow from '../components/LogRow';
 import Pagination from '../components/Pagination';
 
+export const dynamic = 'force-dynamic';
+
 interface Props {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }

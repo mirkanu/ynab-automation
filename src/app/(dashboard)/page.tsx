@@ -3,6 +3,8 @@ import SetupWizard from '../setup/SetupWizard';
 import { getDashboardStats } from '@/lib/activity-log-queries';
 import CopyButton from './components/CopyButton';
 
+export const dynamic = 'force-dynamic';
+
 const card = {
   backgroundColor: '#fff',
   borderRadius: '12px',
