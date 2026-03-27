@@ -29,6 +29,18 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </button>
         </form>
       </header>
+      <nav style={{
+        display: 'flex',
+        gap: '1.5rem',
+        padding: '0.5rem 1.5rem',
+        backgroundColor: '#f9fafb',
+        borderBottom: '1px solid #e5e7eb',
+        fontSize: '0.8125rem',
+        fontWeight: 500,
+      }}>
+        <a href="/" style={{ color: '#374151', textDecoration: 'none' }}>Dashboard</a>
+        <a href="/logs" style={{ color: '#374151', textDecoration: 'none' }}>Activity Log</a>
+      </nav>
       <main style={{ padding: '1.5rem' }}>
         {children}
       </main>
