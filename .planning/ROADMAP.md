@@ -62,7 +62,9 @@ Plans:
   2. The DB record includes the Claude parse output (retailer, amount, date, currency)
   3. The DB record includes the YNAB result (success/fail, transaction ID, amount, account)
   4. Pipeline errors are captured in the DB record with error type and full message
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [x] 12-01-PLAN.md — Add ActivityLog model, writeActivityLog helper, and instrument webhook handler (completed 2026-03-27)
 
 ### Phase 13: Admin UI Shell + Dashboard + Log Viewer
 **Goal**: An authenticated admin visits /admin and can see pipeline health at a glance and drill into individual email logs
@@ -103,7 +105,7 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 10. Deployment Retirement | 1/1 | Complete    | 2026-03-26 | - |
 | 11. Admin Authentication | v4.0 | 1/1 | Complete | 2026-03-26 |
-| 12. Activity Log Infrastructure | v4.0 | 0/TBD | Not started | - |
+| 12. Activity Log Infrastructure | v4.0 | 1/1 | Complete | 2026-03-27 |
 | 13. Admin UI Shell + Dashboard + Log Viewer | v4.0 | 0/TBD | Not started | - |
 | 14. Settings Editor | v4.0 | 0/TBD | Not started | - |
 | 15. Test & Replay Tools | v4.0 | 0/TBD | Not started | - |
