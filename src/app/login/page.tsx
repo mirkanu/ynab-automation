@@ -1,10 +1,33 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useFormState, useFormStatus } from 'react-dom';
 import { loginAction } from './actions';
 
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      style={{
+        width: '100%',
+        padding: '0.5rem 1rem',
+        backgroundColor: pending ? '#9ca3af' : '#111827',
+        color: 'white',
+        border: 'none',
+        borderRadius: '0.375rem',
+        fontSize: '0.875rem',
+        fontWeight: 500,
+        cursor: pending ? 'not-allowed' : 'pointer',
+      }}
+    >
+      {pending ? 'Logging in…' : 'Log in'}
+    </button>
+  );
+}
+
 export default function LoginPage() {
-  const [state, formAction, pending] = useActionState(loginAction, undefined);
+  const [state, formAction] = useFormState(loginAction, undefined);
 
   return (
     <div style={{
@@ -55,23 +78,7 @@ export default function LoginPage() {
               {state.error}
             </p>
           )}
-          <button
-            type="submit"
-            disabled={pending}
-            style={{
-              width: '100%',
-              padding: '0.5rem 1rem',
-              backgroundColor: pending ? '#9ca3af' : '#111827',
-              color: 'white',
-              border: 'none',
-              borderRadius: '0.375rem',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              cursor: pending ? 'not-allowed' : 'pointer',
-            }}
-          >
-            {pending ? 'Logging in…' : 'Log in'}
-          </button>
+          <SubmitButton />
         </form>
       </div>
     </div>

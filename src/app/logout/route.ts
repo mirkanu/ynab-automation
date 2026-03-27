@@ -1,10 +1,8 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getAdminSession } from '@/lib/admin-session';
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   const session = await getAdminSession();
   await session.destroy();
-  return NextResponse.redirect(
-    new URL('/login', process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000'),
-  );
+  return NextResponse.redirect(new URL('/login', request.url));
 }
