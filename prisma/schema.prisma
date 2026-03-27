@@ -13,3 +13,27 @@ model ProcessedEmail {
   sender      String
   processedAt DateTime @default(now())
 }
+
+model ActivityLog {
+  id            Int      @id @default(autoincrement())
+  messageId     String   @unique
+  status        String
+
+  // Inbound email metadata (LOG-01)
+  sender        String?
+  subject       String?
+  receivedAt    DateTime @default(now())
+  rawBody       String?
+
+  // Claude parse result (LOG-02)
+  parseResult   Json?
+
+  // YNAB outcome (LOG-03)
+  ynabResult    Json?
+
+  // Error detail (LOG-04)
+  errorType     String?
+  errorMessage  String?
+
+  createdAt     DateTime @default(now())
+}
