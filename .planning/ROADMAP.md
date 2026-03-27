@@ -76,7 +76,10 @@ Plans:
   3. The webhook inbound URL is displayed prominently with a working one-click copy button
   4. The log view lists entries filterable by status and date range, with pagination
   5. Clicking a log row expands the full request trace (raw email, parse result, YNAB outcome, any errors)
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 13-01-PLAN.md — Dashboard with stats, webhook URL, navigation (DASH-01, DASH-02, DASH-03)
+- [ ] 13-02-PLAN.md — Activity log viewer with filters, pagination, expandable rows (LOG-05, LOG-06)
 
 ### Phase 14: Settings Editor
 **Goal**: An admin can view and update all routing and API configuration from the UI without touching Railway directly
