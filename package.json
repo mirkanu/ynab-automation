@@ -21,6 +21,7 @@
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
+    "@types/react-dom": "^18.3.7",
     "prisma": "^5.13.0",
     "typescript": "^5",
     "vitest": "^4.1.1"
