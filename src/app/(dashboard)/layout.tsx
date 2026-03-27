@@ -1,6 +1,6 @@
 import { type ReactNode } from 'react';
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
+export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <div style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
       <header style={{
@@ -12,7 +12,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         color: 'white',
       }}>
         <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>YNAB Automation — Admin</span>
-        <form action="/admin/logout" method="POST">
+        <form action="/logout" method="POST">
           <button
             type="submit"
             style={{

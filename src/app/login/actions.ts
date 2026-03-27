@@ -22,6 +22,5 @@ export async function loginAction(
   session.isLoggedIn = true;
   await session.save();
 
-  // redirect() throws internally — TypeScript return type is never after this
-  redirect('/admin');
+  redirect('/');
 }

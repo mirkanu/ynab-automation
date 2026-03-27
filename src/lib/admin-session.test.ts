@@ -26,10 +26,11 @@ describe('sessionOptions', () => {
 
 // Test middleware redirect logic (pure logic, no Next.js runtime needed)
 describe('middleware auth logic', () => {
-  it('allows /admin/login through without checking session', () => {
-    const pathname = '/admin/login';
-    const isLoginPage = pathname === '/admin/login';
-    expect(isLoginPage).toBe(true);
+  it('excludes /login from middleware matcher so it loads without auth', () => {
+    const matcher = '/((?!login|logout|api|setup|_next|favicon.ico).*)';
+    const loginPath = '/login';
+    const regex = new RegExp(`^${matcher}$`);
+    expect(regex.test(loginPath)).toBe(false);
   });
 
   it('identifies unauthenticated session as needing redirect', () => {
