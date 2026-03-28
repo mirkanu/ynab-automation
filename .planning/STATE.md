@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v4.0
-milestone_name: Admin Backend UI
-status: complete
-stopped_at: v4.0 milestone archived
+milestone: v5.0
+milestone_name: Multi-Tenant SaaS
+status: defining_requirements
+stopped_at: null
 last_updated: "2026-03-28"
-last_activity: 2026-03-28 — v4.0 milestone archived
+last_activity: 2026-03-28 — Milestone v5.0 started
 progress:
-  total_phases: 6
-  completed_phases: 6
-  total_plans: 7
-  completed_plans: 7
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Amazon to YNAB Automation — Project State
@@ -22,26 +22,20 @@ progress:
 
 See: .planning/PROJECT.md (updated 2026-03-28)
 
-**Core value:** Forwarded order confirmation email → YNAB transaction, fully automated
-**Current focus:** v4.0 complete — planning next milestone
+**Core value:** Forwarded order confirmation email → YNAB transaction, fully automated — for any user
+**Current focus:** v5.0 Multi-Tenant SaaS — defining requirements
 
 ## Current Position
 
-Milestone: v4.0 Admin Backend UI — COMPLETE & ARCHIVED
-All 6 phases shipped, 7 plans executed, 22/22 requirements met
-Tag: v4.0
-
-Progress: [██████████] 100%
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-03-28 — Milestone v5.0 started
 
 ## Quick Tasks Completed
 
 | # | Description | Date | Commit |
 |---|-------------|------|--------|
-| 001 | Test mode toggle | 2026-03-28 | 2aa79ee |
-| 002 | DB-backed settings (no restart) | 2026-03-28 | 606af59 |
-| 003 | Login password reveal | 2026-03-28 | 8c7c045 |
-| 004 | Test mode banner + smart replay | 2026-03-28 | 931dbac |
-| 005 | Activity log YNAB entry details | 2026-03-28 | 97308ee |
 
 ## Accumulated Context
 
@@ -49,8 +43,15 @@ Progress: [██████████] 100%
 
 None.
 
+### Key Context from v4.0
+
+- All v4.0 admin UI patterns (dashboard, activity log, settings, test tools) will be adapted to per-user scope
+- iron-session auth being replaced with Auth.js for multi-user support
+- DB-backed settings pattern extends naturally to per-user settings
+- Inline CSS pattern continues
+
 ## Session Continuity
 
 Last session: 2026-03-28
-Stopped at: v4.0 milestone archived
+Stopped at: Defining v5.0 requirements
 Resume file: None
