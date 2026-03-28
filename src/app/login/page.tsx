@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useFormState, useFormStatus } from 'react-dom';
 import { loginAction } from './actions';
 
@@ -28,6 +29,7 @@ function SubmitButton() {
 
 export default function LoginPage() {
   const [state, formAction] = useFormState(loginAction, undefined);
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <div style={{
@@ -57,21 +59,41 @@ export default function LoginPage() {
             >
               Password
             </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              style={{
-                width: '100%',
-                padding: '0.5rem 0.75rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '0.375rem',
-                fontSize: '0.875rem',
-                boxSizing: 'border-box',
-              }}
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
+                required
+                style={{
+                  width: '100%',
+                  padding: '0.5rem 2.5rem 0.5rem 0.75rem',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '0.375rem',
+                  fontSize: '0.875rem',
+                  boxSizing: 'border-box',
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '0.5rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '0.75rem',
+                  color: '#6b7280',
+                  padding: '0.125rem 0.25rem',
+                }}
+              >
+                {showPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
           </div>
           {state?.error && (
             <p style={{ color: '#dc2626', fontSize: '0.875rem', marginBottom: '1rem' }}>
