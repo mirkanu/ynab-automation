@@ -33,9 +33,40 @@ const statusLabels: Record<string, string> = {
   no_message_id: 'No ID',
 };
 
+type ReplayStatus = 'idle' | 'confirm' | 'loading' | 'success' | 'error';
+
 export default function LogRow({ entry }: { entry: LogEntry }) {
   const [expanded, setExpanded] = useState(false);
   const [showRaw, setShowRaw] = useState(false);
+  const [replayStatus, setReplayStatus] = useState<ReplayStatus>('idle');
+  const [replayResult, setReplayResult] = useState('');
+
+  async function handleReplay() {
+    setReplayStatus('loading');
+    setReplayResult('');
+    try {
+      const res = await fetch('/api/replay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messageId: entry.messageId }),
+      });
+      const data = (await res.json()) as {
+        success?: boolean;
+        transactionId?: string;
+        error?: string;
+      };
+      if (!res.ok || data.error) {
+        setReplayResult(data.error ?? 'Unknown error');
+        setReplayStatus('error');
+      } else {
+        setReplayResult(`Transaction created: ${data.transactionId}`);
+        setReplayStatus('success');
+      }
+    } catch (e) {
+      setReplayResult((e as Error).message);
+      setReplayStatus('error');
+    }
+  }
   const colors = statusColors[entry.status] ?? { bg: '#f3f4f6', text: '#374151' };
   const date = new Date(entry.receivedAt);
 
@@ -131,6 +162,92 @@ export default function LogRow({ entry }: { entry: LogEntry }) {
                   }}>
                     {entry.rawBody}
                   </pre>
+                )}
+              </div>
+            )}
+
+            {/* Replay button — only when rawBody exists */}
+            {entry.rawBody && (
+              <div style={{ marginTop: '0.5rem' }}>
+                {replayStatus === 'idle' && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setReplayStatus('confirm'); }}
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      padding: '0.375rem 0.75rem',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      backgroundColor: '#fff',
+                      color: '#374151',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Replay
+                  </button>
+                )}
+                {replayStatus === 'confirm' && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem' }}>
+                    <span style={{ color: '#dc2626', fontWeight: 500 }}>
+                      This will create a real YNAB transaction. Continue?
+                    </span>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleReplay(); }}
+                      style={{
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        padding: '0.25rem 0.625rem',
+                        border: 'none',
+                        borderRadius: '6px',
+                        backgroundColor: '#dc2626',
+                        color: '#fff',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Yes, replay
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setReplayStatus('idle'); }}
+                      style={{
+                        fontSize: '0.75rem',
+                        padding: '0.25rem 0.625rem',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '6px',
+                        backgroundColor: '#fff',
+                        color: '#374151',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
+                {replayStatus === 'loading' && (
+                  <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>Replaying...</span>
+                )}
+                {replayStatus === 'success' && (
+                  <div style={{
+                    fontSize: '0.75rem',
+                    color: '#16a34a',
+                    backgroundColor: '#f0fdf4',
+                    border: '1px solid #bbf7d0',
+                    borderRadius: '6px',
+                    padding: '0.5rem 0.75rem',
+                  }}>
+                    {replayResult}
+                  </div>
+                )}
+                {replayStatus === 'error' && (
+                  <div style={{
+                    fontSize: '0.75rem',
+                    color: '#dc2626',
+                    backgroundColor: '#fef2f2',
+                    border: '1px solid #fecaca',
+                    borderRadius: '6px',
+                    padding: '0.5rem 0.75rem',
+                  }}>
+                    Replay failed: {replayResult}
+                  </div>
                 )}
               </div>
             )}
