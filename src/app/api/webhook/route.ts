@@ -10,6 +10,7 @@ import { createYnabTransaction, getCategories, findCategory } from '@/lib/ynab';
 import { sendErrorNotification } from '@/lib/notify';
 import { loadConfig, getSenderByEmail, getAccountForCurrency, notificationSuffix } from '@/lib/config';
 import { writeActivityLog } from '@/lib/activity-log';
+import { loadDbSettings } from '@/lib/settings';
 
 export async function GET() {
   return NextResponse.json({ status: 'ok' });
@@ -17,6 +18,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    await loadDbSettings();
     const config = loadConfig();
     const body = await req.json();
     const subject = body?.trigger?.event?.headers?.subject ?? null;

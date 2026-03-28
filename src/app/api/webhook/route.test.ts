@@ -52,6 +52,10 @@ vi.mock('@/lib/notify', () => ({
 
 const mockSenderInfo = { email: 'alice@example.com', name: 'Alice', accountId: 'acct-789' };
 const mockGetSenderByEmail = vi.fn().mockReturnValue(mockSenderInfo);
+vi.mock('@/lib/settings', () => ({
+  loadDbSettings: vi.fn().mockResolvedValue(undefined),
+}));
+
 vi.mock('@/lib/config', () => ({
   loadConfig: vi.fn().mockReturnValue({ senders: [mockSenderInfo], adminEmail: 'admin@test.com', currencyAccounts: {} }),
   getSenderByEmail: mockGetSenderByEmail,

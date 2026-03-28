@@ -1,8 +1,10 @@
 import SettingsForm from './SettingsForm';
+import { loadDbSettings } from '@/lib/settings';
 
 export const dynamic = 'force-dynamic';
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  await loadDbSettings();
   // Parse current SENDERS from env
   let currentSenders: Array<{ email: string; name: string; accountId: string }> = [];
   try {
@@ -39,7 +41,7 @@ export default function SettingsPage() {
         Settings
       </h1>
       <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: '0 0 1.5rem' }}>
-        View and edit all configuration. Changes are applied to Railway and take effect after a redeploy.
+        View and edit all configuration. Changes take effect immediately.
       </p>
       <SettingsForm
         currentSenders={currentSenders}

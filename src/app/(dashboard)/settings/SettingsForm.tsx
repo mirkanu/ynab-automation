@@ -450,11 +450,7 @@ export default function SettingsForm({
 
   // -- Save handler ---------------------------------------------------------
 
-  async function saveToRailway() {
-    if (!effectiveRailwayToken) return;
-    setSaveStatus('loading');
-    setSaveError('');
-
+  function buildVariables(): Record<string, string> {
     const variables: Record<string, string> = {
       SENDERS: buildSendersJson(senders),
       ADMIN_EMAIL: adminEmail.trim(),
@@ -473,19 +469,43 @@ export default function SettingsForm({
     const currencyJson = buildCurrencyJson(currencyRoutes);
     if (currencyJson !== '{}') variables.CURRENCY_ACCOUNTS = currencyJson;
 
+    return variables;
+  }
+
+  async function saveSettings() {
+    setSaveStatus('loading');
+    setSaveError('');
+
+    const variables = buildVariables();
+
     try {
-      const res = await fetch('/api/setup/apply', {
-        method: 'POST',
+      // Save to database (takes effect immediately, no restart)
+      const res = await fetch('/api/settings', {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ railwayToken: effectiveRailwayToken, variables }),
+        body: JSON.stringify({ settings: variables }),
       });
       const data = (await res.json()) as { success?: boolean; error?: string };
       if (!res.ok || data.error) {
         setSaveError(data.error ?? 'Unknown error');
         setSaveStatus('error');
-      } else {
-        setSaveStatus('success');
+        return;
       }
+
+      // Also sync to Railway env vars if token is available (for persistence across deploys)
+      if (effectiveRailwayToken) {
+        try {
+          await fetch('/api/setup/apply', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ railwayToken: effectiveRailwayToken, variables }),
+          });
+        } catch {
+          // Railway sync failure is non-fatal — DB save already succeeded
+        }
+      }
+
+      setSaveStatus('success');
     } catch (e) {
       setSaveError((e as Error).message);
       setSaveStatus('error');
@@ -780,34 +800,32 @@ export default function SettingsForm({
         </div>
       </div>
 
-      {/* Save to Railway */}
+      {/* Save */}
       <div style={S.section}>
-        <h2 style={S.sectionTitle}>Save to Railway</h2>
+        <h2 style={S.sectionTitle}>Save Settings</h2>
         <p style={S.sectionDesc}>
-          Apply the settings above to Railway. The service will redeploy automatically.
+          Changes take effect immediately — no restart required.
+          {effectiveRailwayToken
+            ? ' Settings are also synced to Railway env vars for persistence across deploys.'
+            : ' Add a Railway API token above to also persist settings across deploys.'}
         </p>
-
-        {!effectiveRailwayToken && (
-          <div style={S.error}>
-            No Railway API token set. Add one in the API Keys section above before saving.
-          </div>
-        )}
 
         <button
           style={{
             ...S.btnPrimary,
-            opacity: !effectiveRailwayToken || saveStatus === 'loading' ? 0.6 : 1,
+            opacity: saveStatus === 'loading' ? 0.6 : 1,
           }}
-          onClick={saveToRailway}
-          disabled={!effectiveRailwayToken || saveStatus === 'loading'}
+          onClick={saveSettings}
+          disabled={saveStatus === 'loading'}
         >
-          {saveStatus === 'loading' ? 'Saving...' : 'Save to Railway'}
+          {saveStatus === 'loading' ? 'Saving...' : 'Save Settings'}
         </button>
 
         {saveStatus === 'error' && <div style={S.error}>{saveError}</div>}
         {saveStatus === 'success' && (
           <div style={S.success}>
-            Settings saved successfully. The app will restart in a few seconds.
+            Settings saved — changes are live now.
+            {!effectiveRailwayToken && ' Note: add a Railway API token to persist across deploys.'}
           </div>
         )}
       </div>

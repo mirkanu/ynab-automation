@@ -7,6 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
 model ProcessedEmail {
   id          Int      @id @default(autoincrement())
   messageId   String   @unique

@@ -2,6 +2,7 @@ import { headers } from 'next/headers';
 import SetupWizard from '../setup/SetupWizard';
 import { getDashboardStats } from '@/lib/activity-log-queries';
 import CopyButton from './components/CopyButton';
+import { loadDbSettings } from '@/lib/settings';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,6 +22,7 @@ const clickableCard = {
 };
 
 export default async function DashboardPage() {
+  await loadDbSettings();
   const isConfigured = !!process.env.SENDERS;
 
   if (!isConfigured) {

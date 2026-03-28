@@ -4,8 +4,10 @@ import { parseOrderEmail } from '@/lib/claude';
 import { createYnabTransaction } from '@/lib/ynab';
 import { loadConfig, getSenderByEmail, getAccountForCurrency } from '@/lib/config';
 import { writeActivityLog } from '@/lib/activity-log';
+import { loadDbSettings } from '@/lib/settings';
 
 export async function POST(req: NextRequest) {
+  await loadDbSettings();
   const { messageId } = (await req.json()) as { messageId: string };
   if (!messageId) {
     return NextResponse.json({ error: 'messageId is required' }, { status: 400 });
