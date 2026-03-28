@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Admin Backend UI
-status: executing
-stopped_at: Completed 14-01-PLAN.md — Phase 14 Settings Editor complete
-last_updated: "2026-03-28T09:50:00.000Z"
-last_activity: 2026-03-28 — Phase 14 Settings Editor complete; settings page with 4 sections, Railway save
+status: complete
+stopped_at: Completed 15-01-PLAN.md — Phase 15 Test & Replay Tools complete. v4.0 milestone DONE.
+last_updated: "2026-03-28T13:15:00.000Z"
+last_activity: 2026-03-28 — Phase 15 Test & Replay Tools complete; tools page, parse preview, replay button
 progress:
   total_phases: 6
-  completed_phases: 5
-  total_plans: 6
-  completed_plans: 6
-  percent: 83
+  completed_phases: 6
+  total_plans: 7
+  completed_plans: 7
+  percent: 100
 ---
 
 # Amazon to YNAB Automation — Project State
@@ -23,16 +23,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-26)
 
 **Core value:** Forwarded order confirmation email -> YNAB transaction, fully automated
-**Current focus:** Phase 14 complete — Settings Editor
+**Current focus:** v4.0 milestone COMPLETE
 
 ## Current Position
 
-Phase: 14 of 15 (Settings Editor) — COMPLETE
-Plan: 14-01 complete
-Status: Phase 14 done
-Last activity: 2026-03-28 — Settings page with sender routing, currency routing, API keys, other settings, Railway save
+Phase: 15 of 15 (Test & Replay Tools) — COMPLETE
+Plan: 15-01 complete
+Status: v4.0 Admin Backend UI milestone COMPLETE
+Last activity: 2026-03-28 — Tools page with email parse preview, replay button on log rows
 
-Progress: [████████░░] 83%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -52,6 +52,7 @@ Progress: [████████░░] 83%
 | Phase 10-deployment-retirement P01 | 3 | 1 tasks | 1 files |
 | Phase 11-admin-authentication P01 | 5 | 9 files created | ~15 min |
 | Phase 14-settings-editor P01 | 4 | 4 files | ~5 min |
+| Phase 15-test-replay-tools P01 | 7 | 7 files | ~8 min |
 
 ## Accumulated Context
 
@@ -68,6 +69,8 @@ Recent decisions affecting current work:
 - [Phase 11-admin-authentication]: Simple === password comparison acceptable for internal admin tool; session stores only isLoggedIn bool
 - [Phase 14-settings-editor]: API keys use password fields with masked placeholders; blank = keep current value
 - [Phase 14-settings-editor]: Railway token entered each time (not stored) matching SetupWizard pattern
+- [Phase 15-test-replay-tools]: Replay uses replay-{messageId}-{timestamp} format to avoid unique constraint collision
+- [Phase 15-test-replay-tools]: Test parse is read-only (no YNAB transaction, no activity log entry)
 
 ### Pending Todos
 
@@ -80,6 +83,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-28T09:50:00Z
-Stopped at: Completed 14-01-PLAN.md — Phase 14 Settings Editor complete
+Last session: 2026-03-28T13:15:00Z
+Stopped at: Completed 15-01-PLAN.md — v4.0 Admin Backend UI milestone COMPLETE
 Resume file: None

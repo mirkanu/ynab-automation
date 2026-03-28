@@ -5,7 +5,7 @@
 - ✅ **v1.0** — Core pipeline: Pipedream → Claude → YNAB (2026-03-24)
 - ✅ **v2.0** — Any retailer + category tagging (2026-03-25) → [archive](.planning/milestones/v2.0-ROADMAP.md)
 - ✅ **v3.0** — Generic & publishable + setup wizard (2026-03-26) → [archive](.planning/milestones/v3.0-ROADMAP.md)
-- 🚧 **v4.0 Admin Backend UI** — Phases 10-15 (in progress)
+- ✅ **v4.0 Admin Backend UI** — Phases 10-15 (completed 2026-03-28)
 
 ## Phases
 
@@ -16,7 +16,7 @@ Phases 1-9 covered core pipeline, any-retailer support, category tagging, config
 
 </details>
 
-### 🚧 v4.0 Admin Backend UI (In Progress)
+### ✅ v4.0 Admin Backend UI (Complete)
 
 **Milestone Goal:** Password-protected admin UI for configuration, monitoring, and testing — making the app fully self-serviceable without touching environment variables or raw logs.
 
@@ -24,7 +24,7 @@ Phases 1-9 covered core pipeline, any-retailer support, category tagging, config
 - [x] **Phase 11: Admin Authentication** - Password-protected /admin routes with cookie sessions (completed 2026-03-26)
 - [ ] **Phase 12: Activity Log Infrastructure** - DB schema and write path for full pipeline logging
 - [ ] **Phase 13: Admin UI Shell + Dashboard + Log Viewer** - Shell, stats dashboard, and log viewer with filters
-- [ ] **Phase 14: Settings Editor** - In-UI editing of all env vars with Railway API sync
+- [x] **Phase 14: Settings Editor** - In-UI editing of all env vars with Railway API sync (completed 2026-03-28)
 - [ ] **Phase 15: Test & Replay Tools** - Email parse preview and logged-email replay
 
 ## Phase Details
@@ -91,7 +91,9 @@ Plans:
   3. API keys (YNAB_API_KEY, RESEND_API_KEY, RAILWAY_API_TOKEN) are editable in the UI
   4. Other env vars (ADMIN_EMAIL, NOTIFICATION_LABEL, etc.) are editable in the UI
   5. Saving settings applies the changes to Railway env vars via the API (same mechanism as setup wizard)
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [x] 14-01-PLAN.md — Settings page with editable forms for all configuration + Railway save (completed 2026-03-28)
 
 ### Phase 15: Test & Replay Tools
 **Goal**: An admin can validate Claude parsing without side effects and re-run any past email through the full pipeline
@@ -100,7 +102,9 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. Pasting email content and submitting shows the Claude parse result (retailer, amount, date) without creating a YNAB transaction
   2. Clicking replay on a log entry re-runs that email through the full pipeline and creates a real YNAB transaction
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [x] 15-01-PLAN.md — Test parse preview page + replay API and button on log rows (TEST-01, TEST-02) (completed 2026-03-28)
 
 ## Progress
 
@@ -110,5 +114,5 @@ Plans:
 | 11. Admin Authentication | v4.0 | 1/1 | Complete | 2026-03-26 |
 | 12. Activity Log Infrastructure | v4.0 | 1/1 | Complete | 2026-03-27 |
 | 13. Admin UI Shell + Dashboard + Log Viewer | v4.0 | 2/2 | Complete | 2026-03-27 |
-| 14. Settings Editor | v4.0 | 0/TBD | Not started | - |
-| 15. Test & Replay Tools | v4.0 | 0/TBD | Not started | - |
+| 14. Settings Editor | v4.0 | 1/1 | Complete | 2026-03-28 |
+| 15. Test & Replay Tools | v4.0 | 1/1 | Complete | 2026-03-28 |

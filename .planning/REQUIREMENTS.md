@@ -31,8 +31,8 @@
 - [ ] **DASH-03**: Webhook URL displayed prominently with one-click copy
 
 ## Test & Replay
-- [ ] **TEST-01**: Paste email content → preview Claude parse output (no YNAB write)
-- [ ] **TEST-02**: Replay any logged email through full pipeline (creates real YNAB transaction)
+- [x] **TEST-01**: Paste email content → preview Claude parse output (no YNAB write)
+- [x] **TEST-02**: Replay any logged email through full pipeline (creates real YNAB transaction)
 
 ## Future Requirements
 _(deferred from this milestone — none identified)_
@@ -66,5 +66,5 @@ _(deferred from this milestone — none identified)_
 | SET-03 | Phase 14 | Pending |
 | SET-04 | Phase 14 | Pending |
 | SET-05 | Phase 14 | Pending |
-| TEST-01 | Phase 15 | Pending |
-| TEST-02 | Phase 15 | Pending |
+| TEST-01 | Phase 15 | Complete |
+| TEST-02 | Phase 15 | Complete |
