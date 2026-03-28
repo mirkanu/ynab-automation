@@ -97,38 +97,38 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | — | Pending |
-| AUTH-02 | — | Pending |
-| AUTH-03 | — | Pending |
-| YNAB-01 | — | Pending |
-| YNAB-02 | — | Pending |
-| YNAB-03 | — | Pending |
-| YNAB-04 | — | Pending |
-| YNAB-05 | — | Pending |
-| EMAIL-01 | — | Pending |
-| EMAIL-02 | — | Pending |
-| EMAIL-03 | — | Pending |
-| EMAIL-04 | — | Pending |
-| EMAIL-05 | — | Pending |
-| DATA-01 | — | Pending |
-| DATA-02 | — | Pending |
-| DATA-03 | — | Pending |
-| DATA-04 | — | Pending |
-| DASH-01 | — | Pending |
-| DASH-02 | — | Pending |
-| DASH-03 | — | Pending |
-| DASH-04 | — | Pending |
-| DASH-05 | — | Pending |
-| ONBD-01 | — | Pending |
-| ONBD-02 | — | Pending |
-| ONBD-03 | — | Pending |
-| ONBD-04 | — | Pending |
+| AUTH-01 | Phase 16 | Pending |
+| AUTH-02 | Phase 16 | Pending |
+| AUTH-03 | Phase 16 | Pending |
+| DATA-01 | Phase 16 | Pending |
+| DATA-02 | Phase 16 | Pending |
+| DATA-03 | Phase 16 | Pending |
+| DATA-04 | Phase 16 | Pending |
+| YNAB-01 | Phase 17 | Pending |
+| YNAB-02 | Phase 17 | Pending |
+| YNAB-03 | Phase 17 | Pending |
+| YNAB-04 | Phase 17 | Pending |
+| YNAB-05 | Phase 17 | Pending |
+| EMAIL-01 | Phase 18 | Pending |
+| EMAIL-02 | Phase 18 | Pending |
+| EMAIL-03 | Phase 18 | Pending |
+| EMAIL-04 | Phase 18 | Pending |
+| EMAIL-05 | Phase 18 | Pending |
+| DASH-01 | Phase 19 | Pending |
+| DASH-02 | Phase 19 | Pending |
+| DASH-03 | Phase 19 | Pending |
+| DASH-04 | Phase 19 | Pending |
+| DASH-05 | Phase 19 | Pending |
+| ONBD-01 | Phase 19 | Pending |
+| ONBD-02 | Phase 19 | Pending |
+| ONBD-03 | Phase 19 | Pending |
+| ONBD-04 | Phase 19 | Pending |
 
 **Coverage:**
 - v5.0 requirements: 26 total
-- Mapped to phases: 0
-- Unmapped: 26 ⚠️
+- Mapped to phases: 26
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-28*
-*Last updated: 2026-03-28 after initial definition*
+*Last updated: 2026-03-28 — traceability filled after roadmap creation*
