@@ -248,12 +248,14 @@ function TokenField({
   masked,
   optional,
   onChange,
+  hint,
 }: {
   label: string;
   value: string;
   masked: string;
   optional?: boolean;
   onChange: (v: string) => void;
+  hint?: React.ReactNode;
 }) {
   const [mode, setMode] = useState<'display' | 'revealed' | 'editing'>('display');
   const [editValue, setEditValue] = useState('');
@@ -291,6 +293,7 @@ function TokenField({
             Cancel
           </button>
         </div>
+        {hint && <p style={S.hint}>{hint}</p>}
       </div>
     );
   }
@@ -317,6 +320,7 @@ function TokenField({
           Edit
         </button>
       </div>
+      {hint && <p style={S.hint}>{hint}</p>}
     </div>
   );
 }
@@ -640,6 +644,7 @@ export default function SettingsForm({
           value={pendingKeys.anthropicKey || currentApiKeys.anthropicKey}
           masked={maskToken(pendingKeys.anthropicKey || currentApiKeys.anthropicKey)}
           onChange={v => setPendingKeys(prev => ({ ...prev, anthropicKey: v }))}
+          hint={<>Get yours at <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noreferrer" style={{ color: '#2563eb' }}>console.anthropic.com</a></>}
         />
 
         <TokenField
@@ -650,6 +655,7 @@ export default function SettingsForm({
             setPendingKeys(prev => ({ ...prev, ynabToken: v }));
             fetchYnabData(v);
           }}
+          hint={<>Create at <a href="https://app.ynab.com/settings/developer" target="_blank" rel="noreferrer" style={{ color: '#2563eb' }}>app.ynab.com/settings/developer</a></>}
         />
 
         <TokenField
@@ -658,6 +664,7 @@ export default function SettingsForm({
           masked={maskToken(pendingKeys.resendKey || currentApiKeys.resendKey)}
           optional
           onChange={v => setPendingKeys(prev => ({ ...prev, resendKey: v }))}
+          hint={<>Get yours at <a href="https://resend.com/api-keys" target="_blank" rel="noreferrer" style={{ color: '#2563eb' }}>resend.com/api-keys</a></>}
         />
 
         <TokenField
@@ -665,13 +672,8 @@ export default function SettingsForm({
           value={pendingKeys.railwayToken || currentApiKeys.railwayToken}
           masked={maskToken(pendingKeys.railwayToken || currentApiKeys.railwayToken)}
           onChange={v => setPendingKeys(prev => ({ ...prev, railwayToken: v }))}
+          hint={<>Stored permanently for saving settings. Generate at <a href="https://railway.app/account/tokens" target="_blank" rel="noreferrer" style={{ color: '#2563eb' }}>railway.app/account/tokens</a></>}
         />
-        <p style={S.hint}>
-          Stored permanently for saving settings. Generate at{' '}
-          <a href="https://railway.app/account/tokens" target="_blank" rel="noreferrer" style={{ color: '#2563eb' }}>
-            railway.app/account/tokens
-          </a>
-        </p>
       </div>
 
       {/* Section 4: Other Settings */}
