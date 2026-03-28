@@ -127,8 +127,29 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Step 7: Create YNAB transaction
+    // Step 7: Create YNAB transaction (or skip in test mode)
     const accountId = getAccountForCurrency(config, senderInfo.accountId, parsed.currency);
+    const testMode = process.env.TEST_MODE === 'true';
+
+    if (testMode) {
+      console.log('TEST MODE — skipping YNAB transaction for', senderInfo.name);
+      await writeActivityLog({
+        messageId,
+        status: 'test',
+        sender: sender ?? undefined,
+        subject: subject ?? undefined,
+        rawBody: html || undefined,
+        parseResult: {
+          retailer: parsed.retailer,
+          amount: parsed.amount,
+          date: parsed.date,
+          currency: parsed.currency,
+          description: parsed.description,
+        },
+      });
+      return NextResponse.json({ received: true, testMode: true }, { status: 200 });
+    }
+
     try {
       const transactionId = await createYnabTransaction({
         budgetId,

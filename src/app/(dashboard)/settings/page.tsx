@@ -30,6 +30,7 @@ export default function SettingsPage() {
     adminEmail: process.env.ADMIN_EMAIL ?? '',
     inboundEmail: process.env.INBOUND_EMAIL ?? '',
     budgetId: process.env.YNAB_BUDGET_ID ?? '',
+    testMode: process.env.TEST_MODE === 'true',
   };
 
   return (

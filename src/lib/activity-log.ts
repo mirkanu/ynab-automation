@@ -2,7 +2,7 @@ import { prisma } from '@/lib/db';
 
 export interface ActivityLogEntry {
   messageId: string;
-  status: 'success' | 'parse_error' | 'ynab_error' | 'unknown_sender' | 'duplicate' | 'no_message_id';
+  status: 'success' | 'test' | 'parse_error' | 'ynab_error' | 'unknown_sender' | 'duplicate' | 'no_message_id';
   sender?: string;
   subject?: string;
   rawBody?: string;

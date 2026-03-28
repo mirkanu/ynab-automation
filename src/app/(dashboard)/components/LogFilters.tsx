@@ -5,6 +5,7 @@ import { useState } from 'react';
 const statuses = [
   { value: '', label: 'All statuses' },
   { value: 'success', label: 'Success' },
+  { value: 'test', label: 'Test Only' },
   { value: 'parse_error', label: 'Parse Error' },
   { value: 'ynab_error', label: 'YNAB Error' },
   { value: 'unknown_sender', label: 'Unknown Sender' },

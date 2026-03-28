@@ -17,6 +17,7 @@ interface LogEntry {
 
 const statusColors: Record<string, { bg: string; text: string }> = {
   success: { bg: '#dcfce7', text: '#166534' },
+  test: { bg: '#dbeafe', text: '#1e40af' },
   parse_error: { bg: '#fef2f2', text: '#991b1b' },
   ynab_error: { bg: '#fef2f2', text: '#991b1b' },
   unknown_sender: { bg: '#fefce8', text: '#854d0e' },
@@ -26,6 +27,7 @@ const statusColors: Record<string, { bg: string; text: string }> = {
 
 const statusLabels: Record<string, string> = {
   success: 'Success',
+  test: 'Test Only',
   parse_error: 'Parse Error',
   ynab_error: 'YNAB Error',
   unknown_sender: 'Unknown Sender',

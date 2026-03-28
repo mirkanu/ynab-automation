@@ -30,6 +30,7 @@ interface SettingsFormProps {
     adminEmail: string;
     inboundEmail: string;
     budgetId: string;
+    testMode: boolean;
   };
 }
 
@@ -348,6 +349,7 @@ export default function SettingsForm({
   const [adminEmail, setAdminEmail] = useState(currentOther.adminEmail);
   const [inboundEmail, setInboundEmail] = useState(currentOther.inboundEmail);
   const [budgetId, setBudgetId] = useState(currentOther.budgetId);
+  const [testMode, setTestMode] = useState(currentOther.testMode);
 
   // YNAB data for dropdowns
   const [budgets, setBudgets] = useState<YnabBudget[]>([]);
@@ -458,6 +460,7 @@ export default function SettingsForm({
       ADMIN_EMAIL: adminEmail.trim(),
       INBOUND_EMAIL: inboundEmail.trim(),
       YNAB_BUDGET_ID: budgetId.trim(),
+      TEST_MODE: testMode ? 'true' : 'false',
     };
 
     // Only include API keys if user provided a new value
@@ -680,6 +683,55 @@ export default function SettingsForm({
       <div style={S.section}>
         <h2 style={S.sectionTitle}>Other Settings</h2>
         <p style={S.sectionDesc}>General configuration for the automation.</p>
+
+        <div style={{
+          ...S.fieldRow,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0.75rem 1rem',
+          backgroundColor: testMode ? '#dbeafe' : '#f9fafb',
+          border: `1px solid ${testMode ? '#93c5fd' : '#e5e7eb'}`,
+          borderRadius: '8px',
+          marginBottom: '1rem',
+        }}>
+          <div>
+            <div style={{ fontSize: '0.875rem', fontWeight: 600, color: testMode ? '#1e40af' : '#374151' }}>
+              Test Mode
+            </div>
+            <div style={{ fontSize: '0.75rem', color: testMode ? '#1e40af' : '#6b7280', marginTop: '0.125rem' }}>
+              {testMode
+                ? 'Emails are parsed but NOT written to YNAB'
+                : 'Emails are processed and written to YNAB normally'}
+            </div>
+          </div>
+          <button
+            onClick={() => setTestMode(!testMode)}
+            style={{
+              position: 'relative' as const,
+              width: '44px',
+              height: '24px',
+              borderRadius: '12px',
+              border: 'none',
+              backgroundColor: testMode ? '#2563eb' : '#d1d5db',
+              cursor: 'pointer',
+              transition: 'background-color 0.2s',
+              flexShrink: 0,
+            }}
+          >
+            <span style={{
+              position: 'absolute' as const,
+              top: '2px',
+              left: testMode ? '22px' : '2px',
+              width: '20px',
+              height: '20px',
+              borderRadius: '50%',
+              backgroundColor: '#fff',
+              transition: 'left 0.2s',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+            }} />
+          </button>
+        </div>
 
         <div style={S.fieldRow}>
           <label style={S.label}>Admin Email</label>
