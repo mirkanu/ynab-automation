@@ -50,7 +50,13 @@ Phases 1-9 covered core pipeline, any-retailer support, category tagging, config
   3. A user can log out and is redirected to the login page
   4. No API endpoint returns another user's data — tenant isolation enforced at both app and DB (RLS) level
   5. Existing single-user data (activity log, settings) appears under the initial user account with no data loss
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 16-01-PLAN.md — Auth.js install, schema (auth models + nullable userId), signin/signout pages
+- [ ] 16-02-PLAN.md — Make userId NOT NULL, backfill existing rows to Manuel's user account
+- [ ] 16-03-PLAN.md — PostgreSQL RLS, Prisma user middleware, API route auth enforcement
+- [ ] 16-04-PLAN.md — Human verify checkpoint: magic link, session persistence, logout, isolation
 
 ### Phase 17: YNAB OAuth & Token Management
 **Goal**: Users can connect their own YNAB account via OAuth, with tokens stored encrypted and refreshed automatically
@@ -101,7 +107,7 @@ Phases 1-9 covered core pipeline, any-retailer support, category tagging, config
 | 13. Admin UI Shell + Dashboard + Log Viewer | v4.0 | 2/2 | Complete | 2026-03-27 |
 | 14. Settings Editor | v4.0 | 1/1 | Complete | 2026-03-28 |
 | 15. Test & Replay Tools | v4.0 | 1/1 | Complete | 2026-03-28 |
-| 16. User Accounts & Multi-Tenant Foundation | v5.0 | 0/? | Not started | - |
+| 16. User Accounts & Multi-Tenant Foundation | v5.0 | 0/4 | Not started | - |
 | 17. YNAB OAuth & Token Management | v5.0 | 0/? | Not started | - |
 | 18. Per-User Inbound Email | v5.0 | 0/? | Not started | - |
 | 19. Dashboard, Onboarding & Account Management | v5.0 | 0/? | Not started | - |
