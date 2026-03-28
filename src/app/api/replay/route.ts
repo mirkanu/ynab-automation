@@ -8,7 +8,7 @@ import { loadDbSettings } from '@/lib/settings';
 
 export async function POST(req: NextRequest) {
   await loadDbSettings();
-  const { messageId } = (await req.json()) as { messageId: string };
+  const { messageId, forceLive } = (await req.json()) as { messageId: string; forceLive?: boolean };
   if (!messageId) {
     return NextResponse.json({ error: 'messageId is required' }, { status: 400 });
   }
@@ -63,8 +63,26 @@ export async function POST(req: NextRequest) {
   }
 
   const accountId = getAccountForCurrency(config, senderInfo.accountId, parsed.currency);
+  const testMode = process.env.TEST_MODE === 'true' && !forceLive;
 
-  // 5. Create YNAB transaction
+  // 5. If test mode (and not force-live), skip YNAB and log as test
+  if (testMode) {
+    await writeActivityLog({
+      messageId: `replay-${messageId}-${Date.now()}`,
+      status: 'test',
+      sender: entry.sender ?? undefined,
+      subject: `REPLAY: ${entry.subject ?? ''}`,
+      rawBody: entry.rawBody,
+      parseResult: parsed,
+    });
+    return NextResponse.json({
+      success: true,
+      testMode: true,
+      parsed,
+    });
+  }
+
+  // 6. Create YNAB transaction
   try {
     const transactionId = await createYnabTransaction({
       budgetId,
@@ -76,7 +94,7 @@ export async function POST(req: NextRequest) {
       date: parsed.date,
     });
 
-    // 6. Write activity log for replay
+    // 7. Write activity log for replay
     await writeActivityLog({
       messageId: `replay-${messageId}-${Date.now()}`,
       status: 'success',

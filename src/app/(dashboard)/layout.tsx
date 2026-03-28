@@ -1,6 +1,11 @@
 import { type ReactNode } from 'react';
+import { loadDbSettings } from '@/lib/settings';
 
-export default function DashboardLayout({ children }: { children: ReactNode }) {
+export const dynamic = 'force-dynamic';
+
+export default async function DashboardLayout({ children }: { children: ReactNode }) {
+  await loadDbSettings();
+  const testMode = process.env.TEST_MODE === 'true';
   return (
     <div style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
       <header style={{
@@ -43,6 +48,27 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         <a href="/settings" style={{ color: '#374151', textDecoration: 'none' }}>Settings</a>
         <a href="/tools" style={{ color: '#374151', textDecoration: 'none' }}>Tools</a>
       </nav>
+      {testMode && (
+        <div style={{
+          backgroundColor: '#dcfce7',
+          borderBottom: '1px solid #86efac',
+          padding: '0.5rem 1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          fontSize: '0.8125rem',
+        }}>
+          <div>
+            <span style={{ fontWeight: 600, color: '#166534' }}>Test Mode</span>
+            <span style={{ color: '#166534', marginLeft: '0.375rem' }}>
+              — Emails are parsed but not written to YNAB
+            </span>
+          </div>
+          <a href="/settings" style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 500 }}>
+            Settings
+          </a>
+        </div>
+      )}
       <main style={{ padding: '1.5rem' }}>
         {children}
       </main>

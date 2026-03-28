@@ -35,31 +35,35 @@ const statusLabels: Record<string, string> = {
   no_message_id: 'No ID',
 };
 
-type ReplayStatus = 'idle' | 'confirm' | 'loading' | 'success' | 'error';
+type ReplayStatus = 'idle' | 'confirm' | 'confirm-live' | 'loading' | 'success' | 'error';
 
-export default function LogRow({ entry }: { entry: LogEntry }) {
+export default function LogRow({ entry, testMode }: { entry: LogEntry; testMode?: boolean }) {
   const [expanded, setExpanded] = useState(false);
   const [showRaw, setShowRaw] = useState(false);
   const [replayStatus, setReplayStatus] = useState<ReplayStatus>('idle');
   const [replayResult, setReplayResult] = useState('');
 
-  async function handleReplay() {
+  async function handleReplay(forceLive = false) {
     setReplayStatus('loading');
     setReplayResult('');
     try {
       const res = await fetch('/api/replay', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messageId: entry.messageId }),
+        body: JSON.stringify({ messageId: entry.messageId, forceLive }),
       });
       const data = (await res.json()) as {
         success?: boolean;
         transactionId?: string;
+        testMode?: boolean;
         error?: string;
       };
       if (!res.ok || data.error) {
         setReplayResult(data.error ?? 'Unknown error');
         setReplayStatus('error');
+      } else if (data.testMode) {
+        setReplayResult('Replayed in test mode — parsed successfully, no YNAB transaction');
+        setReplayStatus('success');
       } else {
         setReplayResult(`Transaction created: ${data.transactionId}`);
         setReplayStatus('success');
@@ -69,6 +73,8 @@ export default function LogRow({ entry }: { entry: LogEntry }) {
       setReplayStatus('error');
     }
   }
+
+  const isTestEntry = entry.status === 'test';
   const colors = statusColors[entry.status] ?? { bg: '#f3f4f6', text: '#374151' };
   const date = new Date(entry.receivedAt);
 
@@ -168,25 +174,50 @@ export default function LogRow({ entry }: { entry: LogEntry }) {
               </div>
             )}
 
-            {/* Replay button — only when rawBody exists */}
+            {/* Replay / Run live buttons — only when rawBody exists */}
             {entry.rawBody && (
               <div style={{ marginTop: '0.5rem' }}>
                 {replayStatus === 'idle' && (
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setReplayStatus('confirm'); }}
-                    style={{
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      padding: '0.375rem 0.75rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      backgroundColor: '#fff',
-                      color: '#374151',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Replay
-                  </button>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    {/* Replay: in test mode runs without YNAB, otherwise needs confirm */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (testMode) handleReplay(false);
+                        else setReplayStatus('confirm');
+                      }}
+                      style={{
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        padding: '0.375rem 0.75rem',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '6px',
+                        backgroundColor: '#fff',
+                        color: '#374151',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Replay{testMode ? ' (test)' : ''}
+                    </button>
+                    {/* Run live: for test entries, replay but force YNAB write */}
+                    {isTestEntry && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setReplayStatus('confirm-live'); }}
+                        style={{
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          padding: '0.375rem 0.75rem',
+                          border: '1px solid #d1d5db',
+                          borderRadius: '6px',
+                          backgroundColor: '#fff',
+                          color: '#2563eb',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Run live
+                      </button>
+                    )}
+                  </div>
                 )}
                 {replayStatus === 'confirm' && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem' }}>
@@ -194,16 +225,10 @@ export default function LogRow({ entry }: { entry: LogEntry }) {
                       This will create a real YNAB transaction. Continue?
                     </span>
                     <button
-                      onClick={(e) => { e.stopPropagation(); handleReplay(); }}
+                      onClick={(e) => { e.stopPropagation(); handleReplay(false); }}
                       style={{
-                        fontSize: '0.75rem',
-                        fontWeight: 600,
-                        padding: '0.25rem 0.625rem',
-                        border: 'none',
-                        borderRadius: '6px',
-                        backgroundColor: '#dc2626',
-                        color: '#fff',
-                        cursor: 'pointer',
+                        fontSize: '0.75rem', fontWeight: 600, padding: '0.25rem 0.625rem',
+                        border: 'none', borderRadius: '6px', backgroundColor: '#dc2626', color: '#fff', cursor: 'pointer',
                       }}
                     >
                       Yes, replay
@@ -211,13 +236,33 @@ export default function LogRow({ entry }: { entry: LogEntry }) {
                     <button
                       onClick={(e) => { e.stopPropagation(); setReplayStatus('idle'); }}
                       style={{
-                        fontSize: '0.75rem',
-                        padding: '0.25rem 0.625rem',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '6px',
-                        backgroundColor: '#fff',
-                        color: '#374151',
-                        cursor: 'pointer',
+                        fontSize: '0.75rem', padding: '0.25rem 0.625rem',
+                        border: '1px solid #d1d5db', borderRadius: '6px', backgroundColor: '#fff', color: '#374151', cursor: 'pointer',
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
+                {replayStatus === 'confirm-live' && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem' }}>
+                    <span style={{ color: '#dc2626', fontWeight: 500 }}>
+                      This will create a real YNAB transaction. Continue?
+                    </span>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleReplay(true); }}
+                      style={{
+                        fontSize: '0.75rem', fontWeight: 600, padding: '0.25rem 0.625rem',
+                        border: 'none', borderRadius: '6px', backgroundColor: '#2563eb', color: '#fff', cursor: 'pointer',
+                      }}
+                    >
+                      Yes, run live
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setReplayStatus('idle'); }}
+                      style={{
+                        fontSize: '0.75rem', padding: '0.25rem 0.625rem',
+                        border: '1px solid #d1d5db', borderRadius: '6px', backgroundColor: '#fff', color: '#374151', cursor: 'pointer',
                       }}
                     >
                       Cancel
@@ -229,24 +274,16 @@ export default function LogRow({ entry }: { entry: LogEntry }) {
                 )}
                 {replayStatus === 'success' && (
                   <div style={{
-                    fontSize: '0.75rem',
-                    color: '#16a34a',
-                    backgroundColor: '#f0fdf4',
-                    border: '1px solid #bbf7d0',
-                    borderRadius: '6px',
-                    padding: '0.5rem 0.75rem',
+                    fontSize: '0.75rem', color: '#16a34a', backgroundColor: '#f0fdf4',
+                    border: '1px solid #bbf7d0', borderRadius: '6px', padding: '0.5rem 0.75rem',
                   }}>
                     {replayResult}
                   </div>
                 )}
                 {replayStatus === 'error' && (
                   <div style={{
-                    fontSize: '0.75rem',
-                    color: '#dc2626',
-                    backgroundColor: '#fef2f2',
-                    border: '1px solid #fecaca',
-                    borderRadius: '6px',
-                    padding: '0.5rem 0.75rem',
+                    fontSize: '0.75rem', color: '#dc2626', backgroundColor: '#fef2f2',
+                    border: '1px solid #fecaca', borderRadius: '6px', padding: '0.5rem 0.75rem',
                   }}>
                     Replay failed: {replayResult}
                   </div>

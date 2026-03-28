@@ -1,4 +1,5 @@
 import { getActivityLogs } from '@/lib/activity-log-queries';
+import { loadDbSettings } from '@/lib/settings';
 import LogFilters from '../components/LogFilters';
 import LogRow from '../components/LogRow';
 import Pagination from '../components/Pagination';
@@ -10,6 +11,8 @@ interface Props {
 }
 
 export default async function LogsPage({ searchParams }: Props) {
+  await loadDbSettings();
+  const testMode = process.env.TEST_MODE === 'true';
   const params = await searchParams;
   const status = typeof params.status === 'string' ? params.status : undefined;
   const from = typeof params.from === 'string' ? params.from : undefined;
@@ -45,6 +48,7 @@ export default async function LogsPage({ searchParams }: Props) {
           logs.map(log => (
             <LogRow
               key={log.id}
+              testMode={testMode}
               entry={{
                 id: log.id,
                 messageId: log.messageId,

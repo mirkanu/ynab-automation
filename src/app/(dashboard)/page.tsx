@@ -29,7 +29,6 @@ export default async function DashboardPage() {
     return <SetupWizard />;
   }
 
-  const testMode = process.env.TEST_MODE === 'true';
   const stats = await getDashboardStats();
 
   const h = await headers();
@@ -49,31 +48,6 @@ export default async function DashboardPage() {
       <h1 style={{ fontSize: '1.375rem', fontWeight: 700, color: '#111827', margin: '0 0 1.25rem' }}>
         Dashboard
       </h1>
-
-      {testMode && (
-        <div style={{
-          backgroundColor: '#dbeafe',
-          border: '1px solid #93c5fd',
-          borderRadius: '8px',
-          padding: '0.75rem 1rem',
-          marginBottom: '1.25rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-          <div>
-            <span style={{ fontWeight: 600, color: '#1e40af', fontSize: '0.875rem' }}>
-              Test Mode Active
-            </span>
-            <span style={{ color: '#1e40af', fontSize: '0.8125rem', marginLeft: '0.5rem' }}>
-              — Emails are parsed but not written to YNAB
-            </span>
-          </div>
-          <a href="/settings" style={{ fontSize: '0.75rem', color: '#1e40af', fontWeight: 500 }}>
-            Settings
-          </a>
-        </div>
-      )}
 
       {/* DASH-01: This week stats — clickable to open logs with filters */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
