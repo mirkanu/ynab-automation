@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 // -- Types ------------------------------------------------------------------
 
@@ -7,7 +7,6 @@ interface Sender {
   email: string;
   name: string;
   accountId: string;
-  notificationLabel: string;
 }
 
 interface CurrencyRoute {
@@ -15,13 +14,17 @@ interface CurrencyRoute {
   accountId: string;
 }
 
+interface YnabBudget { id: string; name: string; }
+interface YnabAccount { id: string; name: string; type: string; closed: boolean; }
+
 interface SettingsFormProps {
-  currentSenders: Array<{ email: string; name: string; accountId: string; notificationLabel?: string }>;
+  currentSenders: Array<{ email: string; name: string; accountId: string }>;
   currentCurrencyAccounts: Record<string, string>;
   currentApiKeys: {
     anthropicKey: string;
     ynabToken: string;
     resendKey: string;
+    railwayToken: string;
   };
   currentOther: {
     adminEmail: string;
@@ -78,6 +81,17 @@ const S = {
     color: '#111827',
     backgroundColor: '#fff',
   },
+  select: {
+    width: '100%',
+    boxSizing: 'border-box' as const,
+    padding: '0.5rem 0.75rem',
+    fontSize: '0.875rem',
+    border: '1px solid #d1d5db',
+    borderRadius: '6px',
+    outline: 'none',
+    color: '#111827',
+    backgroundColor: '#fff',
+  },
   btnPrimary: {
     display: 'inline-block' as const,
     padding: '0.5625rem 1.25rem',
@@ -85,17 +99,6 @@ const S = {
     fontWeight: 600 as const,
     backgroundColor: '#2563eb',
     color: '#fff',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-  },
-  btnSecondary: {
-    display: 'inline-block' as const,
-    padding: '0.5625rem 1.25rem',
-    fontSize: '0.875rem',
-    fontWeight: 500 as const,
-    backgroundColor: '#f3f4f6',
-    color: '#374151',
     border: 'none',
     borderRadius: '6px',
     cursor: 'pointer',
@@ -149,39 +152,75 @@ const S = {
   fieldRow: {
     marginBottom: '0.625rem',
   },
+  memoPreview: {
+    fontSize: '0.75rem',
+    color: '#6b7280',
+    backgroundColor: '#f3f4f6',
+    borderRadius: '6px',
+    padding: '0.5rem 0.75rem',
+    marginTop: '0.75rem',
+    fontFamily: 'monospace',
+  },
+  tokenRow: {
+    display: 'flex' as const,
+    alignItems: 'center' as const,
+    gap: '0.5rem',
+  },
+  tokenDisplay: {
+    flex: 1,
+    padding: '0.5rem 0.75rem',
+    fontSize: '0.875rem',
+    fontFamily: 'monospace',
+    color: '#374151',
+    backgroundColor: '#f9fafb',
+    border: '1px solid #d1d5db',
+    borderRadius: '6px',
+    overflow: 'hidden' as const,
+    textOverflow: 'ellipsis' as const,
+    whiteSpace: 'nowrap' as const,
+  },
+  tokenBtn: {
+    fontSize: '0.75rem',
+    fontWeight: 500 as const,
+    padding: '0.5rem 0.75rem',
+    border: '1px solid #d1d5db',
+    borderRadius: '6px',
+    backgroundColor: '#fff',
+    color: '#374151',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap' as const,
+  },
 };
 
 // -- Helpers ----------------------------------------------------------------
 
 function blankSender(): Sender {
-  return { email: '', name: '', accountId: '', notificationLabel: '' };
+  return { email: '', name: '', accountId: '' };
 }
 
 function toSenderState(
-  input: Array<{ email: string; name: string; accountId: string; notificationLabel?: string }>
+  input: Array<{ email: string; name: string; accountId: string }>
 ): Sender[] {
   if (!input.length) return [blankSender()];
   return input.map(s => ({
     email: s.email,
     name: s.name,
     accountId: s.accountId,
-    notificationLabel: s.notificationLabel ?? '',
   }));
 }
 
 function toCurrencyRoutes(input: Record<string, string>): CurrencyRoute[] {
-  const entries = Object.entries(input);
-  return entries.map(([currency, accountId]) => ({ currency, accountId }));
+  return Object.entries(input).map(([currency, accountId]) => ({ currency, accountId }));
 }
 
 function buildSendersJson(senders: Sender[]): string {
   const arr = senders
     .filter(s => s.email.trim() && s.name.trim() && s.accountId.trim())
-    .map(s => {
-      const obj: Record<string, string> = { email: s.email.trim(), name: s.name.trim(), accountId: s.accountId.trim() };
-      if (s.notificationLabel.trim()) obj.notificationLabel = s.notificationLabel.trim();
-      return obj;
-    });
+    .map(s => ({
+      email: s.email.trim(),
+      name: s.name.trim(),
+      accountId: s.accountId.trim(),
+    }));
   return JSON.stringify(arr);
 }
 
@@ -195,12 +234,91 @@ function buildCurrencyJson(routes: CurrencyRoute[]): string {
   return JSON.stringify(obj);
 }
 
-// -- Mask helper for API keys -----------------------------------------------
-
-function maskKey(key: string): string {
+function maskToken(key: string): string {
   if (!key) return '';
   if (key.length <= 8) return '*'.repeat(key.length);
-  return key.slice(0, 4) + '*'.repeat(key.length - 8) + key.slice(-4);
+  return key.slice(0, 4) + '*'.repeat(Math.min(key.length - 8, 20)) + key.slice(-4);
+}
+
+// -- Token Field Component --------------------------------------------------
+
+function TokenField({
+  label,
+  value,
+  masked,
+  optional,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  masked: string;
+  optional?: boolean;
+  onChange: (v: string) => void;
+}) {
+  const [mode, setMode] = useState<'display' | 'revealed' | 'editing'>('display');
+  const [editValue, setEditValue] = useState('');
+
+  if (mode === 'editing') {
+    return (
+      <div style={S.fieldRow}>
+        <label style={S.label}>
+          {label}
+          {optional && <span style={{ fontWeight: 400, color: '#9ca3af' }}> (optional)</span>}
+        </label>
+        <div style={S.tokenRow}>
+          <input
+            style={{ ...S.input, flex: 1 }}
+            type="text"
+            placeholder="Paste new value"
+            value={editValue}
+            onChange={e => setEditValue(e.target.value)}
+            autoFocus
+          />
+          <button
+            style={S.tokenBtn}
+            onClick={() => {
+              if (editValue.trim()) onChange(editValue.trim());
+              setEditValue('');
+              setMode('display');
+            }}
+          >
+            Save
+          </button>
+          <button
+            style={S.tokenBtn}
+            onClick={() => { setEditValue(''); setMode('display'); }}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={S.fieldRow}>
+      <label style={S.label}>
+        {label}
+        {optional && <span style={{ fontWeight: 400, color: '#9ca3af' }}> (optional)</span>}
+      </label>
+      <div style={S.tokenRow}>
+        <div style={S.tokenDisplay}>
+          {value ? (mode === 'revealed' ? value : masked) : <span style={{ color: '#9ca3af' }}>Not set</span>}
+        </div>
+        {value && (
+          <button
+            style={S.tokenBtn}
+            onClick={() => setMode(mode === 'revealed' ? 'display' : 'revealed')}
+          >
+            {mode === 'revealed' ? 'Hide' : 'Show'}
+          </button>
+        )}
+        <button style={S.tokenBtn} onClick={() => { setEditValue(''); setMode('editing'); }}>
+          Edit
+        </button>
+      </div>
+    </div>
+  );
 }
 
 // -- Component --------------------------------------------------------------
@@ -219,20 +337,86 @@ export default function SettingsForm({
     toCurrencyRoutes(currentCurrencyAccounts)
   );
 
-  // API keys state (start with masked placeholders; user types new value to replace)
-  const [anthropicKey, setAnthropicKey] = useState('');
-  const [ynabToken, setYnabToken] = useState('');
-  const [resendKey, setResendKey] = useState('');
+  // API keys state — store pending edits only (empty = keep current)
+  const [pendingKeys, setPendingKeys] = useState<Record<string, string>>({});
 
   // Other settings state
   const [adminEmail, setAdminEmail] = useState(currentOther.adminEmail);
   const [inboundEmail, setInboundEmail] = useState(currentOther.inboundEmail);
   const [budgetId, setBudgetId] = useState(currentOther.budgetId);
 
+  // YNAB data for dropdowns
+  const [budgets, setBudgets] = useState<YnabBudget[]>([]);
+  const [accounts, setAccounts] = useState<YnabAccount[]>([]);
+  const [ynabLoading, setYnabLoading] = useState(false);
+  const [ynabError, setYnabError] = useState('');
+
   // Save state
-  const [railwayToken, setRailwayToken] = useState('');
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [saveError, setSaveError] = useState('');
+
+  // The effective YNAB token (pending edit or current)
+  const effectiveYnabToken = pendingKeys.ynabToken || currentApiKeys.ynabToken;
+  // The effective Railway token (pending edit or current)
+  const effectiveRailwayToken = pendingKeys.railwayToken || currentApiKeys.railwayToken;
+
+  // -- YNAB API (fetch budgets + accounts) ----------------------------------
+
+  const fetchYnabData = useCallback(async (token: string) => {
+    if (!token) return;
+    setYnabLoading(true);
+    setYnabError('');
+    try {
+      // Fetch budgets
+      const budgetRes = await fetch('https://api.youneedabudget.com/v1/budgets', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!budgetRes.ok) throw new Error(`YNAB returned ${budgetRes.status} — check your token`);
+      const budgetJson = await budgetRes.json() as { data: { budgets: YnabBudget[] } };
+      setBudgets(budgetJson.data.budgets);
+
+      // Fetch accounts for the current budget
+      const bid = budgetId || budgetJson.data.budgets[0]?.id;
+      if (bid) {
+        const acctRes = await fetch(`https://api.youneedabudget.com/v1/budgets/${bid}/accounts`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (acctRes.ok) {
+          const acctJson = await acctRes.json() as { data: { accounts: YnabAccount[] } };
+          setAccounts(acctJson.data.accounts.filter(a => !a.closed && a.type !== 'tracking'));
+        }
+      }
+    } catch (e) {
+      setYnabError((e as Error).message);
+    } finally {
+      setYnabLoading(false);
+    }
+  }, [budgetId]);
+
+  // Auto-fetch YNAB data on mount if we have a token
+  useEffect(() => {
+    if (effectiveYnabToken) fetchYnabData(effectiveYnabToken);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function handleBudgetChange(newBudgetId: string) {
+    setBudgetId(newBudgetId);
+    if (!newBudgetId || !effectiveYnabToken) return;
+    try {
+      const res = await fetch(`https://api.youneedabudget.com/v1/budgets/${newBudgetId}/accounts`, {
+        headers: { Authorization: `Bearer ${effectiveYnabToken}` },
+      });
+      if (res.ok) {
+        const json = await res.json() as { data: { accounts: YnabAccount[] } };
+        setAccounts(json.data.accounts.filter(a => !a.closed && a.type !== 'tracking'));
+      }
+    } catch { /* ignore */ }
+  }
+
+  // Helper: get account name from ID
+  function accountName(id: string): string {
+    const acct = accounts.find(a => a.id === id);
+    return acct ? acct.name : '';
+  }
 
   // -- Sender helpers -------------------------------------------------------
 
@@ -261,6 +445,7 @@ export default function SettingsForm({
   // -- Save handler ---------------------------------------------------------
 
   async function saveToRailway() {
+    if (!effectiveRailwayToken) return;
     setSaveStatus('loading');
     setSaveError('');
 
@@ -271,10 +456,11 @@ export default function SettingsForm({
       YNAB_BUDGET_ID: budgetId.trim(),
     };
 
-    // Only include API keys if user typed a new value
-    if (anthropicKey.trim()) variables.ANTHROPIC_API_KEY = anthropicKey.trim();
-    if (ynabToken.trim()) variables.YNAB_PERSONAL_ACCESS_TOKEN = ynabToken.trim();
-    if (resendKey.trim()) variables.RESEND_API_KEY = resendKey.trim();
+    // Only include API keys if user provided a new value
+    if (pendingKeys.anthropicKey) variables.ANTHROPIC_API_KEY = pendingKeys.anthropicKey;
+    if (pendingKeys.ynabToken) variables.YNAB_PERSONAL_ACCESS_TOKEN = pendingKeys.ynabToken;
+    if (pendingKeys.resendKey) variables.RESEND_API_KEY = pendingKeys.resendKey;
+    if (pendingKeys.railwayToken) variables.RAILWAY_API_TOKEN = pendingKeys.railwayToken;
 
     // Currency accounts
     const currencyJson = buildCurrencyJson(currencyRoutes);
@@ -284,7 +470,7 @@ export default function SettingsForm({
       const res = await fetch('/api/setup/apply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ railwayToken, variables }),
+        body: JSON.stringify({ railwayToken: effectiveRailwayToken, variables }),
       });
       const data = (await res.json()) as { success?: boolean; error?: string };
       if (!res.ok || data.error) {
@@ -303,6 +489,14 @@ export default function SettingsForm({
 
   return (
     <div>
+      {/* YNAB connection status */}
+      {ynabLoading && (
+        <div style={{ ...S.section, padding: '0.75rem 1rem', fontSize: '0.8125rem', color: '#6b7280' }}>
+          Loading YNAB budgets and accounts...
+        </div>
+      )}
+      {ynabError && <div style={{ ...S.error, marginBottom: '1rem' }}>YNAB: {ynabError}</div>}
+
       {/* Section 1: Sender Routing */}
       <div style={S.section}>
         <h2 style={S.sectionTitle}>Sender Routing</h2>
@@ -343,34 +537,39 @@ export default function SettingsForm({
                 value={s.name}
                 onChange={e => updateSender(i, 'name', e.target.value)}
               />
+              <p style={S.hint}>Used in error notifications and YNAB memo</p>
             </div>
 
             <div style={S.fieldRow}>
-              <label style={S.label}>YNAB Account ID</label>
-              <input
-                style={S.input}
-                type="text"
-                placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                value={s.accountId}
-                onChange={e => updateSender(i, 'accountId', e.target.value)}
-              />
+              <label style={S.label}>YNAB Account</label>
+              {accounts.length > 0 ? (
+                <select
+                  style={S.select}
+                  value={s.accountId}
+                  onChange={e => updateSender(i, 'accountId', e.target.value)}
+                >
+                  <option value="">— select account —</option>
+                  {accounts.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+                </select>
+              ) : (
+                <input
+                  style={S.input}
+                  type="text"
+                  placeholder="Account ID (connect YNAB above for dropdown)"
+                  value={s.accountId}
+                  onChange={e => updateSender(i, 'accountId', e.target.value)}
+                />
+              )}
             </div>
 
-            <div>
-              <label style={S.label}>
-                Notification label{' '}
-                <span style={{ fontWeight: 400, color: '#9ca3af' }}>(optional)</span>
-              </label>
-              <input
-                style={S.input}
-                type="text"
-                placeholder="Alice"
-                value={s.notificationLabel}
-                onChange={e => updateSender(i, 'notificationLabel', e.target.value)}
-              />
-              <p style={S.hint}>
-                Appended to error notification subjects, e.g. &quot;failed to parse order email (Alice)&quot;
-              </p>
+            {/* Memo preview */}
+            <div style={S.memoPreview}>
+              YNAB memo: {s.name || '(name)'}: (item description) - Automatically added from email
+              {s.accountId && accountName(s.accountId) && (
+                <span style={{ display: 'block', marginTop: '0.25rem', color: '#9ca3af' }}>
+                  Account: {accountName(s.accountId)}
+                </span>
+              )}
             </div>
           </div>
         ))}
@@ -398,12 +597,23 @@ export default function SettingsForm({
               value={r.currency}
               onChange={e => updateCurrencyRoute(i, 'currency', e.target.value)}
             />
-            <input
-              style={S.input}
-              placeholder="YNAB Account ID"
-              value={r.accountId}
-              onChange={e => updateCurrencyRoute(i, 'accountId', e.target.value)}
-            />
+            {accounts.length > 0 ? (
+              <select
+                style={S.select}
+                value={r.accountId}
+                onChange={e => updateCurrencyRoute(i, 'accountId', e.target.value)}
+              >
+                <option value="">— select account —</option>
+                {accounts.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+              </select>
+            ) : (
+              <input
+                style={S.input}
+                placeholder="Account ID"
+                value={r.accountId}
+                onChange={e => updateCurrencyRoute(i, 'accountId', e.target.value)}
+              />
+            )}
             <button
               style={{ ...S.btnDanger, flexShrink: 0 }}
               onClick={() => removeCurrencyRoute(i)}
@@ -418,48 +628,50 @@ export default function SettingsForm({
         </button>
       </div>
 
-      {/* Section 3: API Keys */}
+      {/* Section 3: API Keys & Tokens */}
       <div style={S.section}>
-        <h2 style={S.sectionTitle}>API Keys</h2>
+        <h2 style={S.sectionTitle}>API Keys &amp; Tokens</h2>
         <p style={S.sectionDesc}>
-          Leave a field blank to keep the current value. Enter a new value to replace it.
+          Tokens are stored securely as Railway environment variables. Click Edit to change a value.
         </p>
 
-        <div style={S.fieldRow}>
-          <label style={S.label}>Anthropic API Key</label>
-          <input
-            style={S.input}
-            type="password"
-            placeholder={currentApiKeys.anthropicKey ? maskKey(currentApiKeys.anthropicKey) : 'sk-ant-...'}
-            value={anthropicKey}
-            onChange={e => setAnthropicKey(e.target.value)}
-          />
-        </div>
+        <TokenField
+          label="Anthropic API Key"
+          value={pendingKeys.anthropicKey || currentApiKeys.anthropicKey}
+          masked={maskToken(pendingKeys.anthropicKey || currentApiKeys.anthropicKey)}
+          onChange={v => setPendingKeys(prev => ({ ...prev, anthropicKey: v }))}
+        />
 
-        <div style={S.fieldRow}>
-          <label style={S.label}>YNAB Personal Access Token</label>
-          <input
-            style={S.input}
-            type="password"
-            placeholder={currentApiKeys.ynabToken ? maskKey(currentApiKeys.ynabToken) : 'Paste token'}
-            value={ynabToken}
-            onChange={e => setYnabToken(e.target.value)}
-          />
-        </div>
+        <TokenField
+          label="YNAB Personal Access Token"
+          value={pendingKeys.ynabToken || currentApiKeys.ynabToken}
+          masked={maskToken(pendingKeys.ynabToken || currentApiKeys.ynabToken)}
+          onChange={v => {
+            setPendingKeys(prev => ({ ...prev, ynabToken: v }));
+            fetchYnabData(v);
+          }}
+        />
 
-        <div style={S.fieldRow}>
-          <label style={S.label}>
-            Resend API Key{' '}
-            <span style={{ fontWeight: 400, color: '#9ca3af' }}>(optional)</span>
-          </label>
-          <input
-            style={S.input}
-            type="password"
-            placeholder={currentApiKeys.resendKey ? maskKey(currentApiKeys.resendKey) : 're_...'}
-            value={resendKey}
-            onChange={e => setResendKey(e.target.value)}
-          />
-        </div>
+        <TokenField
+          label="Resend API Key"
+          value={pendingKeys.resendKey || currentApiKeys.resendKey}
+          masked={maskToken(pendingKeys.resendKey || currentApiKeys.resendKey)}
+          optional
+          onChange={v => setPendingKeys(prev => ({ ...prev, resendKey: v }))}
+        />
+
+        <TokenField
+          label="Railway API Token"
+          value={pendingKeys.railwayToken || currentApiKeys.railwayToken}
+          masked={maskToken(pendingKeys.railwayToken || currentApiKeys.railwayToken)}
+          onChange={v => setPendingKeys(prev => ({ ...prev, railwayToken: v }))}
+        />
+        <p style={S.hint}>
+          Stored permanently for saving settings. Generate at{' '}
+          <a href="https://railway.app/account/tokens" target="_blank" rel="noreferrer" style={{ color: '#2563eb' }}>
+            railway.app/account/tokens
+          </a>
+        </p>
       </div>
 
       {/* Section 4: Other Settings */}
@@ -492,14 +704,25 @@ export default function SettingsForm({
         </div>
 
         <div style={S.fieldRow}>
-          <label style={S.label}>YNAB Budget ID</label>
-          <input
-            style={S.input}
-            type="text"
-            placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-            value={budgetId}
-            onChange={e => setBudgetId(e.target.value)}
-          />
+          <label style={S.label}>YNAB Budget</label>
+          {budgets.length > 0 ? (
+            <select
+              style={S.select}
+              value={budgetId}
+              onChange={e => handleBudgetChange(e.target.value)}
+            >
+              <option value="">— select budget —</option>
+              {budgets.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+            </select>
+          ) : (
+            <input
+              style={S.input}
+              type="text"
+              placeholder="Budget ID (connect YNAB above for dropdown)"
+              value={budgetId}
+              onChange={e => setBudgetId(e.target.value)}
+            />
+          )}
         </div>
       </div>
 
@@ -507,43 +730,22 @@ export default function SettingsForm({
       <div style={S.section}>
         <h2 style={S.sectionTitle}>Save to Railway</h2>
         <p style={S.sectionDesc}>
-          Enter your Railway API token to apply the settings above. The token is not stored — you enter it each time.
-          Railway will redeploy the service automatically after saving.
+          Apply the settings above to Railway. The service will redeploy automatically.
         </p>
 
-        <div style={{ marginBottom: '1rem' }}>
-          <label style={S.label}>Railway API Token</label>
-          <input
-            style={S.input}
-            type="password"
-            placeholder="Paste your Railway API token"
-            value={railwayToken}
-            onChange={e => {
-              setRailwayToken(e.target.value);
-              setSaveStatus('idle');
-              setSaveError('');
-            }}
-          />
-          <p style={S.hint}>
-            Generate at{' '}
-            <a
-              href="https://railway.app/account/tokens"
-              target="_blank"
-              rel="noreferrer"
-              style={{ color: '#2563eb' }}
-            >
-              railway.app/account/tokens
-            </a>
-          </p>
-        </div>
+        {!effectiveRailwayToken && (
+          <div style={S.error}>
+            No Railway API token set. Add one in the API Keys section above before saving.
+          </div>
+        )}
 
         <button
           style={{
             ...S.btnPrimary,
-            opacity: !railwayToken.trim() || saveStatus === 'loading' ? 0.6 : 1,
+            opacity: !effectiveRailwayToken || saveStatus === 'loading' ? 0.6 : 1,
           }}
           onClick={saveToRailway}
-          disabled={!railwayToken.trim() || saveStatus === 'loading'}
+          disabled={!effectiveRailwayToken || saveStatus === 'loading'}
         >
           {saveStatus === 'loading' ? 'Saving...' : 'Save to Railway'}
         </button>

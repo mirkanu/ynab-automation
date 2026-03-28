@@ -2,7 +2,7 @@ export interface SenderConfig {
   email: string;
   name: string;
   accountId: string;
-  notificationLabel?: string;
+  notificationLabel?: string; // deprecated — name is used instead; kept for backwards compat
 }
 
 export interface AppConfig {
@@ -61,5 +61,6 @@ export function getAccountForCurrency(
 }
 
 export function notificationSuffix(sender: SenderConfig): string {
-  return sender.notificationLabel ? ` (${sender.notificationLabel})` : '';
+  const label = sender.notificationLabel || sender.name;
+  return label ? ` (${label})` : '';
 }

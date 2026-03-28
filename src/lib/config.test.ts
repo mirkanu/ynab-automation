@@ -198,12 +198,12 @@ describe('notificationSuffix', () => {
     expect(notificationSuffix(sender)).toBe(' (Alice)');
   });
 
-  it('returns "" when notificationLabel is not set', () => {
+  it('falls back to name when notificationLabel is not set', () => {
     const sender: SenderConfig = {
       email: 'bob@example.com',
       name: 'Bob',
       accountId: 'acc-bob',
     };
-    expect(notificationSuffix(sender)).toBe('');
+    expect(notificationSuffix(sender)).toBe(' (Bob)');
   });
 });

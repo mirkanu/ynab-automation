@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic';
 
 export default function SettingsPage() {
   // Parse current SENDERS from env
-  let currentSenders: Array<{ email: string; name: string; accountId: string; notificationLabel?: string }> = [];
+  let currentSenders: Array<{ email: string; name: string; accountId: string }> = [];
   try {
     currentSenders = JSON.parse(process.env.SENDERS ?? '[]');
   } catch {
@@ -23,6 +23,7 @@ export default function SettingsPage() {
     anthropicKey: process.env.ANTHROPIC_API_KEY ?? '',
     ynabToken: process.env.YNAB_PERSONAL_ACCESS_TOKEN ?? '',
     resendKey: process.env.RESEND_API_KEY ?? '',
+    railwayToken: process.env.RAILWAY_API_TOKEN ?? '',
   };
 
   const currentOther = {
