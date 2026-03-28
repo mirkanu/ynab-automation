@@ -40,6 +40,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       }}>
         <a href="/" style={{ color: '#374151', textDecoration: 'none' }}>Dashboard</a>
         <a href="/logs" style={{ color: '#374151', textDecoration: 'none' }}>Activity Log</a>
+        <a href="/settings" style={{ color: '#374151', textDecoration: 'none' }}>Settings</a>
       </nav>
       <main style={{ padding: '1.5rem' }}>
         {children}
