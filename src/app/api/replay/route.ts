@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { parseOrderEmail } from '@/lib/claude';
-import { createYnabTransaction } from '@/lib/ynab';
+import { createYnabTransaction, getAccountName } from '@/lib/ynab';
 import { loadConfig, getSenderByEmail, getAccountForCurrency } from '@/lib/config';
 import { writeActivityLog } from '@/lib/activity-log';
 import { loadDbSettings } from '@/lib/settings';
@@ -66,6 +66,7 @@ export async function POST(req: NextRequest) {
   const testMode = process.env.TEST_MODE === 'true' && !forceLive;
 
   const memo = `${senderInfo.name}: ${parsed.description} - Automatically added from email`;
+  const accountName = await getAccountName(budgetId, accountId);
 
   // 5. If test mode (and not force-live), skip YNAB and log as test
   if (testMode) {
@@ -80,6 +81,7 @@ export async function POST(req: NextRequest) {
         transactionId: '(test — not created)',
         amount: Math.round(parsed.amount * 1000) * -1,
         accountId,
+        accountName,
         payeeName: parsed.retailer,
         memo,
         date: parsed.date,
@@ -116,6 +118,7 @@ export async function POST(req: NextRequest) {
         transactionId,
         amount: Math.round(parsed.amount * 1000) * -1,
         accountId,
+        accountName,
         payeeName: parsed.retailer,
         memo,
         date: parsed.date,

@@ -6,7 +6,7 @@ import {
   extractCategoryHint,
 } from '@/lib/email';
 import { parseOrderEmail } from '@/lib/claude';
-import { createYnabTransaction, getCategories, findCategory } from '@/lib/ynab';
+import { createYnabTransaction, getCategories, findCategory, getAccountName } from '@/lib/ynab';
 import { sendErrorNotification } from '@/lib/notify';
 import { loadConfig, getSenderByEmail, getAccountForCurrency, notificationSuffix } from '@/lib/config';
 import { writeActivityLog } from '@/lib/activity-log';
@@ -117,12 +117,14 @@ export async function POST(req: NextRequest) {
     // Step 6b: Resolve category hint to YNAB category ID (if hint was present)
     const budgetId = process.env.YNAB_BUDGET_ID ?? '';
     let categoryId: string | undefined;
+    let categoryName: string | undefined;
     if (categoryHint) {
       try {
         const categories = await getCategories(budgetId);
         const matched = findCategory(categories, categoryHint);
         if (matched) {
           categoryId = matched.id;
+          categoryName = matched.name;
         }
       } catch (err) {
         console.error('getCategories failed, continuing without category:', err);
@@ -134,6 +136,7 @@ export async function POST(req: NextRequest) {
     const testMode = process.env.TEST_MODE === 'true';
 
     const memo = `${senderInfo.name}: ${parsed.description} - Automatically added from email`;
+    const accountName = await getAccountName(budgetId, accountId);
 
     if (testMode) {
       console.log('TEST MODE — skipping YNAB transaction for', senderInfo.name);
@@ -154,9 +157,11 @@ export async function POST(req: NextRequest) {
           transactionId: '(test — not created)',
           amount: Math.round(parsed.amount * 1000) * -1,
           accountId,
+          accountName,
           payeeName: parsed.retailer,
           memo,
           categoryId: categoryId ?? null,
+          categoryName: categoryName ?? null,
           date: parsed.date,
         },
       });
@@ -192,9 +197,11 @@ export async function POST(req: NextRequest) {
           transactionId,
           amount: Math.round(parsed.amount * 1000) * -1,
           accountId,
+          accountName,
           payeeName: parsed.retailer,
           memo,
           categoryId: categoryId ?? null,
+          categoryName: categoryName ?? null,
           date: parsed.date,
         },
       });

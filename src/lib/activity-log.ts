@@ -17,10 +17,12 @@ export interface ActivityLogEntry {
     transactionId: string;
     amount: number;
     accountId: string;
+    accountName?: string;
     payeeName: string;
     date: string;
     memo?: string;
     categoryId?: string | null;
+    categoryName?: string | null;
   };
   errorType?: string;
   errorMessage?: string;

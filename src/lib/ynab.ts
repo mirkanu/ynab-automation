@@ -78,6 +78,22 @@ export function findCategory(categories: YnabCategory[], hint: string): YnabCate
   return categories.find((c) => c.name.toLowerCase().includes(lower)) ?? null;
 }
 
+/**
+ * Looks up an account name by ID. Returns the ID if lookup fails.
+ */
+export async function getAccountName(budgetId: string, accountId: string): Promise<string> {
+  try {
+    const res = await fetch(`https://api.youneedabudget.com/v1/budgets/${budgetId}/accounts/${accountId}`, {
+      headers: { 'Authorization': `Bearer ${process.env.YNAB_PERSONAL_ACCESS_TOKEN}` },
+    });
+    if (!res.ok) return accountId;
+    const data = await res.json() as { data: { account: { name: string } } };
+    return data.data.account.name;
+  } catch {
+    return accountId;
+  }
+}
+
 export async function createYnabTransaction(
   params: YnabTransactionParams,
 ): Promise<string> {

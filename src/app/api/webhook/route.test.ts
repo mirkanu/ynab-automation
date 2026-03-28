@@ -44,6 +44,7 @@ vi.mock('@/lib/ynab', () => ({
   createYnabTransaction: mockCreateYnabTransaction,
   getCategories: vi.fn().mockResolvedValue([]),
   findCategory: vi.fn().mockReturnValue(null),
+  getAccountName: vi.fn().mockResolvedValue('UK Current'),
 }));
 
 vi.mock('@/lib/notify', () => ({

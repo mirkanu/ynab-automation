@@ -134,16 +134,16 @@ export default function LogRow({ entry, testMode }: { entry: LogEntry; testMode?
             {entry.ynabResult && (() => {
               const yr = entry.ynabResult;
               const memo = yr.memo ? String(yr.memo) : '';
-              const account = yr.accountId ? String(yr.accountId) : '';
+              const accountDisplay = yr.accountName ? String(yr.accountName) : (yr.accountId ? String(yr.accountId) : '');
               const payee = yr.payeeName ? String(yr.payeeName) : '';
-              const catId = yr.categoryId ? String(yr.categoryId) : '';
+              const categoryDisplay = yr.categoryName ? String(yr.categoryName) : '';
               const txnId = yr.transactionId ? String(yr.transactionId) : '';
               return (
                 <Section label={entry.status === 'test' ? 'YNAB Entry (simulated)' : 'YNAB Entry'}>
                   {memo && <KV label="Memo" value={memo} />}
-                  {account && <KV label="Account" value={account} />}
+                  {accountDisplay && <KV label="Account" value={accountDisplay} />}
                   {payee && <KV label="Payee" value={payee} />}
-                  {catId && catId !== 'null' && <KV label="Category" value={catId} />}
+                  <KV label="Category" value={categoryDisplay || '(empty)'} />
                   {entry.status !== 'test' && txnId && <KV label="Transaction ID" value={txnId} />}
                 </Section>
               );
