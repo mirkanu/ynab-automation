@@ -131,14 +131,23 @@ export default function LogRow({ entry, testMode }: { entry: LogEntry; testMode?
               </Section>
             )}
 
-            {entry.ynabResult && (
-              <Section label="YNAB Result">
-                <KV label="Transaction ID" value={String(entry.ynabResult.transactionId ?? '')} />
-                <KV label="Amount" value={`${entry.ynabResult.amount} milliunits`} />
-                <KV label="Account" value={String(entry.ynabResult.accountId ?? '')} />
-                <KV label="Payee" value={String(entry.ynabResult.payeeName ?? '')} />
-              </Section>
-            )}
+            {entry.ynabResult && (() => {
+              const yr = entry.ynabResult;
+              const memo = yr.memo ? String(yr.memo) : '';
+              const account = yr.accountId ? String(yr.accountId) : '';
+              const payee = yr.payeeName ? String(yr.payeeName) : '';
+              const catId = yr.categoryId ? String(yr.categoryId) : '';
+              const txnId = yr.transactionId ? String(yr.transactionId) : '';
+              return (
+                <Section label={entry.status === 'test' ? 'YNAB Entry (simulated)' : 'YNAB Entry'}>
+                  {memo && <KV label="Memo" value={memo} />}
+                  {account && <KV label="Account" value={account} />}
+                  {payee && <KV label="Payee" value={payee} />}
+                  {catId && catId !== 'null' && <KV label="Category" value={catId} />}
+                  {entry.status !== 'test' && txnId && <KV label="Transaction ID" value={txnId} />}
+                </Section>
+              );
+            })()}
 
             {(entry.errorType || entry.errorMessage) && (
               <Section label="Error">

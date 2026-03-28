@@ -19,6 +19,8 @@ export interface ActivityLogEntry {
     accountId: string;
     payeeName: string;
     date: string;
+    memo?: string;
+    categoryId?: string | null;
   };
   errorType?: string;
   errorMessage?: string;

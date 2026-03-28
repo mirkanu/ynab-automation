@@ -133,6 +133,8 @@ export async function POST(req: NextRequest) {
     const accountId = getAccountForCurrency(config, senderInfo.accountId, parsed.currency);
     const testMode = process.env.TEST_MODE === 'true';
 
+    const memo = `${senderInfo.name}: ${parsed.description} - Automatically added from email`;
+
     if (testMode) {
       console.log('TEST MODE — skipping YNAB transaction for', senderInfo.name);
       await writeActivityLog({
@@ -147,6 +149,15 @@ export async function POST(req: NextRequest) {
           date: parsed.date,
           currency: parsed.currency,
           description: parsed.description,
+        },
+        ynabResult: {
+          transactionId: '(test — not created)',
+          amount: Math.round(parsed.amount * 1000) * -1,
+          accountId,
+          payeeName: parsed.retailer,
+          memo,
+          categoryId: categoryId ?? null,
+          date: parsed.date,
         },
       });
       return NextResponse.json({ received: true, testMode: true }, { status: 200 });
@@ -182,6 +193,8 @@ export async function POST(req: NextRequest) {
           amount: Math.round(parsed.amount * 1000) * -1,
           accountId,
           payeeName: parsed.retailer,
+          memo,
+          categoryId: categoryId ?? null,
           date: parsed.date,
         },
       });

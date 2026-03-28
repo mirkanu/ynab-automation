@@ -65,6 +65,8 @@ export async function POST(req: NextRequest) {
   const accountId = getAccountForCurrency(config, senderInfo.accountId, parsed.currency);
   const testMode = process.env.TEST_MODE === 'true' && !forceLive;
 
+  const memo = `${senderInfo.name}: ${parsed.description} - Automatically added from email`;
+
   // 5. If test mode (and not force-live), skip YNAB and log as test
   if (testMode) {
     await writeActivityLog({
@@ -74,6 +76,14 @@ export async function POST(req: NextRequest) {
       subject: `REPLAY: ${entry.subject ?? ''}`,
       rawBody: entry.rawBody,
       parseResult: parsed,
+      ynabResult: {
+        transactionId: '(test — not created)',
+        amount: Math.round(parsed.amount * 1000) * -1,
+        accountId,
+        payeeName: parsed.retailer,
+        memo,
+        date: parsed.date,
+      },
     });
     return NextResponse.json({
       success: true,
@@ -107,6 +117,7 @@ export async function POST(req: NextRequest) {
         amount: Math.round(parsed.amount * 1000) * -1,
         accountId,
         payeeName: parsed.retailer,
+        memo,
         date: parsed.date,
       },
     });
