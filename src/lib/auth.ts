@@ -13,6 +13,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   session: { strategy: 'database' },
   callbacks: {
+    authorized({ auth: sessionData }) {
+      // Middleware: allow access only if session exists
+      return !!sessionData
+    },
     session({ session, user }) {
       // With database strategy, user object (not token) is provided
       if (session.user && user) {
