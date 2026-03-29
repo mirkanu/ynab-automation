@@ -68,7 +68,15 @@ Plans:
   3. User can disconnect YNAB (tokens revoked, connection status shows as disconnected)
   4. YNAB API calls succeed after token expiry without the user re-authenticating (auto-refresh)
   5. YNAB tokens are not visible in plaintext in the database (encrypted at rest)
-**Plans**: TBD
+**Plans**: 6 plans
+
+Plans:
+- [ ] 17-01-PLAN.md — AES-256-GCM crypto module + Prisma schema migration (token management fields)
+- [ ] 17-02-PLAN.md — Wave 0 test scaffolds for YNAB-01, YNAB-03, YNAB-04, YNAB-05
+- [ ] 17-03-PLAN.md — OAuth authorize + callback routes (YNAB consent flow, encrypted token storage)
+- [ ] 17-04-PLAN.md — getValidYnabToken with proactive refresh + mutex; migrate ynab.ts to per-user tokens; disconnect route
+- [ ] 17-05-PLAN.md — Budget/account selection API routes + settings page UI with connect/disconnect
+- [ ] 17-06-PLAN.md — Human verify checkpoint: full OAuth flow, encrypted DB tokens, budget selection, disconnect
 
 ### Phase 18: Per-User Inbound Email
 **Goal**: Every user has a unique forwarding address; forwarded emails are routed to the correct user and create YNAB transactions in their account
@@ -107,7 +115,7 @@ Plans:
 | 13. Admin UI Shell + Dashboard + Log Viewer | v4.0 | 2/2 | Complete | 2026-03-27 |
 | 14. Settings Editor | v4.0 | 1/1 | Complete | 2026-03-28 |
 | 15. Test & Replay Tools | v4.0 | 1/1 | Complete | 2026-03-28 |
-| 16. User Accounts & Multi-Tenant Foundation | 4/4 | Complete    | 2026-03-29 | - |
-| 17. YNAB OAuth & Token Management | v5.0 | 0/? | Not started | - |
+| 16. User Accounts & Multi-Tenant Foundation | v5.0 | 4/4 | Complete | 2026-03-29 |
+| 17. YNAB OAuth & Token Management | v5.0 | 0/6 | Not started | - |
 | 18. Per-User Inbound Email | v5.0 | 0/? | Not started | - |
 | 19. Dashboard, Onboarding & Account Management | v5.0 | 0/? | Not started | - |
