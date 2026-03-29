@@ -12,6 +12,20 @@ import { loadConfig, getSenderByEmail, getAccountForCurrency, notificationSuffix
 import { writeActivityLog } from '@/lib/activity-log';
 import { loadDbSettings } from '@/lib/settings';
 
+const INITIAL_USER_EMAIL = process.env.ADMIN_EMAIL ?? 'manuelkuhs@gmail.com';
+
+async function getInitialUserId(): Promise<string | null> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email: INITIAL_USER_EMAIL },
+      select: { id: true },
+    });
+    return user?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function GET() {
   return NextResponse.json({ status: 'ok' });
 }
@@ -34,13 +48,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true }, { status: 200 });
     }
 
-    // Step 2: Deduplicate
+    // Step 2: Look up the user who owns this webhook (Phase 16-19 shim: initial user)
+    const userId = await getInitialUserId();
+    if (!userId) {
+      console.error('Webhook: no initial user found — cannot process email');
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
+
+    // Step 3: Deduplicate
     const existing = await prisma.processedEmail.findUnique({
-      where: { messageId },
+      where: { userId_messageId: { userId, messageId } },
     });
     if (existing) {
       console.log('Duplicate email skipped:', messageId);
       await writeActivityLog({
+        userId,
         messageId,
         status: 'duplicate',
         sender: extractOriginalSender(body) ?? undefined,
@@ -48,22 +70,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true }, { status: 200 });
     }
 
-    // Step 3: Extract sender early (needed for notifications)
+    // Step 4: Extract sender early (needed for notifications)
     const sender = extractOriginalSender(body);
     const senderKey = (sender ?? '').toLowerCase();
 
-    // Step 4: Record as processed
+    // Step 5: Record as processed
     console.log('Processing order email from:', sender, 'messageId:', messageId);
     try {
       await prisma.processedEmail.create({
-        data: { messageId, sender: sender ?? 'unknown' },
+        data: { userId, messageId, sender: sender ?? 'unknown' },
       });
     } catch (dbErr) {
-      console.error('Step 4 DB error:', dbErr);
+      console.error('Step 5 DB error:', dbErr);
       throw dbErr;
     }
 
-    // Step 5: Resolve sender to display name and YNAB account ID
+    // Step 6: Resolve sender to display name and YNAB account ID
     const senderInfo = getSenderByEmail(config, senderKey);
     if (!senderInfo) {
       console.warn('Unrecognised sender — no YNAB transaction created:', sender);
@@ -77,6 +99,7 @@ export async function POST(req: NextRequest) {
           `Add this sender to the automation if needed.`,
       });
       await writeActivityLog({
+        userId,
         messageId,
         status: 'unknown_sender',
         sender: sender ?? undefined,
@@ -88,7 +111,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true }, { status: 200 });
     }
 
-    // Step 6: Extract HTML body and parse with Claude
+    // Step 7: Extract HTML body and parse with Claude
     const html = body?.trigger?.event?.body?.html ?? '';
     const categoryHint = extractCategoryHint(html);
     const parsed = await parseOrderEmail(html, senderInfo.name);
@@ -103,6 +126,7 @@ export async function POST(req: NextRequest) {
           `Please add this transaction to YNAB manually.`,
       });
       await writeActivityLog({
+        userId,
         messageId,
         status: 'parse_error',
         sender: sender ?? undefined,
@@ -114,7 +138,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true }, { status: 200 });
     }
 
-    // Step 6b: Resolve category hint to YNAB category ID (if hint was present)
+    // Step 7b: Resolve category hint to YNAB category ID (if hint was present)
     const budgetId = process.env.YNAB_BUDGET_ID ?? '';
     let categoryId: string | undefined;
     let categoryName: string | undefined;
@@ -131,7 +155,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Step 7: Create YNAB transaction (or skip in test mode)
+    // Step 8: Create YNAB transaction (or skip in test mode)
     const accountId = getAccountForCurrency(config, senderInfo.accountId, parsed.currency);
     const testMode = process.env.TEST_MODE === 'true';
 
@@ -141,6 +165,7 @@ export async function POST(req: NextRequest) {
     if (testMode) {
       console.log('TEST MODE — skipping YNAB transaction for', senderInfo.name);
       await writeActivityLog({
+        userId,
         messageId,
         status: 'test',
         sender: sender ?? undefined,
@@ -181,6 +206,7 @@ export async function POST(req: NextRequest) {
       });
       console.log('YNAB transaction created:', transactionId, 'for', senderInfo.name);
       await writeActivityLog({
+        userId,
         messageId,
         status: 'success',
         sender: sender ?? undefined,
@@ -219,6 +245,7 @@ export async function POST(req: NextRequest) {
           `Please add this transaction to YNAB manually.`,
       });
       await writeActivityLog({
+        userId,
         messageId,
         status: 'ynab_error',
         sender: sender ?? undefined,

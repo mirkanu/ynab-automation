@@ -8,49 +8,57 @@ datasource db {
 }
 
 model Setting {
-  key       String   @id
+  id        String   @id @default(cuid())
+  userId    String
+  key       String
   value     String
   updatedAt DateTime @updatedAt
 
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, key])
 }
 
 model ProcessedEmail {
-  id          Int      @id @default(autoincrement())
-  messageId   String   @unique
+  id          String   @id @default(cuid())
+  userId      String
+  messageId   String
   sender      String
   processedAt DateTime @default(now())
 
-  userId    String?
-  user      User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, messageId])
+  @@index([userId, processedAt])
 }
 
 model ActivityLog {
-  id            Int      @id @default(autoincrement())
-  messageId     String   @unique
-  status        String
+  id           Int      @id @default(autoincrement())
+  userId       String
+  messageId    String   @unique
+  status       String
 
   // Inbound email metadata (LOG-01)
-  sender        String?
-  subject       String?
-  receivedAt    DateTime @default(now())
-  rawBody       String?
+  sender       String?
+  subject      String?
+  receivedAt   DateTime @default(now())
+  rawBody      String?
 
   // Claude parse result (LOG-02)
-  parseResult   Json?
+  parseResult  Json?
 
   // YNAB outcome (LOG-03)
-  ynabResult    Json?
+  ynabResult   Json?
 
   // Error detail (LOG-04)
-  errorType     String?
-  errorMessage  String?
+  errorType    String?
+  errorMessage String?
 
-  createdAt     DateTime @default(now())
+  createdAt    DateTime @default(now())
 
-  userId    String?
-  user      User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
 }
 
 model User {
