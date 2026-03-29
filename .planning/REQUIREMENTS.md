@@ -9,9 +9,9 @@ Requirements for multi-tenant SaaS milestone. Each maps to roadmap phases.
 
 ### Authentication
 
-- [ ] **AUTH-01**: User can sign up with email magic link (passwordless)
-- [ ] **AUTH-02**: User session persists across browser refresh
-- [ ] **AUTH-03**: User can log out
+- [x] **AUTH-01**: User can sign up with email magic link (passwordless)
+- [x] **AUTH-02**: User session persists across browser refresh
+- [x] **AUTH-03**: User can log out
 
 ### YNAB Integration
 
@@ -97,9 +97,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 16 | Pending |
-| AUTH-02 | Phase 16 | Pending |
-| AUTH-03 | Phase 16 | Pending |
+| AUTH-01 | Phase 16 | Complete |
+| AUTH-02 | Phase 16 | Complete |
+| AUTH-03 | Phase 16 | Complete |
 | DATA-01 | Phase 16 | Pending |
 | DATA-02 | Phase 16 | Pending |
 | DATA-03 | Phase 16 | Pending |
