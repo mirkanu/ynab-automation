@@ -107,7 +107,7 @@ Plans:
 | 13. Admin UI Shell + Dashboard + Log Viewer | v4.0 | 2/2 | Complete | 2026-03-27 |
 | 14. Settings Editor | v4.0 | 1/1 | Complete | 2026-03-28 |
 | 15. Test & Replay Tools | v4.0 | 1/1 | Complete | 2026-03-28 |
-| 16. User Accounts & Multi-Tenant Foundation | 4/4 | Complete   | 2026-03-29 | - |
+| 16. User Accounts & Multi-Tenant Foundation | 4/4 | Complete    | 2026-03-29 | - |
 | 17. YNAB OAuth & Token Management | v5.0 | 0/? | Not started | - |
 | 18. Per-User Inbound Email | v5.0 | 0/? | Not started | - |
 | 19. Dashboard, Onboarding & Account Management | v5.0 | 0/? | Not started | - |
