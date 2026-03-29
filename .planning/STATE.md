@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Multi-Tenant SaaS
-status: planning
-stopped_at: Completed 16-02-PLAN.md
-last_updated: "2026-03-29T00:38:00Z"
+status: executing
+stopped_at: Completed 16-03-PLAN.md
+last_updated: "2026-03-29T00:57:31.839Z"
 last_activity: 2026-03-29 — userId NOT NULL migration + backfill applied (DATA-01, DATA-02)
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 4
-  completed_plans: 2
+  completed_plans: 3
   percent: 10
 ---
 
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 ## Current Position
 
 Phase: 16 of 19 (User Accounts & Multi-Tenant Foundation)
-Plan: 02 complete, ready for 16-03
+Plan: 03 complete, ready for 16-04
 Status: In progress
-Last activity: 2026-03-29 — userId NOT NULL migration + backfill applied (DATA-01, DATA-02)
+Last activity: 2026-03-29 — RLS + auth middleware + two-layer tenant isolation applied (DATA-03, DATA-04)
 
-Progress: [█░░░░░░░░░] 10%
+Progress: [█████████░] 89%
 
 ## Performance Metrics
 
@@ -50,6 +50,7 @@ Progress: [█░░░░░░░░░] 10%
 *Updated after each plan completion*
 | Phase 16-user-accounts-multi-tenant-foundation P01 | 80 min | 3 tasks | 14 files |
 | Phase 16-user-accounts-multi-tenant-foundation P02 | 17 min | 2 tasks | 7 files |
+| Phase 16-user-accounts-multi-tenant-foundation P03 | 9 | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -69,6 +70,9 @@ Recent decisions affecting current work:
 - [Phase 16-02]: Migration SQL hardcodes manuelkuhs@gmail.com — SQL cannot read env vars at runtime
 - [Phase 16-02]: Initial-user shim pattern (getInitialUserId()) established in settings.ts, activity-log.ts, webhook/route.ts — Phase 19 replaces with session.user.id
 - [Phase 16-02]: Vitest v4 requires Node.js v20+; Railway runs v18.20.5 — migration correctness verified via direct DB queries
+- [Phase 16-03]: FORCE ROW LEVEL SECURITY applied to ActivityLog, Setting, ProcessedEmail — superusers bypass regular RLS, FORCE ensures isolation even for privileged DB roles
+- [Phase 16-03]: getPrismaForUser uses set_config(..., TRUE) transaction-local scope — prevents session variable leakage in connection pools
+- [Phase 16-03]: activity-log-queries.ts getDashboardStats/getActivityLogs now require userId — old global unscoped queries removed to prevent cross-user data exposure
 
 ### Pending Todos
 
@@ -82,6 +86,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-29T00:38:00Z
-Stopped at: Completed 16-02-PLAN.md
+Last session: 2026-03-29T00:57:31.835Z
+Stopped at: Completed 16-03-PLAN.md
 Resume file: None

@@ -33,8 +33,8 @@ Requirements for multi-tenant SaaS milestone. Each maps to roadmap phases.
 
 - [x] **DATA-01**: All database tables are scoped by user_id
 - [x] **DATA-02**: Existing single-user data is migrated to user #1 (Manuel)
-- [ ] **DATA-03**: Row-Level Security policies enforce tenant isolation at DB level
-- [ ] **DATA-04**: No user can access another user's data through any API endpoint
+- [x] **DATA-03**: Row-Level Security policies enforce tenant isolation at DB level
+- [x] **DATA-04**: No user can access another user's data through any API endpoint
 
 ### Dashboard & Self-Service
 
@@ -102,8 +102,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-03 | Phase 16 | Complete |
 | DATA-01 | Phase 16 | Complete |
 | DATA-02 | Phase 16 | Complete |
-| DATA-03 | Phase 16 | Pending |
-| DATA-04 | Phase 16 | Pending |
+| DATA-03 | Phase 16 | Complete |
+| DATA-04 | Phase 16 | Complete |
 | YNAB-01 | Phase 17 | Pending |
 | YNAB-02 | Phase 17 | Pending |
 | YNAB-03 | Phase 17 | Pending |
