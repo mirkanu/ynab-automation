@@ -3,20 +3,20 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Multi-Tenant SaaS
 status: planning
-stopped_at: Completed 16-01-PLAN.md
-last_updated: "2026-03-29T00:14:45.807Z"
-last_activity: 2026-03-28 — Roadmap created (4 phases, 26 requirements mapped)
+stopped_at: Completed 16-02-PLAN.md
+last_updated: "2026-03-29T00:38:00Z"
+last_activity: 2026-03-29 — userId NOT NULL migration + backfill applied (DATA-01, DATA-02)
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 4
-  completed_plans: 1
-  percent: 0
+  completed_plans: 2
+  percent: 10
 ---
 
 # Amazon to YNAB Automation — Project State
 
-**Updated:** 2026-03-28
+**Updated:** 2026-03-29
 
 ## Project Reference
 
@@ -28,27 +28,28 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 ## Current Position
 
 Phase: 16 of 19 (User Accounts & Multi-Tenant Foundation)
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-03-28 — Roadmap created (4 phases, 26 requirements mapped)
+Plan: 02 complete, ready for 16-03
+Status: In progress
+Last activity: 2026-03-29 — userId NOT NULL migration + backfill applied (DATA-01, DATA-02)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 10%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0 (v5.0)
-- Average duration: —
-- Total execution time: —
+- Total plans completed: 2 (v5.0)
+- Average duration: 49 min
+- Total execution time: ~97 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 16 (2 of N complete) | 2 | ~97 min | ~49 min |
 
 *Updated after each plan completion*
-| Phase 16-user-accounts-multi-tenant-foundation P01 | 80 | 3 tasks | 14 files |
+| Phase 16-user-accounts-multi-tenant-foundation P01 | 80 min | 3 tasks | 14 files |
+| Phase 16-user-accounts-multi-tenant-foundation P02 | 17 min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -64,6 +65,10 @@ Recent decisions affecting current work:
 - [Phase 16-01]: Auth.js auth.ts lives at src/lib/auth.ts (not root lib/) because tsconfig @/ alias maps to ./src
 - [Phase 16-01]: Nullable userId added to Setting/ProcessedEmail/ActivityLog in plan 01; plan 02 will make them NOT NULL with data backfill
 - [Phase 16-01]: Railway PostgreSQL only reachable via private network — migrations deployed via railway up then verified via railway ssh
+- [Phase 16-02]: ProcessedEmail.id kept as Int (autoincrement) — changing INT to TEXT requires full table recreate; id is internal-only
+- [Phase 16-02]: Migration SQL hardcodes manuelkuhs@gmail.com — SQL cannot read env vars at runtime
+- [Phase 16-02]: Initial-user shim pattern (getInitialUserId()) established in settings.ts, activity-log.ts, webhook/route.ts — Phase 19 replaces with session.user.id
+- [Phase 16-02]: Vitest v4 requires Node.js v20+; Railway runs v18.20.5 — migration correctness verified via direct DB queries
 
 ### Pending Todos
 
@@ -73,9 +78,10 @@ None yet.
 
 - Email provider (Postmark vs SendGrid) decision deferred to Phase 18 planning — run technical spike then
 - GDPR compliance scope (audit log retention post-deletion) — clarify during Phase 16 planning
+- Railway Node.js version is v18.20.5 — Vitest v4 tests cannot run in Railway SSH (require v20+); consider upgrading Railway's Node version before Phase 16-03 testing
 
 ## Session Continuity
 
-Last session: 2026-03-29T00:14:45.803Z
-Stopped at: Completed 16-01-PLAN.md
+Last session: 2026-03-29T00:38:00Z
+Stopped at: Completed 16-02-PLAN.md
 Resume file: None
