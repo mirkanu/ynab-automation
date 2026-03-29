@@ -1,11 +1,24 @@
 import { type ReactNode } from 'react';
+import { redirect } from 'next/navigation';
+import { auth, signOut } from '@/lib/auth';
 import { loadDbSettings } from '@/lib/settings';
 
 export const dynamic = 'force-dynamic';
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
+  const session = await auth();
+  if (!session) {
+    redirect('/auth/signin');
+  }
+
   await loadDbSettings();
   const testMode = process.env.TEST_MODE === 'true';
+
+  async function handleSignOut() {
+    'use server'
+    await signOut({ redirectTo: '/auth/signin' })
+  }
+
   return (
     <div style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
       <header style={{
@@ -17,7 +30,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
         color: 'white',
       }}>
         <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>YNAB Automation — Admin</span>
-        <form action="/logout" method="POST">
+        <form action={handleSignOut}>
           <button
             type="submit"
             style={{
