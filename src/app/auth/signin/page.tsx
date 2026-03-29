@@ -1,37 +1,25 @@
-'use client'
+import { signIn } from '@/lib/auth'
+import { redirect } from 'next/navigation'
 
-import { useState, FormEvent } from 'react'
+export default function SignInPage({
+  searchParams,
+}: {
+  searchParams: { error?: string }
+}) {
+  const error = searchParams.error
 
-export default function SignInPage() {
-  const [email, setEmail] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
-
+  async function handleSignIn(formData: FormData) {
+    'use server'
+    const email = formData.get('email') as string
+    if (!email) return
     try {
-      const formData = new FormData()
-      formData.append('email', email)
-
-      const response = await fetch('/api/auth/signin/resend', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, callbackUrl: '/', redirect: false }),
-      })
-
-      if (response.ok) {
-        window.location.href = '/auth/verify-request'
-      } else {
-        const data = await response.json().catch(() => ({}))
-        setError(data.error || 'Failed to send magic link. Please try again.')
-        setLoading(false)
+      await signIn('resend', { email, redirectTo: '/' })
+    } catch (e: unknown) {
+      // Auth.js throws a NEXT_REDIRECT on success — let it propagate
+      if (e instanceof Error && e.message?.includes('NEXT_REDIRECT')) {
+        throw e
       }
-    } catch {
-      setError('An unexpected error occurred. Please try again.')
-      setLoading(false)
+      redirect('/auth/signin?error=EmailSendFailed')
     }
   }
 
@@ -91,19 +79,18 @@ export default function SignInPage() {
               color: '#dc2626',
             }}
           >
-            {error}
+            {error === 'EmailSendFailed'
+              ? 'Failed to send magic link. Please try again.'
+              : 'Something went wrong. Please try again.'}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <form action={handleSignIn} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <input
             type="email"
             name="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
             placeholder="your@email.com"
             required
-            disabled={loading}
             style={{
               width: '100%',
               padding: '0.625rem 0.75rem',
@@ -112,26 +99,24 @@ export default function SignInPage() {
               fontSize: '0.875rem',
               outline: 'none',
               boxSizing: 'border-box',
-              opacity: loading ? 0.6 : 1,
             }}
           />
           <button
             type="submit"
-            disabled={loading}
             style={{
               width: '100%',
               padding: '0.625rem',
-              backgroundColor: loading ? '#6b7280' : '#111827',
+              backgroundColor: '#111827',
               color: 'white',
               border: 'none',
               borderRadius: '0.375rem',
               fontSize: '0.875rem',
               fontWeight: 500,
-              cursor: loading ? 'not-allowed' : 'pointer',
+              cursor: 'pointer',
               transition: 'background-color 0.15s',
             }}
           >
-            {loading ? 'Sending link...' : 'Send magic link'}
+            Send magic link
           </button>
         </form>
       </div>
