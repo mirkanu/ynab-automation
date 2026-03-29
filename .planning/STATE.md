@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Multi-Tenant SaaS
 status: executing
-stopped_at: Completed 16-03-PLAN.md
-last_updated: "2026-03-29T00:57:31.839Z"
-last_activity: 2026-03-29 — userId NOT NULL migration + backfill applied (DATA-01, DATA-02)
+stopped_at: Completed 16-04-PLAN.md
+last_updated: "2026-03-29T22:52:00.437Z"
+last_activity: 2026-03-29 — RLS + auth middleware + two-layer tenant isolation applied (DATA-03, DATA-04)
 progress:
   total_phases: 4
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 4
-  completed_plans: 3
-  percent: 10
+  completed_plans: 4
+  percent: 89
 ---
 
 # Amazon to YNAB Automation — Project State
@@ -51,6 +51,7 @@ Progress: [█████████░] 89%
 | Phase 16-user-accounts-multi-tenant-foundation P01 | 80 min | 3 tasks | 14 files |
 | Phase 16-user-accounts-multi-tenant-foundation P02 | 17 min | 2 tasks | 7 files |
 | Phase 16-user-accounts-multi-tenant-foundation P03 | 9 | 3 tasks | 10 files |
+| Phase 16-user-accounts-multi-tenant-foundation P04 | 1440 | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -73,6 +74,9 @@ Recent decisions affecting current work:
 - [Phase 16-03]: FORCE ROW LEVEL SECURITY applied to ActivityLog, Setting, ProcessedEmail — superusers bypass regular RLS, FORCE ensures isolation even for privileged DB roles
 - [Phase 16-03]: getPrismaForUser uses set_config(..., TRUE) transaction-local scope — prevents session variable leakage in connection pools
 - [Phase 16-03]: activity-log-queries.ts getDashboardStats/getActivityLogs now require userId — old global unscoped queries removed to prevent cross-user data exposure
+- [Phase 16-04]: API routes excluded from middleware matcher so unauthenticated calls return 401 not 307 redirect
+- [Phase 16-04]: Auth.js signIn() must be called from server action not client-side fetch — avoids CSRF issues
+- [Phase 16-04]: Iron-session middleware replaced with Auth.js middleware — was left over from pre-Phase-16 code
 
 ### Pending Todos
 
@@ -86,6 +90,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-29T00:57:31.835Z
-Stopped at: Completed 16-03-PLAN.md
+Last session: 2026-03-29T22:52:00.433Z
+Stopped at: Completed 16-04-PLAN.md
 Resume file: None
