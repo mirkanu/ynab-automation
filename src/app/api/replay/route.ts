@@ -1,44 +1,53 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
-import { parseOrderEmail } from '@/lib/claude';
-import { createYnabTransaction, getAccountName } from '@/lib/ynab';
-import { loadConfig, getSenderByEmail, getAccountForCurrency } from '@/lib/config';
-import { writeActivityLog } from '@/lib/activity-log';
-import { loadDbSettings } from '@/lib/settings';
+import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@/lib/auth'
+import { getPrismaForUser } from '@/lib/db'
+import { parseOrderEmail } from '@/lib/claude'
+import { createYnabTransaction, getAccountName } from '@/lib/ynab'
+import { loadConfig, getSenderByEmail, getAccountForCurrency } from '@/lib/config'
+import { writeActivityLog } from '@/lib/activity-log'
+import { loadDbSettings } from '@/lib/settings'
 
 export async function POST(req: NextRequest) {
-  await loadDbSettings();
-  const { messageId, forceLive } = (await req.json()) as { messageId: string; forceLive?: boolean };
+  const session = await auth()
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  const userId = session.user.id
+
+  await loadDbSettings()
+  const { messageId, forceLive } = (await req.json()) as { messageId: string; forceLive?: boolean }
   if (!messageId) {
-    return NextResponse.json({ error: 'messageId is required' }, { status: 400 });
+    return NextResponse.json({ error: 'messageId is required' }, { status: 400 })
   }
 
-  // 1. Fetch original log entry
-  const entry = await prisma.activityLog.findUnique({ where: { messageId } });
+  // 1. Fetch original log entry — scoped to the requesting user
+  const db = getPrismaForUser(userId)
+  const entry = await db.activityLog.findUnique({ where: { messageId, userId } })
   if (!entry) {
-    return NextResponse.json({ error: 'Log entry not found' }, { status: 404 });
+    return NextResponse.json({ error: 'Log entry not found' }, { status: 404 })
   }
   if (!entry.rawBody) {
     return NextResponse.json(
       { error: 'Email body not available for this entry' },
       { status: 422 },
-    );
+    )
   }
 
   // 2. Resolve sender
-  const config = loadConfig();
-  const senderInfo = entry.sender ? getSenderByEmail(config, entry.sender) : null;
+  const config = loadConfig()
+  const senderInfo = entry.sender ? getSenderByEmail(config, entry.sender) : null
   if (!senderInfo) {
     return NextResponse.json(
       { error: 'Sender not found in current config' },
       { status: 422 },
-    );
+    )
   }
 
   // 3. Parse email
-  const parsed = await parseOrderEmail(entry.rawBody, senderInfo.name);
+  const parsed = await parseOrderEmail(entry.rawBody, senderInfo.name)
   if (!parsed) {
     await writeActivityLog({
+      userId,
       messageId: `replay-${messageId}-${Date.now()}`,
       status: 'parse_error',
       sender: entry.sender ?? undefined,
@@ -46,31 +55,32 @@ export async function POST(req: NextRequest) {
       rawBody: entry.rawBody,
       errorType: 'parse_error',
       errorMessage: 'Claude could not re-parse this email',
-    });
+    })
     return NextResponse.json(
       { error: 'Claude could not parse this email' },
       { status: 422 },
-    );
+    )
   }
 
   // 4. Resolve YNAB budget
-  const budgetId = process.env.YNAB_BUDGET_ID;
+  const budgetId = process.env.YNAB_BUDGET_ID
   if (!budgetId) {
     return NextResponse.json(
       { error: 'YNAB_BUDGET_ID not configured' },
       { status: 500 },
-    );
+    )
   }
 
-  const accountId = getAccountForCurrency(config, senderInfo.accountId, parsed.currency);
-  const testMode = process.env.TEST_MODE === 'true' && !forceLive;
+  const accountId = getAccountForCurrency(config, senderInfo.accountId, parsed.currency)
+  const testMode = process.env.TEST_MODE === 'true' && !forceLive
 
-  const memo = `${senderInfo.name}: ${parsed.description} - Automatically added from email`;
-  const accountName = await getAccountName(budgetId, accountId);
+  const memo = `${senderInfo.name}: ${parsed.description} - Automatically added from email`
+  const accountName = await getAccountName(budgetId, accountId)
 
   // 5. If test mode (and not force-live), skip YNAB and log as test
   if (testMode) {
     await writeActivityLog({
+      userId,
       messageId: `replay-${messageId}-${Date.now()}`,
       status: 'test',
       sender: entry.sender ?? undefined,
@@ -86,12 +96,12 @@ export async function POST(req: NextRequest) {
         memo,
         date: parsed.date,
       },
-    });
+    })
     return NextResponse.json({
       success: true,
       testMode: true,
       parsed,
-    });
+    })
   }
 
   // 6. Create YNAB transaction
@@ -104,10 +114,11 @@ export async function POST(req: NextRequest) {
       senderName: senderInfo.name,
       payeeName: parsed.retailer,
       date: parsed.date,
-    });
+    })
 
     // 7. Write activity log for replay
     await writeActivityLog({
+      userId,
       messageId: `replay-${messageId}-${Date.now()}`,
       status: 'success',
       sender: entry.sender ?? undefined,
@@ -123,15 +134,16 @@ export async function POST(req: NextRequest) {
         memo,
         date: parsed.date,
       },
-    });
+    })
 
     return NextResponse.json({
       success: true,
       transactionId,
       parsed,
-    });
+    })
   } catch (e) {
     await writeActivityLog({
+      userId,
       messageId: `replay-${messageId}-${Date.now()}`,
       status: 'ynab_error',
       sender: entry.sender ?? undefined,
@@ -140,10 +152,10 @@ export async function POST(req: NextRequest) {
       parseResult: parsed,
       errorType: 'ynab_error',
       errorMessage: (e as Error).message,
-    });
+    })
     return NextResponse.json(
       { error: `YNAB error: ${(e as Error).message}` },
       { status: 500 },
-    );
+    )
   }
 }

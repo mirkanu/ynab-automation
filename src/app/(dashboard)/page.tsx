@@ -1,17 +1,19 @@
-import { headers } from 'next/headers';
-import SetupWizard from '../setup/SetupWizard';
-import { getDashboardStats } from '@/lib/activity-log-queries';
-import CopyButton from './components/CopyButton';
-import { loadDbSettings } from '@/lib/settings';
+import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
+import { auth } from '@/lib/auth'
+import SetupWizard from '../setup/SetupWizard'
+import { getDashboardStats } from '@/lib/activity-log-queries'
+import CopyButton from './components/CopyButton'
+import { loadDbSettings } from '@/lib/settings'
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
 
 const card = {
   backgroundColor: '#fff',
   borderRadius: '12px',
   padding: '1.5rem',
   boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-};
+}
 
 const clickableCard = {
   ...card,
@@ -19,29 +21,34 @@ const clickableCard = {
   textDecoration: 'none' as const,
   color: 'inherit' as const,
   transition: 'box-shadow 0.15s',
-};
+}
 
 export default async function DashboardPage() {
-  await loadDbSettings();
-  const isConfigured = !!process.env.SENDERS;
-
-  if (!isConfigured) {
-    return <SetupWizard />;
+  const session = await auth()
+  if (!session?.user?.id) {
+    redirect('/auth/signin')
   }
 
-  const stats = await getDashboardStats();
+  await loadDbSettings()
+  const isConfigured = !!process.env.SENDERS
 
-  const h = await headers();
-  const host = h.get('x-forwarded-host') ?? h.get('host') ?? 'localhost:3000';
-  const proto = h.get('x-forwarded-proto') ?? 'https';
-  const webhookUrl = `${proto}://${host}/api/webhook`;
-  const inboundEmail = process.env.INBOUND_EMAIL ?? null;
+  if (!isConfigured) {
+    return <SetupWizard />
+  }
+
+  const stats = await getDashboardStats(session.user.id)
+
+  const h = await headers()
+  const host = h.get('x-forwarded-host') ?? h.get('host') ?? 'localhost:3000'
+  const proto = h.get('x-forwarded-proto') ?? 'https'
+  const webhookUrl = `${proto}://${host}/api/webhook`
+  const inboundEmail = process.env.INBOUND_EMAIL ?? null
 
   // Build date filter for "this week" links
-  const startOfWeek = new Date();
-  startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
-  const fromDate = startOfWeek.toISOString().slice(0, 10);
-  const toDate = new Date().toISOString().slice(0, 10);
+  const startOfWeek = new Date()
+  startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay())
+  const fromDate = startOfWeek.toISOString().slice(0, 10)
+  const toDate = new Date().toISOString().slice(0, 10)
 
   return (
     <div>
@@ -157,5 +164,5 @@ export default async function DashboardPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }
