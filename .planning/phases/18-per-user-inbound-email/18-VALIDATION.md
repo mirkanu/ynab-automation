@@ -39,10 +39,10 @@ created: 2026-03-30
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
 | 18-01-01 | 01 | 1 | EMAIL-01 | unit | `npx vitest run tests/email/forwarding-address` | ❌ W0 | ⬜ pending |
-| 18-01-02 | 01 | 1 | EMAIL-03 | unit | `npx vitest run tests/email/webhook-signature` | ❌ W0 | ⬜ pending |
-| 18-02-01 | 02 | 2 | EMAIL-02 | integration | `npx vitest run tests/email/routing` | ❌ W0 | ⬜ pending |
-| 18-02-02 | 02 | 2 | EMAIL-04 | unit | `npx vitest run tests/email/idempotency` | ❌ W0 | ⬜ pending |
-| 18-02-03 | 02 | 2 | EMAIL-05 | integration | `npx vitest run tests/email/transaction-creation` | ❌ W0 | ⬜ pending |
+| 18-03-01 | 03 | 2 | EMAIL-01 | unit | `npx vitest run tests/email/forwarding-address` | ❌ W0 | ⬜ pending |
+| 18-04-01 | 04 | 2 | EMAIL-02/03 | unit | `npx vitest run tests/email/routing tests/email/security` | ❌ W0 | ⬜ pending |
+| 18-04-02 | 04 | 2 | EMAIL-04 | unit | `npx vitest run tests/email/idempotency` | ❌ W0 | ⬜ pending |
+| 18-04-02 | 04 | 2 | EMAIL-05 | integration | `npx vitest run tests/email/transaction-creation` | ❌ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -51,7 +51,7 @@ created: 2026-03-30
 ## Wave 0 Requirements
 
 - [ ] `tests/email/forwarding-address.test.ts` — stubs for EMAIL-01
-- [ ] `tests/email/webhook-signature.test.ts` — stubs for EMAIL-03
+- [ ] `tests/email/security.test.ts` — stubs for EMAIL-03
 - [ ] `tests/email/routing.test.ts` — stubs for EMAIL-02
 - [ ] `tests/email/idempotency.test.ts` — stubs for EMAIL-04
 - [ ] `tests/email/transaction-creation.test.ts` — stubs for EMAIL-05
