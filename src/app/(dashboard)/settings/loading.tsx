@@ -21,6 +21,13 @@ export default function SettingsLoading() {
       <div style={{ ...shimmer, width: '120px', height: '1.375rem', marginBottom: '0.5rem' }} />
       <div style={{ ...shimmer, width: '360px', height: '0.875rem', marginBottom: '1.5rem' }} />
 
+      {/* YNAB Connection section skeleton */}
+      <div style={section}>
+        <div style={{ ...shimmer, width: '180px', height: '1.125rem', marginBottom: '0.5rem' }} />
+        <div style={{ ...shimmer, width: '340px', height: '0.8125rem', marginBottom: '1.25rem' }} />
+        <div style={{ ...shimmer, width: '140px', height: '2.25rem', borderRadius: '6px' }} />
+      </div>
+
       {/* Section 1: Sender Routing skeleton */}
       <div style={section}>
         <div style={{ ...shimmer, width: '160px', height: '1.125rem', marginBottom: '0.5rem' }} />

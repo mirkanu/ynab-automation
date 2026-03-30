@@ -1,10 +1,29 @@
+import { redirect } from 'next/navigation';
+import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/db';
 import SettingsForm from './SettingsForm';
-import { loadDbSettings } from '@/lib/settings';
+import YnabConnectionSection from './YnabConnectionSection';
 
 export const dynamic = 'force-dynamic';
 
 export default async function SettingsPage() {
-  await loadDbSettings();
+  const session = await auth();
+  if (!session?.user?.id) {
+    redirect('/auth/signin');
+  }
+
+  // Load YNAB connection status and current selection from DB
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      oauthToken: true,
+      selectedBudgetId: true,
+      selectedAccountId: true,
+    },
+  });
+
+  const ynabConnected = !!user?.oauthToken;
+
   // Parse current SENDERS from env
   let currentSenders: Array<{ email: string; name: string; accountId: string }> = [];
   try {
@@ -42,6 +61,13 @@ export default async function SettingsPage() {
       <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: '0 0 1.5rem' }}>
         View and edit all configuration. Changes take effect immediately.
       </p>
+
+      <YnabConnectionSection
+        connected={ynabConnected}
+        initialBudgetId={user?.selectedBudgetId}
+        initialAccountId={user?.selectedAccountId}
+      />
+
       <SettingsForm
         currentSenders={currentSenders}
         currentCurrencyAccounts={currentCurrencyAccounts}
