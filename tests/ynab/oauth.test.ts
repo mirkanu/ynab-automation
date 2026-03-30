@@ -68,8 +68,10 @@ describe('YNAB OAuth Flow (YNAB-01)', () => {
       expect(location).toContain('app.ynab.com/oauth/authorize')
       expect(location).toContain('client_id=test-client-id')
       expect(location).toContain('response_type=code')
-      expect(location).toContain('redirect_uri=')
-      expect(location).toContain('/api/ynab/callback')
+      // redirect_uri is URL-encoded in the location header — decode before checking
+      const decodedLocation = decodeURIComponent(location)
+      expect(decodedLocation).toContain('redirect_uri=')
+      expect(decodedLocation).toContain('/api/ynab/callback')
     })
   })
 
