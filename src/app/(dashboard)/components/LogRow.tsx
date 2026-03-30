@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { formatParseResult } from '@/lib/parse-result';
 
 interface LogEntry {
   id: number;
@@ -40,6 +41,7 @@ type ReplayStatus = 'idle' | 'confirm' | 'confirm-live' | 'loading' | 'success' 
 export default function LogRow({ entry, testMode }: { entry: LogEntry; testMode?: boolean }) {
   const [expanded, setExpanded] = useState(false);
   const [showRaw, setShowRaw] = useState(false);
+  const [showReasoning, setShowReasoning] = useState(false);
   const [replayStatus, setReplayStatus] = useState<ReplayStatus>('idle');
   const [replayResult, setReplayResult] = useState('');
 
@@ -130,6 +132,30 @@ export default function LogRow({ entry, testMode }: { entry: LogEntry; testMode?
                 {entry.parseResult.description ? <KV label="Description" value={String(entry.parseResult.description)} /> : null}
               </Section>
             )}
+
+            {entry.parseResult && (() => {
+              const reasoning = formatParseResult(entry.parseResult);
+              if (!reasoning) return null;
+              return (
+                <div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setShowReasoning(!showReasoning); }}
+                    style={{ fontSize: '0.75rem', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                  >
+                    {showReasoning ? 'Hide' : 'Why?'} (Claude&apos;s reasoning)
+                  </button>
+                  {showReasoning && (
+                    <Section label="Claude's Reasoning">
+                      {reasoning.retailer !== undefined && <KV label="Retailer" value={reasoning.retailer} />}
+                      {reasoning.amount !== undefined && <KV label="Amount" value={String(reasoning.amount)} />}
+                      {reasoning.date !== undefined && <KV label="Date" value={reasoning.date} />}
+                      {reasoning.currency !== undefined && <KV label="Currency" value={reasoning.currency} />}
+                      {reasoning.description !== undefined && <KV label="Description" value={reasoning.description} />}
+                    </Section>
+                  )}
+                </div>
+              );
+            })()}
 
             {entry.ynabResult && (() => {
               const yr = entry.ynabResult;

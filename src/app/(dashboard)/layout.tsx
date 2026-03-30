@@ -2,6 +2,8 @@ import { type ReactNode } from 'react';
 import { redirect } from 'next/navigation';
 import { auth, signOut } from '@/lib/auth';
 import { loadDbSettings } from '@/lib/settings';
+import { prisma } from '@/lib/db';
+import TestModeBanner from './components/TestModeBanner';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,7 +14,11 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   }
 
   await loadDbSettings();
-  const testMode = process.env.TEST_MODE === 'true';
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { testMode: true },
+  });
+  const testMode = user?.testMode ?? false;
 
   async function handleSignOut() {
     'use server'
@@ -61,27 +67,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
         <a href="/settings" style={{ color: '#374151', textDecoration: 'none' }}>Settings</a>
         <a href="/tools" style={{ color: '#374151', textDecoration: 'none' }}>Tools</a>
       </nav>
-      {testMode && (
-        <div style={{
-          backgroundColor: '#dcfce7',
-          borderBottom: '1px solid #86efac',
-          padding: '0.5rem 1.5rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          fontSize: '0.8125rem',
-        }}>
-          <div>
-            <span style={{ fontWeight: 600, color: '#166534' }}>Test Mode</span>
-            <span style={{ color: '#166534', marginLeft: '0.375rem' }}>
-              — Emails are parsed but not written to YNAB
-            </span>
-          </div>
-          <a href="/settings" style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 500 }}>
-            Settings
-          </a>
-        </div>
-      )}
+      <TestModeBanner testMode={testMode} />
       <main style={{ padding: '1.5rem' }}>
         {children}
       </main>
