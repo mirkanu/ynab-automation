@@ -16,7 +16,7 @@ Requirements for multi-tenant SaaS milestone. Each maps to roadmap phases.
 ### YNAB Integration
 
 - [x] **YNAB-01**: User can connect YNAB account via OAuth (Authorization Code Grant)
-- [ ] **YNAB-02**: YNAB OAuth tokens are encrypted at rest (AES-256-GCM)
+- [x] **YNAB-02**: YNAB OAuth tokens are encrypted at rest (AES-256-GCM)
 - [x] **YNAB-03**: YNAB tokens auto-refresh before expiry
 - [x] **YNAB-04**: User can disconnect YNAB account (revokes tokens)
 - [x] **YNAB-05**: User can select default YNAB budget and account after connecting
@@ -105,7 +105,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DATA-03 | Phase 16 | Complete |
 | DATA-04 | Phase 16 | Complete |
 | YNAB-01 | Phase 17 | Complete |
-| YNAB-02 | Phase 17 | Pending |
+| YNAB-02 | Phase 17 | Complete |
 | YNAB-03 | Phase 17 | Complete |
 | YNAB-04 | Phase 17 | Complete |
 | YNAB-05 | Phase 17 | Complete |

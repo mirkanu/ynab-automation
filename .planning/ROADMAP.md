@@ -116,6 +116,6 @@ Plans:
 | 14. Settings Editor | v4.0 | 1/1 | Complete | 2026-03-28 |
 | 15. Test & Replay Tools | v4.0 | 1/1 | Complete | 2026-03-28 |
 | 16. User Accounts & Multi-Tenant Foundation | v5.0 | 4/4 | Complete | 2026-03-29 |
-| 17. YNAB OAuth & Token Management | 1/6 | In Progress|  | - |
+| 17. YNAB OAuth & Token Management | 2/6 | In Progress|  | - |
 | 18. Per-User Inbound Email | v5.0 | 0/? | Not started | - |
 | 19. Dashboard, Onboarding & Account Management | v5.0 | 0/? | Not started | - |

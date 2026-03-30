@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Multi-Tenant SaaS
 status: executing
-stopped_at: Completed 17-02-PLAN.md
-last_updated: "2026-03-30T07:23:14Z"
+stopped_at: Completed 17-01-PLAN.md
+last_updated: "2026-03-30T07:29:52.501Z"
 last_activity: 2026-03-30 — Wave 0 YNAB test scaffolds created (YNAB-01, YNAB-03, YNAB-04, YNAB-05)
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
+  total_plans: 10
+  completed_plans: 6
   percent: 89
 ---
 
@@ -53,6 +53,7 @@ Progress: [█████████░] 89%
 | Phase 16-user-accounts-multi-tenant-foundation P03 | 9 | 3 tasks | 10 files |
 | Phase 16-user-accounts-multi-tenant-foundation P04 | 1440 | 1 tasks | 2 files |
 | Phase 17-ynab-oauth-token-management P02 | 4 min | 2 tasks | 4 files |
+| Phase 17-ynab-oauth-token-management P01 | 7 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -79,6 +80,8 @@ Recent decisions affecting current work:
 - [Phase 16-04]: Auth.js signIn() must be called from server action not client-side fetch — avoids CSRF issues
 - [Phase 16-04]: Iron-session middleware replaced with Auth.js middleware — was left over from pre-Phase-16 code
 - [Phase 17-02]: it.todo() used for Wave 0 test stubs — renders as todo in vitest output (not failure), keeping suite green until Plans 03-05 implement routes
+- [Phase 17-ynab-oauth-token-management]: Node.js built-in crypto used for AES-256-GCM token encryption (no native deps like libsodium)
+- [Phase 17-ynab-oauth-token-management]: Error messages never include plaintext/ciphertext in crypto.ts — throws generic 'Decryption failed'
 
 ### Pending Todos
 
@@ -92,6 +95,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-30T07:23:14Z
-Stopped at: Completed 17-02-PLAN.md
+Last session: 2026-03-30T07:29:52.497Z
+Stopped at: Completed 17-01-PLAN.md
 Resume file: None
