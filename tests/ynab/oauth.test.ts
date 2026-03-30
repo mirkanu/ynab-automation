@@ -30,6 +30,10 @@ vi.mock('@/lib/crypto', () => ({
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 
+// Cast to a vi mock function to avoid TS inference issues with next-auth overloads
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mockAuth = auth as unknown as { mockResolvedValueOnce: (v: any) => void }
+
 describe('YNAB OAuth Flow (YNAB-01)', () => {
   it('smoke: test file loads without error', () => {
     expect(true).toBe(true)
@@ -45,20 +49,20 @@ describe('YNAB OAuth Flow (YNAB-01)', () => {
 
   describe('GET /api/ynab/authorize', () => {
     it('returns 401 if user not authenticated', async () => {
-      vi.mocked(auth).mockResolvedValueOnce(null)
+      mockAuth.mockResolvedValueOnce(null)
       const { GET } = await import('@/app/api/ynab/authorize/route')
       const response = await GET()
       expect(response.status).toBe(401)
     })
 
     it('redirects to YNAB consent URL with correct params when authenticated', async () => {
-      vi.mocked(auth).mockResolvedValueOnce({
+      mockAuth.mockResolvedValueOnce({
         user: { id: 'user-1', email: 'test@example.com', name: 'Test' },
         expires: '2099-01-01',
       })
       const { GET } = await import('@/app/api/ynab/authorize/route')
       const response = await GET()
-      // Should redirect (302/307)
+      // Should redirect (307)
       expect(response.status).toBe(307)
       const location = response.headers.get('location') ?? ''
       expect(location).toContain('app.ynab.com/oauth/authorize')
@@ -71,14 +75,14 @@ describe('YNAB OAuth Flow (YNAB-01)', () => {
 
   describe('GET /api/ynab/status', () => {
     it('returns 401 if user not authenticated', async () => {
-      vi.mocked(auth).mockResolvedValueOnce(null)
+      mockAuth.mockResolvedValueOnce(null)
       const { GET } = await import('@/app/api/ynab/status/route')
       const response = await GET()
       expect(response.status).toBe(401)
     })
 
     it('returns { connected: false } if user has no oauthToken', async () => {
-      vi.mocked(auth).mockResolvedValueOnce({
+      mockAuth.mockResolvedValueOnce({
         user: { id: 'user-1', email: 'test@example.com', name: 'Test' },
         expires: '2099-01-01',
       })
@@ -94,7 +98,7 @@ describe('YNAB OAuth Flow (YNAB-01)', () => {
     })
 
     it('returns { connected: true } if user has oauthToken', async () => {
-      vi.mocked(auth).mockResolvedValueOnce({
+      mockAuth.mockResolvedValueOnce({
         user: { id: 'user-1', email: 'test@example.com', name: 'Test' },
         expires: '2099-01-01',
       })
@@ -112,7 +116,7 @@ describe('YNAB OAuth Flow (YNAB-01)', () => {
 
   describe('GET /api/ynab/callback', () => {
     it('returns 401 if user not authenticated', async () => {
-      vi.mocked(auth).mockResolvedValueOnce(null)
+      mockAuth.mockResolvedValueOnce(null)
       const { GET } = await import('@/app/api/ynab/callback/route')
       const req = new Request('https://app.example.com/api/ynab/callback?code=abc123')
       const response = await GET(req)
@@ -120,7 +124,7 @@ describe('YNAB OAuth Flow (YNAB-01)', () => {
     })
 
     it('returns 400 if code param is missing', async () => {
-      vi.mocked(auth).mockResolvedValueOnce({
+      mockAuth.mockResolvedValueOnce({
         user: { id: 'user-1', email: 'test@example.com', name: 'Test' },
         expires: '2099-01-01',
       })
@@ -131,7 +135,7 @@ describe('YNAB OAuth Flow (YNAB-01)', () => {
     })
 
     it('exchanges code for tokens and redirects to settings page on success', async () => {
-      vi.mocked(auth).mockResolvedValueOnce({
+      mockAuth.mockResolvedValueOnce({
         user: { id: 'user-1', email: 'test@example.com', name: 'Test' },
         expires: '2099-01-01',
       })
@@ -158,7 +162,7 @@ describe('YNAB OAuth Flow (YNAB-01)', () => {
     })
 
     it('returns 500 if YNAB token exchange fails', async () => {
-      vi.mocked(auth).mockResolvedValueOnce({
+      mockAuth.mockResolvedValueOnce({
         user: { id: 'user-1', email: 'test@example.com', name: 'Test' },
         expires: '2099-01-01',
       })
