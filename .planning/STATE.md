@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Multi-Tenant SaaS
 status: executing
-stopped_at: Completed 19-01-PLAN.md
-last_updated: "2026-03-30T15:39:19.627Z"
+stopped_at: Completed 19-03-PLAN.md
+last_updated: "2026-03-30T15:53:28.454Z"
 last_activity: 2026-03-30 — Wave 0 YNAB test scaffolds created (YNAB-01, YNAB-03, YNAB-04, YNAB-05)
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 20
-  completed_plans: 16
+  completed_plans: 18
   percent: 89
 ---
 
@@ -64,6 +64,8 @@ Progress: [█████████░] 89%
 | Phase 18 P04 | 12 | 2 tasks | 7 files |
 | Phase 18-per-user-inbound-email P05 | 5 | 2 tasks | 0 files |
 | Phase 19-dashboard-onboarding-account-management P01 | 5 | 2 tasks | 9 files |
+| Phase 19-dashboard-onboarding-account-management P03 | 12 | 2 tasks | 8 files |
+| Phase 19-dashboard-onboarding-account-management P02 | 9 | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -106,6 +108,11 @@ Recent decisions affecting current work:
 - [Phase 18-per-user-inbound-email]: Automated test suite (27 passing tests) accepted as verification proxy for 18-05 checkpoint — live endpoint confirmed 403 for non-Postmark IPs
 - [Phase 19-01]: Wave 0 stubs use no source imports — avoids vitest errors when source modules don't exist yet (pattern from Phase 17/18)
 - [Phase 19-01]: DATABASE_URL mocked for local prisma validate since Railway PostgreSQL is not reachable
+- [Phase 19-03]: Onboarding redirect implemented in dashboard server component (not auth.ts redirect callback) — simpler pattern consistent with server component auth guard
+- [Phase 19-03]: prisma generate required after schema additions (onboardingCompleted, testMode) before TypeScript compiles — must be run as part of schema migration workflow
+- [Phase 19-02]: TestModeBanner extracted to client component so server layout can pass DB-read testMode as prop while keeping interactive toggle
+- [Phase 19-02]: formatParseResult uses whitelist approach (explicit fields only) - safer against future debug field additions
+- [Phase 19-02]: page.tsx: webhookUrl section removed (Pipedream was v4.0 single-user, not relevant in multi-tenant)
 
 ### Pending Todos
 
@@ -119,6 +126,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-30T15:39:19.623Z
-Stopped at: Completed 19-01-PLAN.md
+Last session: 2026-03-30T15:53:28.450Z
+Stopped at: Completed 19-03-PLAN.md
 Resume file: None
