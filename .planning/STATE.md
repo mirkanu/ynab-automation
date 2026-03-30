@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Multi-Tenant SaaS
 status: executing
-stopped_at: Completed 17-01-PLAN.md
-last_updated: "2026-03-30T07:29:52.501Z"
+stopped_at: Completed 17-03-PLAN.md
+last_updated: "2026-03-30T07:42:48.561Z"
 last_activity: 2026-03-30 — Wave 0 YNAB test scaffolds created (YNAB-01, YNAB-03, YNAB-04, YNAB-05)
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 10
-  completed_plans: 6
+  completed_plans: 7
   percent: 89
 ---
 
@@ -54,6 +54,7 @@ Progress: [█████████░] 89%
 | Phase 16-user-accounts-multi-tenant-foundation P04 | 1440 | 1 tasks | 2 files |
 | Phase 17-ynab-oauth-token-management P02 | 4 min | 2 tasks | 4 files |
 | Phase 17-ynab-oauth-token-management P01 | 7 | 2 tasks | 4 files |
+| Phase 17-ynab-oauth-token-management P03 | 7 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -82,6 +83,8 @@ Recent decisions affecting current work:
 - [Phase 17-02]: it.todo() used for Wave 0 test stubs — renders as todo in vitest output (not failure), keeping suite green until Plans 03-05 implement routes
 - [Phase 17-ynab-oauth-token-management]: Node.js built-in crypto used for AES-256-GCM token encryption (no native deps like libsodium)
 - [Phase 17-ynab-oauth-token-management]: Error messages never include plaintext/ciphertext in crypto.ts — throws generic 'Decryption failed'
+- [Phase 17-ynab-oauth-token-management]: PKCE and state params omitted for v5.0 MVP (YNAB does not enforce for server-side clients); noted for future CSRF hardening
+- [Phase 17-ynab-oauth-token-management]: YNAB_CLIENT_SECRET used in POST body to token endpoint only — never in redirect URL or JSON response body
 
 ### Pending Todos
 
@@ -95,6 +98,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-30T07:29:52.497Z
-Stopped at: Completed 17-01-PLAN.md
+Last session: 2026-03-30T07:42:48.557Z
+Stopped at: Completed 17-03-PLAN.md
 Resume file: None
