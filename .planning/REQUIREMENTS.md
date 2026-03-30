@@ -38,18 +38,18 @@ Requirements for multi-tenant SaaS milestone. Each maps to roadmap phases.
 
 ### Dashboard & Self-Service
 
-- [ ] **DASH-01**: User can view their activity log (processed emails, outcomes, errors)
-- [ ] **DASH-02**: User can view their dashboard with stats (success rate, last transaction, total processed)
-- [ ] **DASH-03**: User can edit their settings (sender routing, currency accounts)
-- [ ] **DASH-04**: User can toggle test mode (process emails without YNAB writes)
-- [ ] **DASH-05**: User can see email parse transparency (Claude's reasoning for each parse)
+- [x] **DASH-01**: User can view their activity log (processed emails, outcomes, errors)
+- [x] **DASH-02**: User can view their dashboard with stats (success rate, last transaction, total processed)
+- [x] **DASH-03**: User can edit their settings (sender routing, currency accounts)
+- [x] **DASH-04**: User can toggle test mode (process emails without YNAB writes)
+- [x] **DASH-05**: User can see email parse transparency (Claude's reasoning for each parse)
 
 ### Onboarding & Account Management
 
-- [ ] **ONBD-01**: New user is guided through signup → connect YNAB → get forwarding address
-- [ ] **ONBD-02**: User sees provider-specific email forwarding instructions (Gmail, Outlook, etc.)
-- [ ] **ONBD-03**: User can delete their account and all associated data (GDPR)
-- [ ] **ONBD-04**: Homepage/landing page explains the product and has signup CTA
+- [x] **ONBD-01**: New user is guided through signup → connect YNAB → get forwarding address
+- [x] **ONBD-02**: User sees provider-specific email forwarding instructions (Gmail, Outlook, etc.)
+- [x] **ONBD-03**: User can delete their account and all associated data (GDPR)
+- [x] **ONBD-04**: Homepage/landing page explains the product and has signup CTA
 
 ## v5.1+ Requirements
 
@@ -114,15 +114,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EMAIL-03 | Phase 18 | Complete |
 | EMAIL-04 | Phase 18 | Complete |
 | EMAIL-05 | Phase 18 | Complete |
-| DASH-01 | Phase 19 | Pending |
-| DASH-02 | Phase 19 | Pending |
-| DASH-03 | Phase 19 | Pending |
-| DASH-04 | Phase 19 | Pending |
-| DASH-05 | Phase 19 | Pending |
-| ONBD-01 | Phase 19 | Pending |
-| ONBD-02 | Phase 19 | Pending |
-| ONBD-03 | Phase 19 | Pending |
-| ONBD-04 | Phase 19 | Pending |
+| DASH-01 | Phase 19 | Complete |
+| DASH-02 | Phase 19 | Complete |
+| DASH-03 | Phase 19 | Complete |
+| DASH-04 | Phase 19 | Complete |
+| DASH-05 | Phase 19 | Complete |
+| ONBD-01 | Phase 19 | Complete |
+| ONBD-02 | Phase 19 | Complete |
+| ONBD-03 | Phase 19 | Complete |
+| ONBD-04 | Phase 19 | Complete |
 
 **Coverage:**
 - v5.0 requirements: 26 total
