@@ -1,10 +1,8 @@
 import { redirect } from 'next/navigation'
-import { headers } from 'next/headers'
 import { auth } from '@/lib/auth'
-import SetupWizard from '../setup/SetupWizard'
 import { getDashboardStats } from '@/lib/activity-log-queries'
 import CopyButton from './components/CopyButton'
-import { loadDbSettings } from '@/lib/settings'
+import { prisma } from '@/lib/db'
 
 export const dynamic = 'force-dynamic'
 
@@ -29,20 +27,18 @@ export default async function DashboardPage() {
     redirect('/auth/signin')
   }
 
-  await loadDbSettings()
-  const isConfigured = !!process.env.SENDERS
+  // Fetch user data: onboarding status and forwarding email
+  const userRecord = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { onboardingCompleted: true, forwardingEmail: true },
+  })
 
-  if (!isConfigured) {
-    return <SetupWizard />
+  if (!userRecord?.onboardingCompleted) {
+    redirect('/onboarding')
   }
 
   const stats = await getDashboardStats(session.user.id)
-
-  const h = await headers()
-  const host = h.get('x-forwarded-host') ?? h.get('host') ?? 'localhost:3000'
-  const proto = h.get('x-forwarded-proto') ?? 'https'
-  const webhookUrl = `${proto}://${host}/api/webhook`
-  const inboundEmail = process.env.INBOUND_EMAIL ?? null
+  const inboundEmail = userRecord?.forwardingEmail ?? null
 
   // Build date filter for "this week" links
   const startOfWeek = new Date()
@@ -106,7 +102,7 @@ export default async function DashboardPage() {
         )}
       </div>
 
-      {/* Inbound email address */}
+      {/* Inbound email address — from User.forwardingEmail in DB */}
       {inboundEmail && (
         <div style={{ ...card, marginBottom: '1.5rem' }}>
           <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
@@ -135,34 +131,6 @@ export default async function DashboardPage() {
           </div>
         </div>
       )}
-
-      {/* DASH-03: Webhook URL */}
-      <div style={card}>
-        <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
-          Webhook URL
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <code style={{
-            flex: 1,
-            fontSize: '0.8125rem',
-            fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
-            color: '#111827',
-            backgroundColor: '#f9fafb',
-            padding: '0.5rem 0.75rem',
-            borderRadius: '6px',
-            border: '1px solid #e5e7eb',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}>
-            {webhookUrl}
-          </code>
-          <CopyButton text={webhookUrl} />
-        </div>
-        <div style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.5rem' }}>
-          Pipedream or webhook relay endpoint
-        </div>
-      </div>
     </div>
   )
 }
