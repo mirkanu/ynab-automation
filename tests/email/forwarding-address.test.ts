@@ -17,7 +17,8 @@ vi.mock('@/lib/db', () => ({
 import { generateMailboxHash, assignForwardingAddress } from '@/lib/email-forwarding';
 import { prisma } from '@/lib/db';
 
-const mockPrisma = prisma as {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mockPrisma = prisma as unknown as {
   emailForwardingAddress: {
     findFirst: ReturnType<typeof vi.fn>;
     create: ReturnType<typeof vi.fn>;
