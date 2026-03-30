@@ -23,7 +23,6 @@ export default async function SettingsPage() {
 
   const currentApiKeys = {
     anthropicKey: process.env.ANTHROPIC_API_KEY ?? '',
-    ynabToken: process.env.YNAB_PERSONAL_ACCESS_TOKEN ?? '',
     resendKey: process.env.RESEND_API_KEY ?? '',
     railwayToken: process.env.RAILWAY_API_TOKEN ?? '',
   };

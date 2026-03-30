@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
   const testMode = process.env.TEST_MODE === 'true' && !forceLive
 
   const memo = `${senderInfo.name}: ${parsed.description} - Automatically added from email`
-  const accountName = await getAccountName(budgetId, accountId)
+  const accountName = await getAccountName(userId, budgetId, accountId)
 
   // 5. If test mode (and not force-live), skip YNAB and log as test
   if (testMode) {
@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
 
   // 6. Create YNAB transaction
   try {
-    const transactionId = await createYnabTransaction({
+    const transactionId = await createYnabTransaction(userId, {
       budgetId,
       accountId,
       amount: parsed.amount,

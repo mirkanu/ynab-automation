@@ -22,7 +22,6 @@ interface SettingsFormProps {
   currentCurrencyAccounts: Record<string, string>;
   currentApiKeys: {
     anthropicKey: string;
-    ynabToken: string;
     resendKey: string;
     railwayToken: string;
   };
@@ -361,61 +360,11 @@ export default function SettingsForm({
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [saveError, setSaveError] = useState('');
 
-  // The effective YNAB token (pending edit or current)
-  const effectiveYnabToken = pendingKeys.ynabToken || currentApiKeys.ynabToken;
   // The effective Railway token (pending edit or current)
   const effectiveRailwayToken = pendingKeys.railwayToken || currentApiKeys.railwayToken;
 
-  // -- YNAB API (fetch budgets + accounts) ----------------------------------
-
-  const fetchYnabData = useCallback(async (token: string) => {
-    if (!token) return;
-    setYnabLoading(true);
-    setYnabError('');
-    try {
-      // Fetch budgets
-      const budgetRes = await fetch('https://api.youneedabudget.com/v1/budgets', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!budgetRes.ok) throw new Error(`YNAB returned ${budgetRes.status} — check your token`);
-      const budgetJson = await budgetRes.json() as { data: { budgets: YnabBudget[] } };
-      setBudgets(budgetJson.data.budgets);
-
-      // Fetch accounts for the current budget
-      const bid = budgetId || budgetJson.data.budgets[0]?.id;
-      if (bid) {
-        const acctRes = await fetch(`https://api.youneedabudget.com/v1/budgets/${bid}/accounts`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (acctRes.ok) {
-          const acctJson = await acctRes.json() as { data: { accounts: YnabAccount[] } };
-          setAccounts(acctJson.data.accounts.filter(a => !a.closed && a.type !== 'tracking'));
-        }
-      }
-    } catch (e) {
-      setYnabError((e as Error).message);
-    } finally {
-      setYnabLoading(false);
-    }
-  }, [budgetId]);
-
-  // Auto-fetch YNAB data on mount if we have a token
-  useEffect(() => {
-    if (effectiveYnabToken) fetchYnabData(effectiveYnabToken);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   async function handleBudgetChange(newBudgetId: string) {
     setBudgetId(newBudgetId);
-    if (!newBudgetId || !effectiveYnabToken) return;
-    try {
-      const res = await fetch(`https://api.youneedabudget.com/v1/budgets/${newBudgetId}/accounts`, {
-        headers: { Authorization: `Bearer ${effectiveYnabToken}` },
-      });
-      if (res.ok) {
-        const json = await res.json() as { data: { accounts: YnabAccount[] } };
-        setAccounts(json.data.accounts.filter(a => !a.closed && a.type !== 'tracking'));
-      }
-    } catch { /* ignore */ }
   }
 
   // Helper: get account name from ID
@@ -461,7 +410,6 @@ export default function SettingsForm({
 
     // Only include API keys if user provided a new value
     if (pendingKeys.anthropicKey) variables.ANTHROPIC_API_KEY = pendingKeys.anthropicKey;
-    if (pendingKeys.ynabToken) variables.YNAB_PERSONAL_ACCESS_TOKEN = pendingKeys.ynabToken;
     if (pendingKeys.resendKey) variables.RESEND_API_KEY = pendingKeys.resendKey;
     if (pendingKeys.railwayToken) variables.RAILWAY_API_TOKEN = pendingKeys.railwayToken;
 
@@ -668,17 +616,6 @@ export default function SettingsForm({
           masked={maskToken(pendingKeys.anthropicKey || currentApiKeys.anthropicKey)}
           onChange={v => setPendingKeys(prev => ({ ...prev, anthropicKey: v }))}
           hint={<>Get yours at <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noreferrer" style={{ color: '#2563eb' }}>console.anthropic.com</a></>}
-        />
-
-        <TokenField
-          label="YNAB Personal Access Token"
-          value={pendingKeys.ynabToken || currentApiKeys.ynabToken}
-          masked={maskToken(pendingKeys.ynabToken || currentApiKeys.ynabToken)}
-          onChange={v => {
-            setPendingKeys(prev => ({ ...prev, ynabToken: v }));
-            fetchYnabData(v);
-          }}
-          hint={<>Create at <a href="https://app.ynab.com/settings/developer" target="_blank" rel="noreferrer" style={{ color: '#2563eb' }}>app.ynab.com/settings/developer</a></>}
         />
 
         <TokenField

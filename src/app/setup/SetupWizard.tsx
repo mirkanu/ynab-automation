@@ -200,7 +200,6 @@ export default function SetupWizard() {
     setApplyError('');
 
     const variables: Record<string, string> = {
-      YNAB_PERSONAL_ACCESS_TOKEN: ynabToken,
       YNAB_BUDGET_ID: budgetId,
       SENDERS: sendersJson,
       ANTHROPIC_API_KEY: anthropicKey,
@@ -529,7 +528,6 @@ export default function SetupWizard() {
             <p style={{ ...S.hint, margin: '0 0 1rem' }}>
               Add these in your Railway service → Variables tab → Raw Editor.
             </p>
-            <EnvRow label="YNAB_PERSONAL_ACCESS_TOKEN" value={ynabToken} />
             <EnvRow label="YNAB_BUDGET_ID" value={budgetId} />
             <EnvRow label="SENDERS" value={sendersJson} />
             {hasCurrency && <EnvRow label="CURRENCY_ACCOUNTS" value={currencyJson} />}

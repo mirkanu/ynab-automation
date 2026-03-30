@@ -1,6 +1,20 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-// We will stub global fetch for all tests
+// Mock prisma and crypto for getValidYnabToken
+vi.mock('@/lib/db', () => ({
+  prisma: {
+    user: {
+      findUnique: vi.fn(),
+      update: vi.fn(),
+    },
+  },
+}))
+
+vi.mock('@/lib/crypto', () => ({
+  decryptToken: vi.fn((ciphertext: string) => 'test-token-abc'),
+  encryptToken: vi.fn((plaintext: string) => `encrypted:${plaintext}`),
+}))
+
 import {
   createYnabTransaction,
   getCategories,
@@ -8,6 +22,14 @@ import {
   type YnabTransactionParams,
   type YnabCategory,
 } from './ynab';
+import { prisma } from '@/lib/db';
+
+const mockPrisma = prisma as unknown as {
+  user: {
+    findUnique: ReturnType<typeof vi.fn>
+    update: ReturnType<typeof vi.fn>
+  }
+}
 
 const BASE_PARAMS: YnabTransactionParams = {
   budgetId: 'bud-456',
@@ -32,35 +54,45 @@ function makeOkResponse(transactionId: string) {
   };
 }
 
+// Set up a valid non-expired user token for all tests
+function mockFreshUser() {
+  const futureExpiry = BigInt(Date.now() + 30 * 60 * 1000);
+  mockPrisma.user.findUnique.mockResolvedValue({
+    oauthToken: 'encrypted-token',
+    oauthRefreshToken: 'encrypted-refresh-token',
+    oauthExpiresAt: futureExpiry,
+    lastRefreshAttemptAt: null,
+  });
+}
+
 describe('createYnabTransaction', () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
-    // Set required env var
-    process.env.YNAB_PERSONAL_ACCESS_TOKEN = 'test-token-abc';
+    mockFreshUser();
   });
 
   afterEach(() => {
     vi.unstubAllGlobals();
-    delete process.env.YNAB_PERSONAL_ACCESS_TOKEN;
+    vi.clearAllMocks();
   });
 
   it('POSTs to the correct YNAB endpoint for the given budgetId', async () => {
     fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-001'));
 
-    await createYnabTransaction(BASE_PARAMS);
+    await createYnabTransaction('user-123', BASE_PARAMS);
 
     expect(fetchMock).toHaveBeenCalledOnce();
     const [url] = fetchMock.mock.calls[0];
     expect(url).toBe('https://api.youneedabudget.com/v1/budgets/bud-456/transactions');
   });
 
-  it('sends correct Authorization header using YNAB_PERSONAL_ACCESS_TOKEN', async () => {
+  it('sends correct Authorization header using the user OAuth token', async () => {
     fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-002'));
 
-    await createYnabTransaction(BASE_PARAMS);
+    await createYnabTransaction('user-123', BASE_PARAMS);
 
     const [, options] = fetchMock.mock.calls[0];
     const headers = options.headers as Record<string, string>;
@@ -70,7 +102,7 @@ describe('createYnabTransaction', () => {
   it('converts amount to negative milliunits: 12.99 → -12990', async () => {
     fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-003'));
 
-    await createYnabTransaction(BASE_PARAMS);
+    await createYnabTransaction('user-123', BASE_PARAMS);
 
     const [, options] = fetchMock.mock.calls[0];
     const body = JSON.parse(options.body as string) as { transaction: { amount: number } };
@@ -80,7 +112,7 @@ describe('createYnabTransaction', () => {
   it('converts amount: 5.00 → -5000', async () => {
     fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-004'));
 
-    await createYnabTransaction({ ...BASE_PARAMS, amount: 5.0 });
+    await createYnabTransaction('user-123', { ...BASE_PARAMS, amount: 5.0 });
 
     const [, options] = fetchMock.mock.calls[0];
     const body = JSON.parse(options.body as string) as { transaction: { amount: number } };
@@ -90,7 +122,7 @@ describe('createYnabTransaction', () => {
   it('converts amount: 100.00 → -100000', async () => {
     fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-005'));
 
-    await createYnabTransaction({ ...BASE_PARAMS, amount: 100.0 });
+    await createYnabTransaction('user-123', { ...BASE_PARAMS, amount: 100.0 });
 
     const [, options] = fetchMock.mock.calls[0];
     const body = JSON.parse(options.body as string) as { transaction: { amount: number } };
@@ -100,7 +132,7 @@ describe('createYnabTransaction', () => {
   it('sets payee_name to the provided payeeName (Amazon)', async () => {
     fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-006'));
 
-    await createYnabTransaction(BASE_PARAMS);
+    await createYnabTransaction('user-123', BASE_PARAMS);
 
     const [, options] = fetchMock.mock.calls[0];
     const body = JSON.parse(options.body as string) as { transaction: { payee_name: string } };
@@ -110,7 +142,7 @@ describe('createYnabTransaction', () => {
   it('sets payee_name to Costco when payeeName is Costco', async () => {
     fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-012'));
 
-    await createYnabTransaction({ ...BASE_PARAMS, payeeName: 'Costco' });
+    await createYnabTransaction('user-123', { ...BASE_PARAMS, payeeName: 'Costco' });
 
     const [, options] = fetchMock.mock.calls[0];
     const body = JSON.parse(options.body as string) as { transaction: { payee_name: string } };
@@ -120,7 +152,7 @@ describe('createYnabTransaction', () => {
   it('formats memo as "Alice: AirPods case - Automatically added from email"', async () => {
     fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-007'));
 
-    await createYnabTransaction(BASE_PARAMS);
+    await createYnabTransaction('user-123', BASE_PARAMS);
 
     const [, options] = fetchMock.mock.calls[0];
     const body = JSON.parse(options.body as string) as { transaction: { memo: string } };
@@ -130,7 +162,7 @@ describe('createYnabTransaction', () => {
   it('omits category_id from the request body to prevent YNAB auto-assign', async () => {
     fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-008'));
 
-    await createYnabTransaction(BASE_PARAMS);
+    await createYnabTransaction('user-123', BASE_PARAMS);
 
     const [, options] = fetchMock.mock.calls[0];
     const body = JSON.parse(options.body as string) as { transaction: Record<string, unknown> };
@@ -140,7 +172,7 @@ describe('createYnabTransaction', () => {
   it('sets account_id from params.accountId', async () => {
     fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-009'));
 
-    await createYnabTransaction(BASE_PARAMS);
+    await createYnabTransaction('user-123', BASE_PARAMS);
 
     const [, options] = fetchMock.mock.calls[0];
     const body = JSON.parse(options.body as string) as { transaction: { account_id: string } };
@@ -150,7 +182,7 @@ describe('createYnabTransaction', () => {
   it('returns the transaction ID from the YNAB response', async () => {
     fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-010'));
 
-    const transactionId = await createYnabTransaction(BASE_PARAMS);
+    const transactionId = await createYnabTransaction('user-123', BASE_PARAMS);
 
     expect(transactionId).toBe('txn-uuid-010');
   });
@@ -162,13 +194,13 @@ describe('createYnabTransaction', () => {
       json: async () => ({ error: { detail: 'Invalid transaction' } }),
     });
 
-    await expect(createYnabTransaction(BASE_PARAMS)).rejects.toThrow('422');
+    await expect(createYnabTransaction('user-123', BASE_PARAMS)).rejects.toThrow('422');
   });
 
   it('uses the provided date in the YNAB transaction', async () => {
     fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-011'));
 
-    await createYnabTransaction({ ...BASE_PARAMS, date: '2024-03-15' });
+    await createYnabTransaction('user-123', { ...BASE_PARAMS, date: '2024-03-15' });
 
     const [, options] = fetchMock.mock.calls[0];
     const body = JSON.parse(options.body as string) as { transaction: { date: string } };
@@ -178,7 +210,7 @@ describe('createYnabTransaction', () => {
   it('includes category_id in the POST body when categoryId is provided', async () => {
     fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-013'));
 
-    await createYnabTransaction({ ...BASE_PARAMS, categoryId: 'cat-uuid-001' });
+    await createYnabTransaction('user-123', { ...BASE_PARAMS, categoryId: 'cat-uuid-001' });
 
     const [, options] = fetchMock.mock.calls[0];
     const body = JSON.parse(options.body as string) as { transaction: { category_id?: string } };
@@ -188,7 +220,7 @@ describe('createYnabTransaction', () => {
   it('omits category_id from the POST body when categoryId is undefined', async () => {
     fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-014'));
 
-    await createYnabTransaction({ ...BASE_PARAMS, categoryId: undefined });
+    await createYnabTransaction('user-123', { ...BASE_PARAMS, categoryId: undefined });
 
     const [, options] = fetchMock.mock.calls[0];
     const body = JSON.parse(options.body as string) as { transaction: Record<string, unknown> };
@@ -228,12 +260,12 @@ describe('getCategories', () => {
   beforeEach(() => {
     fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
-    process.env.YNAB_PERSONAL_ACCESS_TOKEN = 'test-token-abc';
+    mockFreshUser();
   });
 
   afterEach(() => {
     vi.unstubAllGlobals();
-    delete process.env.YNAB_PERSONAL_ACCESS_TOKEN;
+    vi.clearAllMocks();
   });
 
   it('GETs the correct YNAB categories endpoint', async () => {
@@ -242,7 +274,7 @@ describe('getCategories', () => {
       json: async () => MOCK_CATEGORY_GROUPS_RESPONSE,
     });
 
-    await getCategories('bud-456');
+    await getCategories('user-123', 'bud-456');
 
     const [url] = fetchMock.mock.calls[0];
     expect(url).toBe('https://api.youneedabudget.com/v1/budgets/bud-456/categories');
@@ -254,7 +286,7 @@ describe('getCategories', () => {
       json: async () => MOCK_CATEGORY_GROUPS_RESPONSE,
     });
 
-    const result = await getCategories('bud-456');
+    const result = await getCategories('user-123', 'bud-456');
 
     expect(result).toHaveLength(3);
     expect(result.map((c) => c.id)).toEqual(['cat-1', 'cat-2', 'cat-3']);
@@ -266,14 +298,14 @@ describe('getCategories', () => {
       json: async () => MOCK_CATEGORY_GROUPS_RESPONSE,
     });
 
-    const result = await getCategories('bud-456');
+    const result = await getCategories('user-123', 'bud-456');
     expect(result.find((c) => c.id === 'cat-deleted')).toBeUndefined();
   });
 
   it('throws when YNAB returns a non-2xx status', async () => {
     fetchMock.mockResolvedValueOnce({ ok: false, status: 401 });
 
-    await expect(getCategories('bud-456')).rejects.toThrow('401');
+    await expect(getCategories('user-123', 'bud-456')).rejects.toThrow('401');
   });
 });
 

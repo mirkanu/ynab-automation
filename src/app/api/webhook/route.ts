@@ -144,7 +144,7 @@ export async function POST(req: NextRequest) {
     let categoryName: string | undefined;
     if (categoryHint) {
       try {
-        const categories = await getCategories(budgetId);
+        const categories = await getCategories(userId, budgetId);
         const matched = findCategory(categories, categoryHint);
         if (matched) {
           categoryId = matched.id;
@@ -160,7 +160,7 @@ export async function POST(req: NextRequest) {
     const testMode = process.env.TEST_MODE === 'true';
 
     const memo = `${senderInfo.name}: ${parsed.description} - Automatically added from email`;
-    const accountName = await getAccountName(budgetId, accountId);
+    const accountName = await getAccountName(userId, budgetId, accountId);
 
     if (testMode) {
       console.log('TEST MODE — skipping YNAB transaction for', senderInfo.name);
@@ -194,7 +194,7 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-      const transactionId = await createYnabTransaction({
+      const transactionId = await createYnabTransaction(userId, {
         budgetId,
         accountId,
         amount: parsed.amount,
