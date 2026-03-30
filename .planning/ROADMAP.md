@@ -35,7 +35,7 @@ Phases 1-9 covered core pipeline, any-retailer support, category tagging, config
 
 - [x] **Phase 16: User Accounts & Multi-Tenant Foundation** — Auth.js sessions, multi-tenant DB schema with RLS, existing data migrated to user #1 (completed 2026-03-29)
 - [x] **Phase 17: YNAB OAuth & Token Management** — Per-user YNAB OAuth connect/disconnect, encrypted token storage, auto-refresh (completed 2026-03-30)
-- [ ] **Phase 18: Per-User Inbound Email** — Unique forwarding addresses, webhook routing by user, end-to-end email-to-YNAB for any user
+- [x] **Phase 18: Per-User Inbound Email** — Unique forwarding addresses, webhook routing by user, end-to-end email-to-YNAB for any user (completed 2026-03-30)
 - [ ] **Phase 19: Dashboard, Onboarding & Account Management** — Per-user dashboard, guided onboarding, settings, test mode, account deletion
 
 ## Phase Details
@@ -124,5 +124,5 @@ Plans:
 | 15. Test & Replay Tools | v4.0 | 1/1 | Complete | 2026-03-28 |
 | 16. User Accounts & Multi-Tenant Foundation | v5.0 | 4/4 | Complete | 2026-03-29 |
 | 17. YNAB OAuth & Token Management | 6/6 | Complete    | 2026-03-30 | - |
-| 18. Per-User Inbound Email | 4/5 | In Progress|  | - |
+| 18. Per-User Inbound Email | 5/5 | Complete   | 2026-03-30 | - |
 | 19. Dashboard, Onboarding & Account Management | v5.0 | 0/? | Not started | - |

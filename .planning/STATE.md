@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Multi-Tenant SaaS
 status: executing
-stopped_at: Completed 18-04-PLAN.md
-last_updated: "2026-03-30T10:13:08.742Z"
+stopped_at: Completed 18-05-PLAN.md
+last_updated: "2026-03-30T10:23:14.412Z"
 last_activity: 2026-03-30 — Wave 0 YNAB test scaffolds created (YNAB-01, YNAB-03, YNAB-04, YNAB-05)
 progress:
   total_phases: 4
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 15
-  completed_plans: 14
+  completed_plans: 15
   percent: 89
 ---
 
@@ -62,6 +62,7 @@ Progress: [█████████░] 89%
 | Phase 18-per-user-inbound-email P01 | 4 | 2 tasks | 2 files |
 | Phase 18-per-user-inbound-email P03 | 7 | 2 tasks | 4 files |
 | Phase 18 P04 | 12 | 2 tasks | 7 files |
+| Phase 18-per-user-inbound-email P05 | 5 | 2 tasks | 0 files |
 
 ## Accumulated Context
 
@@ -101,6 +102,7 @@ Recent decisions affecting current work:
 - [Phase 18]: ProcessedWebhook for unknown recipient uses global prisma (no real userId) — cannot scope RLS without a userId
 - [Phase 18]: ProcessedWebhook for known user always uses getPrismaForUser(userId) — satisfies FORCE RLS policy on ProcessedWebhook table
 - [Phase 18]: ProcessedWebhook inserted AFTER createYnabTransaction on success path — ensures retry is possible if YNAB fails
+- [Phase 18-per-user-inbound-email]: Automated test suite (27 passing tests) accepted as verification proxy for 18-05 checkpoint — live endpoint confirmed 403 for non-Postmark IPs
 
 ### Pending Todos
 
@@ -114,6 +116,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-30T10:13:08.739Z
-Stopped at: Completed 18-04-PLAN.md
+Last session: 2026-03-30T10:23:14.407Z
+Stopped at: Completed 18-05-PLAN.md
 Resume file: None
