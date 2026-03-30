@@ -108,7 +108,14 @@ Plans:
   4. User can enable test mode and confirm forwarded emails parse without writing to YNAB
   5. User can delete their account and all associated data is removed
   6. A visitor landing on the homepage understands the product and can click through to sign up
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+- [ ] 19-01-PLAN.md — Schema migration (testMode + onboardingCompleted on User) + Wave 0 test stubs
+- [ ] 19-02-PLAN.md — Per-user test mode API + parse transparency in LogRow + dashboard forwarding email from DB
+- [ ] 19-03-PLAN.md — Email provider lib + onboarding route + OnboardingSteps client component
+- [ ] 19-04-PLAN.md — Account deletion endpoint + Settings UI + public homepage + middleware update
+- [ ] 19-05-PLAN.md — Human verify checkpoint: full end-to-end UX across all 9 requirements
 
 ## Progress
 
@@ -125,4 +132,4 @@ Plans:
 | 16. User Accounts & Multi-Tenant Foundation | v5.0 | 4/4 | Complete | 2026-03-29 |
 | 17. YNAB OAuth & Token Management | 6/6 | Complete    | 2026-03-30 | - |
 | 18. Per-User Inbound Email | 5/5 | Complete    | 2026-03-30 | - |
-| 19. Dashboard, Onboarding & Account Management | v5.0 | 0/? | Not started | - |
+| 19. Dashboard, Onboarding & Account Management | v5.0 | 0/5 | Not started | - |
