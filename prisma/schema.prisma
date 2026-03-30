@@ -81,6 +81,10 @@ model User {
   // Prepared for Phase 18 (unique forwarding email per user)
   forwardingEmail String? @unique
 
+  // Phase 19: per-user test mode and onboarding state
+  testMode             Boolean   @default(false)
+  onboardingCompleted  Boolean   @default(false)
+
   accounts                 Account[]
   sessions                 Session[]
   activityLogs             ActivityLog[]
