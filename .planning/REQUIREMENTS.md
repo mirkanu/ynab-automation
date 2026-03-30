@@ -23,11 +23,11 @@ Requirements for multi-tenant SaaS milestone. Each maps to roadmap phases.
 
 ### Email Routing
 
-- [ ] **EMAIL-01**: User receives a unique forwarding email address upon signup
-- [ ] **EMAIL-02**: Forwarded emails are routed to the correct user via inbound email service
-- [ ] **EMAIL-03**: Inbound webhook verifies signature to prevent forged emails
-- [ ] **EMAIL-04**: Duplicate webhook deliveries are deduplicated (idempotency)
-- [ ] **EMAIL-05**: Forwarded email is parsed and creates YNAB transaction in the user's connected account
+- [x] **EMAIL-01**: User receives a unique forwarding email address upon signup
+- [x] **EMAIL-02**: Forwarded emails are routed to the correct user via inbound email service
+- [x] **EMAIL-03**: Inbound webhook verifies signature to prevent forged emails
+- [x] **EMAIL-04**: Duplicate webhook deliveries are deduplicated (idempotency)
+- [x] **EMAIL-05**: Forwarded email is parsed and creates YNAB transaction in the user's connected account
 
 ### Multi-Tenant Data
 
@@ -109,11 +109,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | YNAB-03 | Phase 17 | Complete |
 | YNAB-04 | Phase 17 | Complete |
 | YNAB-05 | Phase 17 | Complete |
-| EMAIL-01 | Phase 18 | Pending |
-| EMAIL-02 | Phase 18 | Pending |
-| EMAIL-03 | Phase 18 | Pending |
-| EMAIL-04 | Phase 18 | Pending |
-| EMAIL-05 | Phase 18 | Pending |
+| EMAIL-01 | Phase 18 | Complete |
+| EMAIL-02 | Phase 18 | Complete |
+| EMAIL-03 | Phase 18 | Complete |
+| EMAIL-04 | Phase 18 | Complete |
+| EMAIL-05 | Phase 18 | Complete |
 | DASH-01 | Phase 19 | Pending |
 | DASH-02 | Phase 19 | Pending |
 | DASH-03 | Phase 19 | Pending |
