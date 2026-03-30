@@ -88,7 +88,14 @@ Plans:
   3. Forwarding the same email twice does not create a duplicate YNAB transaction
   4. A forged/unsigned inbound webhook is rejected (returns 4xx, no transaction created)
   5. A forwarded order confirmation email results in a YNAB transaction with the correct amount, payee, and account
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+- [ ] 18-01-PLAN.md — Schema migration: EmailForwardingAddress + ProcessedWebhook tables with RLS
+- [ ] 18-02-PLAN.md — Wave 0 test scaffolds for EMAIL-01 through EMAIL-05
+- [ ] 18-03-PLAN.md — Forwarding address lib (generateMailboxHash, assignForwardingAddress) + Auth.js createUser event
+- [ ] 18-04-PLAN.md — POST /api/email/inbound webhook handler (IP check, dedup, user routing, YNAB transaction)
+- [ ] 18-05-PLAN.md — Human verify checkpoint: live email forwarding, duplicate dedup, multi-user isolation
 
 ### Phase 19: Dashboard, Onboarding & Account Management
 **Goal**: Users can see their automation activity, configure their setup, and a new user is guided from signup to first working transaction in under 5 minutes
@@ -117,5 +124,5 @@ Plans:
 | 15. Test & Replay Tools | v4.0 | 1/1 | Complete | 2026-03-28 |
 | 16. User Accounts & Multi-Tenant Foundation | v5.0 | 4/4 | Complete | 2026-03-29 |
 | 17. YNAB OAuth & Token Management | 6/6 | Complete    | 2026-03-30 | - |
-| 18. Per-User Inbound Email | v5.0 | 0/? | Not started | - |
+| 18. Per-User Inbound Email | v5.0 | 0/5 | Not started | - |
 | 19. Dashboard, Onboarding & Account Management | v5.0 | 0/? | Not started | - |
