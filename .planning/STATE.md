@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Multi-Tenant SaaS
 status: executing
-stopped_at: Completed 17-03-PLAN.md
-last_updated: "2026-03-30T07:42:48.561Z"
+stopped_at: Completed 17-04-PLAN.md
+last_updated: "2026-03-30T08:10:33.476Z"
 last_activity: 2026-03-30 — Wave 0 YNAB test scaffolds created (YNAB-01, YNAB-03, YNAB-04, YNAB-05)
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 10
-  completed_plans: 7
+  completed_plans: 8
   percent: 89
 ---
 
@@ -55,6 +55,7 @@ Progress: [█████████░] 89%
 | Phase 17-ynab-oauth-token-management P02 | 4 min | 2 tasks | 4 files |
 | Phase 17-ynab-oauth-token-management P01 | 7 | 2 tasks | 4 files |
 | Phase 17-ynab-oauth-token-management P03 | 7 | 2 tasks | 4 files |
+| Phase 17-ynab-oauth-token-management P04 | 21 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -85,6 +86,7 @@ Recent decisions affecting current work:
 - [Phase 17-ynab-oauth-token-management]: Error messages never include plaintext/ciphertext in crypto.ts — throws generic 'Decryption failed'
 - [Phase 17-ynab-oauth-token-management]: PKCE and state params omitted for v5.0 MVP (YNAB does not enforce for server-side clients); noted for future CSRF hardening
 - [Phase 17-ynab-oauth-token-management]: YNAB_CLIENT_SECRET used in POST body to token endpoint only — never in redirect URL or JSON response body
+- [Phase 17-ynab-oauth-token-management]: getValidYnabToken uses BigInt comparison for oauthExpiresAt stored as BigInt; concurrent refresh mutex via DB timestamp not in-process lock
 
 ### Pending Todos
 
@@ -98,6 +100,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-30T07:42:48.557Z
-Stopped at: Completed 17-03-PLAN.md
+Last session: 2026-03-30T08:10:33.473Z
+Stopped at: Completed 17-04-PLAN.md
 Resume file: None
