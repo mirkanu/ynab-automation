@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { getDashboardStats } from '@/lib/activity-log-queries'
-import CopyButton from './components/CopyButton'
+import CopyButton from '../components/CopyButton'
 import { prisma } from '@/lib/db'
 
 export const dynamic = 'force-dynamic'

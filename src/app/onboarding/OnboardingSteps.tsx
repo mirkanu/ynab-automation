@@ -42,7 +42,7 @@ export default function OnboardingSteps({
     setCompleting(true)
     try {
       await fetch('/api/onboarding/complete', { method: 'POST' })
-      router.push('/')
+      router.push('/dashboard')
     } catch {
       setCompleting(false)
     }

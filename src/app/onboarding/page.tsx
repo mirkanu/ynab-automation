@@ -15,7 +15,7 @@ export default async function OnboardingPage() {
     select: { onboardingCompleted: true, oauthToken: true, forwardingEmail: true, email: true },
   })
 
-  if (user?.onboardingCompleted) redirect('/')
+  if (user?.onboardingCompleted) redirect('/dashboard')
 
   const provider = detectEmailProvider(session.user.email ?? '')
   const instructions = user?.forwardingEmail

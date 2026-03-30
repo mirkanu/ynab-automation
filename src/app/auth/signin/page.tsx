@@ -13,7 +13,7 @@ export default function SignInPage({
     const email = formData.get('email') as string
     if (!email) return
     try {
-      await signIn('resend', { email, redirectTo: '/' })
+      await signIn('resend', { email, redirectTo: '/dashboard' })
     } catch (e: unknown) {
       // Auth.js throws a NEXT_REDIRECT on success — let it propagate
       if (e instanceof Error && e.message?.includes('NEXT_REDIRECT')) {
