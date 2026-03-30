@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Multi-Tenant SaaS
 status: executing
-stopped_at: Completed 16-04-PLAN.md
-last_updated: "2026-03-29T23:00:32.548Z"
-last_activity: 2026-03-29 — RLS + auth middleware + two-layer tenant isolation applied (DATA-03, DATA-04)
+stopped_at: Completed 17-02-PLAN.md
+last_updated: "2026-03-30T07:23:14Z"
+last_activity: 2026-03-30 — Wave 0 YNAB test scaffolds created (YNAB-01, YNAB-03, YNAB-04, YNAB-05)
 progress:
   total_phases: 4
   completed_phases: 1
@@ -23,14 +23,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** Forwarded order confirmation email → YNAB transaction, fully automated — for any user
-**Current focus:** v5.0 Multi-Tenant SaaS — Phase 16: User Accounts & Multi-Tenant Foundation
+**Current focus:** v5.0 Multi-Tenant SaaS — Phase 17: YNAB OAuth Token Management
 
 ## Current Position
 
-Phase: 16 of 19 (User Accounts & Multi-Tenant Foundation)
-Plan: 03 complete, ready for 16-04
+Phase: 17 of 19 (YNAB OAuth Token Management)
+Plan: 02 complete, ready for 17-03
 Status: In progress
-Last activity: 2026-03-29 — RLS + auth middleware + two-layer tenant isolation applied (DATA-03, DATA-04)
+Last activity: 2026-03-30 — Wave 0 YNAB test scaffolds created (YNAB-01, YNAB-03, YNAB-04, YNAB-05)
 
 Progress: [█████████░] 89%
 
@@ -52,6 +52,7 @@ Progress: [█████████░] 89%
 | Phase 16-user-accounts-multi-tenant-foundation P02 | 17 min | 2 tasks | 7 files |
 | Phase 16-user-accounts-multi-tenant-foundation P03 | 9 | 3 tasks | 10 files |
 | Phase 16-user-accounts-multi-tenant-foundation P04 | 1440 | 1 tasks | 2 files |
+| Phase 17-ynab-oauth-token-management P02 | 4 min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -77,6 +78,7 @@ Recent decisions affecting current work:
 - [Phase 16-04]: API routes excluded from middleware matcher so unauthenticated calls return 401 not 307 redirect
 - [Phase 16-04]: Auth.js signIn() must be called from server action not client-side fetch — avoids CSRF issues
 - [Phase 16-04]: Iron-session middleware replaced with Auth.js middleware — was left over from pre-Phase-16 code
+- [Phase 17-02]: it.todo() used for Wave 0 test stubs — renders as todo in vitest output (not failure), keeping suite green until Plans 03-05 implement routes
 
 ### Pending Todos
 
@@ -90,6 +92,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-29T22:52:00.433Z
-Stopped at: Completed 16-04-PLAN.md
+Last session: 2026-03-30T07:23:14Z
+Stopped at: Completed 17-02-PLAN.md
 Resume file: None

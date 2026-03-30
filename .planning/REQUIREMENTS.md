@@ -15,11 +15,11 @@ Requirements for multi-tenant SaaS milestone. Each maps to roadmap phases.
 
 ### YNAB Integration
 
-- [ ] **YNAB-01**: User can connect YNAB account via OAuth (Authorization Code Grant)
+- [x] **YNAB-01**: User can connect YNAB account via OAuth (Authorization Code Grant)
 - [ ] **YNAB-02**: YNAB OAuth tokens are encrypted at rest (AES-256-GCM)
-- [ ] **YNAB-03**: YNAB tokens auto-refresh before expiry
-- [ ] **YNAB-04**: User can disconnect YNAB account (revokes tokens)
-- [ ] **YNAB-05**: User can select default YNAB budget and account after connecting
+- [x] **YNAB-03**: YNAB tokens auto-refresh before expiry
+- [x] **YNAB-04**: User can disconnect YNAB account (revokes tokens)
+- [x] **YNAB-05**: User can select default YNAB budget and account after connecting
 
 ### Email Routing
 
@@ -104,11 +104,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DATA-02 | Phase 16 | Complete |
 | DATA-03 | Phase 16 | Complete |
 | DATA-04 | Phase 16 | Complete |
-| YNAB-01 | Phase 17 | Pending |
+| YNAB-01 | Phase 17 | Complete |
 | YNAB-02 | Phase 17 | Pending |
-| YNAB-03 | Phase 17 | Pending |
-| YNAB-04 | Phase 17 | Pending |
-| YNAB-05 | Phase 17 | Pending |
+| YNAB-03 | Phase 17 | Complete |
+| YNAB-04 | Phase 17 | Complete |
+| YNAB-05 | Phase 17 | Complete |
 | EMAIL-01 | Phase 18 | Pending |
 | EMAIL-02 | Phase 18 | Pending |
 | EMAIL-03 | Phase 18 | Pending |
