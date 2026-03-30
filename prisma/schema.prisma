@@ -73,6 +73,11 @@ model User {
   oauthRefreshToken String?
   oauthExpiresAt    BigInt?
 
+  // Phase 17: token management fields
+  lastRefreshAttemptAt  DateTime?  // Mutex: prevents concurrent refresh token exhaustion
+  selectedBudgetId      String?    // Phase 17 YNAB-05: user's chosen default budget
+  selectedAccountId     String?    // Phase 17 YNAB-05: user's chosen default account
+
   // Prepared for Phase 18 (unique forwarding email per user)
   forwardingEmail String? @unique
 
