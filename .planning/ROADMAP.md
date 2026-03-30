@@ -124,5 +124,5 @@ Plans:
 | 15. Test & Replay Tools | v4.0 | 1/1 | Complete | 2026-03-28 |
 | 16. User Accounts & Multi-Tenant Foundation | v5.0 | 4/4 | Complete | 2026-03-29 |
 | 17. YNAB OAuth & Token Management | 6/6 | Complete    | 2026-03-30 | - |
-| 18. Per-User Inbound Email | 1/5 | In Progress|  | - |
+| 18. Per-User Inbound Email | 2/5 | In Progress|  | - |
 | 19. Dashboard, Onboarding & Account Management | v5.0 | 0/? | Not started | - |

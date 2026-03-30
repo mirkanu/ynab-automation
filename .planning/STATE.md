@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Multi-Tenant SaaS
 status: executing
-stopped_at: Completed 18-02-PLAN.md
-last_updated: "2026-03-30T09:51:13.031Z"
+stopped_at: Completed 18-01-PLAN.md
+last_updated: "2026-03-30T09:54:42.565Z"
 last_activity: 2026-03-30 — Wave 0 YNAB test scaffolds created (YNAB-01, YNAB-03, YNAB-04, YNAB-05)
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 15
-  completed_plans: 11
+  completed_plans: 12
   percent: 89
 ---
 
@@ -59,6 +59,7 @@ Progress: [█████████░] 89%
 | Phase 17-ynab-oauth-token-management P05 | 7 | 2 tasks | 7 files |
 | Phase 17-ynab-oauth-token-management P06 | 5 | 1 tasks | 0 files |
 | Phase 18 P02 | 130 | 1 tasks | 5 files |
+| Phase 18-per-user-inbound-email P01 | 4 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -93,6 +94,8 @@ Recent decisions affecting current work:
 - [Phase 17-ynab-oauth-token-management]: Server component (page.tsx) reads YNAB status from DB and passes as props to YnabConnectionSection client component — avoids client-side auth status fetch
 - [Phase 17-ynab-oauth-token-management]: Automated test suite accepted as verification proxy for 17-06 checkpoint — full browser OAuth deferred pending YNAB developer credentials (YNAB_CLIENT_ID/YNAB_CLIENT_SECRET)
 - [Phase 18]: it.todo() stubs kept import-free so test runner never errors on missing source modules
+- [Phase 18-per-user-inbound-email]: Manually authored migration SQL (no local PostgreSQL) — followed existing patterns from Phase 16 migrations
+- [Phase 18-per-user-inbound-email]: RLS policy uses current_setting('app.user_id', true) directly — matches plan spec and works with getPrismaForUser()
 
 ### Pending Todos
 
@@ -106,6 +109,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-30T09:51:13.028Z
-Stopped at: Completed 18-02-PLAN.md
+Last session: 2026-03-30T09:54:42.562Z
+Stopped at: Completed 18-01-PLAN.md
 Resume file: None
