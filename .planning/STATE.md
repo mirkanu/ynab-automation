@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Multi-Tenant SaaS
 status: executing
-stopped_at: Completed 19-03-PLAN.md
-last_updated: "2026-03-30T15:53:28.454Z"
+stopped_at: Completed 19-04-PLAN.md
+last_updated: "2026-03-30T16:12:14.972Z"
 last_activity: 2026-03-30 — Wave 0 YNAB test scaffolds created (YNAB-01, YNAB-03, YNAB-04, YNAB-05)
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 20
-  completed_plans: 18
+  completed_plans: 19
   percent: 89
 ---
 
@@ -66,6 +66,7 @@ Progress: [█████████░] 89%
 | Phase 19-dashboard-onboarding-account-management P01 | 5 | 2 tasks | 9 files |
 | Phase 19-dashboard-onboarding-account-management P03 | 12 | 2 tasks | 8 files |
 | Phase 19-dashboard-onboarding-account-management P02 | 9 | 2 tasks | 9 files |
+| Phase 19-dashboard-onboarding-account-management P04 | 14 | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -113,6 +114,9 @@ Recent decisions affecting current work:
 - [Phase 19-02]: TestModeBanner extracted to client component so server layout can pass DB-read testMode as prop while keeping interactive toggle
 - [Phase 19-02]: formatParseResult uses whitelist approach (explicit fields only) - safer against future debug field additions
 - [Phase 19-02]: page.tsx: webhookUrl section removed (Pipedream was v4.0 single-user, not relevant in multi-tenant)
+- [Phase 19-04]: Dashboard URL moved from / to /dashboard — public homepage at / requires root page.tsx precedence
+- [Phase 19-04]: Account deletion uses single prisma.user.delete() — onDelete: Cascade handles all child rows
+- [Phase 19-04]: SettingsForm stripped of v4.0 admin tooling — per-user controls only (test mode, forwarding email, danger zone)
 
 ### Pending Todos
 
@@ -126,6 +130,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-30T15:53:28.450Z
-Stopped at: Completed 19-03-PLAN.md
+Last session: 2026-03-30T16:12:14.968Z
+Stopped at: Completed 19-04-PLAN.md
 Resume file: None
