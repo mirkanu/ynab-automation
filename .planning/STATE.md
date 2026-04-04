@@ -136,9 +136,10 @@ None yet.
 |---|-------------|------|--------|-----------|
 | 2 | Add email indicator to onboarding welcome screen | 2026-04-04 | e303ed9 | [2-add-email-indicator-to-onboarding-welcom](./quick/2-add-email-indicator-to-onboarding-welcom/) |
 | 3 | Remove SENDERS config — use user's selected account | 2026-04-04 | afa76bd | [3-remove-senders-config-dependency-from-in](./quick/3-remove-senders-config-dependency-from-in/) |
+| 4 | Restore per-sender routing rules UI and pipeline | 2026-04-04 | f1e2703 | [4-restore-per-sender-routing-rules-ui-and-](./quick/4-restore-per-sender-routing-rules-ui-and-/) |
 
 ## Session Continuity
 
-Last session: 2026-04-04T13:14:07.224Z
-Stopped at: Completed quick task 2: Add email indicator to onboarding welcome screen
+Last session: 2026-04-04T17:33:20Z
+Stopped at: Completed quick task 4: Restore per-sender routing rules UI and pipeline
 Resume file: None
