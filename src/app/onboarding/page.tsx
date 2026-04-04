@@ -24,9 +24,12 @@ export default async function OnboardingPage() {
 
   return (
     <div style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', padding: '2rem', maxWidth: '600px', margin: '0 auto' }}>
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#111827', marginBottom: '0.5rem' }}>
+      <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#111827', marginBottom: '0.25rem' }}>
         Welcome! Let&apos;s get you set up
       </h1>
+      <p style={{ color: '#9ca3af', fontSize: '0.8125rem', marginBottom: '0.75rem' }}>
+        Signed in as {session.user.email}
+      </p>
       <p style={{ color: '#6b7280', marginBottom: '2rem', fontSize: '0.875rem' }}>
         Follow these 3 steps to start processing your order confirmation emails automatically.
       </p>
