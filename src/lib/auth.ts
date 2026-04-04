@@ -4,8 +4,43 @@ import Resend from 'next-auth/providers/resend'
 import { prisma } from '@/lib/db'
 import { assignForwardingAddress } from '@/lib/email-forwarding'
 
+// Wrap PrismaAdapter to convert BigInt fields (oauthExpiresAt) to Number
+// before Auth.js tries to JSON-serialize the User object
+const baseAdapter = PrismaAdapter(prisma)
+const adapter = {
+  ...baseAdapter,
+  async getUser(id: string) {
+    const user = await baseAdapter.getUser!(id)
+    return user ? sanitizeBigInt(user) : null
+  },
+  async getUserByEmail(email: string) {
+    const user = await baseAdapter.getUserByEmail!(email)
+    return user ? sanitizeBigInt(user) : null
+  },
+  async getUserByAccount(providerAccountId: { provider: string; providerAccountId: string }) {
+    const user = await baseAdapter.getUserByAccount!(providerAccountId)
+    return user ? sanitizeBigInt(user) : null
+  },
+  async getSessionAndUser(sessionToken: string) {
+    const result = await baseAdapter.getSessionAndUser!(sessionToken)
+    if (!result) return null
+    return { ...result, user: sanitizeBigInt(result.user) }
+  },
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function sanitizeBigInt<T extends Record<string, any>>(obj: T): T {
+  const result = { ...obj }
+  for (const key in result) {
+    if (typeof result[key] === 'bigint') {
+      result[key] = Number(result[key]) as typeof result[typeof key]
+    }
+  }
+  return result
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  adapter,
   providers: [
     Resend({
       apiKey: process.env.RESEND_API_KEY,
