@@ -116,9 +116,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ status: 'parse_error' }, { status: 200 });
     }
 
+    // Step 5b: Currency-based account override (after parsing, since we need parsed.currency)
+    const currencyRuleSetting = await prisma.setting.findUnique({
+      where: { userId_key: { userId, key: 'CURRENCY_RULES' } },
+    });
+    if (currencyRuleSetting?.value) {
+      try {
+        const currencyRules = JSON.parse(currencyRuleSetting.value) as Array<{ currency: string; accountId: string }>;
+        const currencyMatch = currencyRules.find((r) => r.currency.toUpperCase() === parsed.currency.toUpperCase());
+        if (currencyMatch?.accountId) {
+          accountId = currencyMatch.accountId;
+        }
+      } catch {
+        // Malformed currency rules JSON — keep existing accountId
+      }
+    }
+
     // Step 6: Resolve category and account from user's saved selection
     const budgetId = user.selectedBudgetId;
-    // accountId already resolved above (with sender rule override if applicable)
 
     let categoryId: string | undefined;
     let categoryName: string | undefined;
