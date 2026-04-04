@@ -138,9 +138,10 @@ None yet.
 | 3 | Remove SENDERS config — use user's selected account | 2026-04-04 | afa76bd | [3-remove-senders-config-dependency-from-in](./quick/3-remove-senders-config-dependency-from-in/) |
 | 4 | Restore per-sender routing rules UI and pipeline | 2026-04-04 | f1e2703 | [4-restore-per-sender-routing-rules-ui-and-](./quick/4-restore-per-sender-routing-rules-ui-and-/) |
 | 5 | Add Edit button to sender routing rules | 2026-04-04 | 03bff61 | [5-add-edit-button-to-sender-routing-rules](./quick/5-add-edit-button-to-sender-routing-rules/) |
+| 6 | Restore currency-based account routing rules | 2026-04-04 | 58cb8be | [6-restore-currency-based-account-routing-r](./quick/6-restore-currency-based-account-routing-r/) |
 
 ## Session Continuity
 
-Last session: 2026-04-04T17:37:28Z
-Stopped at: Completed quick task 5: Add Edit button to sender routing rules
+Last session: 2026-04-04T17:42:11Z
+Stopped at: Completed quick task 6: Restore currency-based account routing rules
 Resume file: None
