@@ -71,6 +71,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ status: 'no_budget_selected' }, { status: 200 });
     }
 
+    // Step 4b: Check for per-sender routing rule override
+    const senderRuleSetting = await prisma.setting.findUnique({
+      where: { userId_key: { userId, key: 'SENDER_RULES' } },
+    });
+
+    let accountId = user.selectedAccountId;  // default
+    if (senderRuleSetting?.value) {
+      try {
+        const rules = JSON.parse(senderRuleSetting.value) as Array<{ email: string; accountId: string }>;
+        // Normalize sender: Postmark From may be "Name <email@example.com>"
+        const senderEmail = (body.From as string ?? '').replace(/.*<(.+)>.*/, '$1').trim().toLowerCase();
+        const match = rules.find((r) => r.email.toLowerCase() === senderEmail);
+        if (match?.accountId) {
+          accountId = match.accountId;
+        }
+      } catch {
+        // Malformed rules JSON — fall back to default accountId
+      }
+    }
+
     // Step 5: Parse email with Claude (no SENDERS config needed — any sender is accepted)
     const html = body.HtmlBody ?? '';
     const sender = body.From ?? '';
@@ -98,7 +118,7 @@ export async function POST(request: NextRequest) {
 
     // Step 6: Resolve category and account from user's saved selection
     const budgetId = user.selectedBudgetId;
-    const accountId = user.selectedAccountId;
+    // accountId already resolved above (with sender rule override if applicable)
 
     let categoryId: string | undefined;
     let categoryName: string | undefined;
