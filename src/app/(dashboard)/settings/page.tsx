@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import SettingsForm from './SettingsForm';
 import YnabConnectionSection from './YnabConnectionSection';
+import SenderRulesSection from './SenderRulesSection';
 import DangerZone from './DangerZone';
 
 export const dynamic = 'force-dynamic';
@@ -41,6 +42,11 @@ export default async function SettingsPage() {
         connected={ynabConnected}
         initialBudgetId={user?.selectedBudgetId}
         initialAccountId={user?.selectedAccountId}
+      />
+
+      <SenderRulesSection
+        connected={ynabConnected}
+        initialBudgetId={user?.selectedBudgetId}
       />
 
       <SettingsForm
