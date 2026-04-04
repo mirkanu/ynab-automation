@@ -51,6 +51,6 @@ export async function GET(req: Request) {
   })
 
   return NextResponse.redirect(
-    `${process.env.APP_URL}/dashboard/settings?ynab_connected=true`
+    `${process.env.APP_URL}/settings?ynab_connected=true`
   )
 }
