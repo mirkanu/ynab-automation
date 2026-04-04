@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 Phase: 19 of 19 (Dashboard, Onboarding, Account Management)
 Plan: 05 complete — ALL PLANS COMPLETE
 Status: Complete
-Last activity: 2026-04-04 - Completed quick task 2: Add email indicator to onboarding welcome screen
+Last activity: 2026-04-04 - Completed quick task 3: Remove SENDERS config — use user's selected account
 
 Progress: [██████████] 100%
 
@@ -135,6 +135,7 @@ None yet.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 2 | Add email indicator to onboarding welcome screen | 2026-04-04 | e303ed9 | [2-add-email-indicator-to-onboarding-welcom](./quick/2-add-email-indicator-to-onboarding-welcom/) |
+| 3 | Remove SENDERS config — use user's selected account | 2026-04-04 | afa76bd | [3-remove-senders-config-dependency-from-in](./quick/3-remove-senders-config-dependency-from-in/) |
 
 ## Session Continuity
 
