@@ -159,6 +159,12 @@ export default function SenderRulesSection({ connected, initialBudgetId }: Props
   const [loadingAccounts, setLoadingAccounts] = useState(false);
   const [newAccountId, setNewAccountId] = useState('');
 
+  // Edit state
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [editEmail, setEditEmail] = useState('');
+  const [editName, setEditName] = useState('');
+  const [editAccountId, setEditAccountId] = useState('');
+
   const fetchRules = useCallback(async () => {
     setLoading(true);
     try {
@@ -244,6 +250,37 @@ export default function SenderRulesSection({ connected, initialBudgetId }: Props
   const handleDeleteRule = async (index: number) => {
     const updated = rules.filter((_, i) => i !== index);
     await saveRules(updated);
+    if (editIndex === index) setEditIndex(null);
+  };
+
+  const startEdit = (index: number) => {
+    const rule = rules[index];
+    setEditIndex(index);
+    setEditEmail(rule.email);
+    setEditName(rule.name);
+    setEditAccountId(rule.accountId);
+    setError('');
+  };
+
+  const cancelEdit = () => {
+    setEditIndex(null);
+    setError('');
+  };
+
+  const handleSaveEdit = async () => {
+    if (editIndex === null) return;
+    if (!editEmail.trim() || !editAccountId) {
+      setError('Sender email and account are required.');
+      return;
+    }
+    const selectedAccount = accounts.find((a) => a.id === editAccountId);
+    const updated = rules.map((rule, i) =>
+      i === editIndex
+        ? { ...rule, email: editEmail.trim(), name: editName.trim(), accountId: editAccountId, accountName: selectedAccount?.name ?? rule.accountName }
+        : rule
+    );
+    await saveRules(updated);
+    setEditIndex(null);
   };
 
   return (
@@ -264,19 +301,72 @@ export default function SenderRulesSection({ connected, initialBudgetId }: Props
           ) : (
             <div style={{ marginBottom: '0.5rem' }}>
               {rules.map((rule, i) => (
-                <div key={i} style={S.ruleRow}>
-                  <span style={S.ruleLabel}>
-                    {rule.name ? `${rule.name} (${rule.email})` : rule.email}
-                    <span style={S.ruleArrow}> → </span>
-                    {rule.accountName}
-                  </span>
-                  <button
-                    onClick={() => void handleDeleteRule(i)}
-                    disabled={saving}
-                    style={{ ...S.btnDanger, opacity: saving ? 0.5 : 1 }}
-                  >
-                    Delete
-                  </button>
+                <div key={i} style={{ ...S.ruleRow, flexDirection: editIndex === i ? 'column' : 'row', alignItems: editIndex === i ? 'stretch' : 'center', gap: editIndex === i ? '0.5rem' : undefined }}>
+                  {editIndex === i ? (
+                    <>
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <input
+                          type="email"
+                          value={editEmail}
+                          onChange={(e) => setEditEmail(e.target.value)}
+                          placeholder="sender@example.com"
+                          style={{ ...S.input, flex: 1 }}
+                        />
+                        <input
+                          type="text"
+                          value={editName}
+                          onChange={(e) => setEditName(e.target.value)}
+                          placeholder="Name (optional)"
+                          style={{ ...S.input, flex: 1 }}
+                        />
+                      </div>
+                      <select
+                        value={editAccountId}
+                        onChange={(e) => setEditAccountId(e.target.value)}
+                        style={S.select}
+                        disabled={loadingAccounts}
+                      >
+                        <option value="">{loadingAccounts ? 'Loading...' : 'Select account'}</option>
+                        {accounts.map((a) => (
+                          <option key={a.id} value={a.id}>{a.name}</option>
+                        ))}
+                      </select>
+                      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                        <button onClick={cancelEdit} style={{ ...S.btnDanger, color: '#6b7280' }}>Cancel</button>
+                        <button
+                          onClick={() => void handleSaveEdit()}
+                          disabled={saving}
+                          style={{ ...S.btnPrimary, padding: '0.375rem 1rem', fontSize: '0.8125rem' }}
+                        >
+                          {saving ? 'Saving...' : 'Save'}
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <span style={S.ruleLabel}>
+                        {rule.name ? `${rule.name} (${rule.email})` : rule.email}
+                        <span style={S.ruleArrow}> → </span>
+                        {rule.accountName}
+                      </span>
+                      <div style={{ display: 'flex', gap: '0.75rem' }}>
+                        <button
+                          onClick={() => startEdit(i)}
+                          disabled={saving}
+                          style={{ ...S.btnDanger, color: '#2563eb', opacity: saving ? 0.5 : 1 }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => void handleDeleteRule(i)}
+                          disabled={saving}
+                          style={{ ...S.btnDanger, opacity: saving ? 0.5 : 1 }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               ))}
             </div>
