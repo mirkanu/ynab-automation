@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Multi-Tenant SaaS
 status: completed
-stopped_at: Completed 04-01-PLAN.md (verify+document)
-last_updated: "2026-04-09T21:10:38.775Z"
+stopped_at: Completed 04-02-PLAN.md (verify+document)
+last_updated: "2026-04-09T21:15:49.719Z"
 last_activity: "2026-04-04 - Completed quick task 3: Remove SENDERS config — use user's selected account"
 progress:
   total_phases: 4
@@ -119,6 +119,7 @@ Recent decisions affecting current work:
 - [Phase 19-04]: Account deletion uses single prisma.user.delete() — onDelete: Cascade handles all child rows
 - [Phase 19-04]: SettingsForm stripped of v4.0 admin tooling — per-user controls only (test mode, forwarding email, danger zone)
 - [Phase 19-05]: Automated test suite (30/30 passing) plus live endpoint verification accepted as human-verify proxy -- all 9 Phase 19 requirements confirmed working
+- [Phase 04-error-notification]: config.adminEmail used as notification target for unknown-sender branch — avoids hardcoding MANUEL_EMAIL in webhook handler
 
 ### Pending Todos
 
@@ -142,6 +143,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-09T21:10:38.773Z
-Stopped at: Completed 04-01-PLAN.md (verify+document)
+Last session: 2026-04-09T21:15:35.379Z
+Stopped at: Completed 04-02-PLAN.md (verify+document)
 Resume file: None
