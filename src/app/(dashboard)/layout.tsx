@@ -1,29 +1,20 @@
-import { type ReactNode } from 'react';
-import { redirect } from 'next/navigation';
-import { auth, signOut } from '@/lib/auth';
-import { loadDbSettings } from '@/lib/settings';
-import { prisma } from '@/lib/db';
-import TestModeBanner from './components/TestModeBanner';
+import { type ReactNode } from 'react'
+import { redirect } from 'next/navigation'
+import { getAdminSession } from '@/lib/admin-session'
+import { loadDbSettings, getSetting } from '@/lib/settings'
+import TestModeBanner from './components/TestModeBanner'
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
-  const session = await auth();
-  if (!session) {
-    redirect('/auth/signin');
+  const session = await getAdminSession()
+  if (!session.isLoggedIn) {
+    redirect('/login')
   }
 
-  await loadDbSettings();
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { testMode: true },
-  });
-  const testMode = user?.testMode ?? false;
-
-  async function handleSignOut() {
-    'use server'
-    await signOut({ redirectTo: '/auth/signin' })
-  }
+  await loadDbSettings()
+  const testModeValue = await getSetting('TEST_MODE')
+  const testMode = testModeValue === 'true'
 
   return (
     <div style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
@@ -36,7 +27,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
         color: 'white',
       }}>
         <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>YNAB Automation — Admin</span>
-        <form action={handleSignOut}>
+        <form action="/logout" method="POST">
           <button
             type="submit"
             style={{
@@ -72,5 +63,5 @@ export default async function DashboardLayout({ children }: { children: ReactNod
         {children}
       </main>
     </div>
-  );
+  )
 }
