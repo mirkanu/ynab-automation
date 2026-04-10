@@ -15,7 +15,13 @@ export function middleware(request: NextRequest) {
 
   if (!sessionToken) {
     const signInUrl = new URL('/auth/signin', request.url)
-    signInUrl.searchParams.set('callbackUrl', request.url)
+    // Use pathname+search only — `request.url` resolves to the internal bind
+    // address (e.g. https://localhost:8080) behind Railway's proxy, which would
+    // break the post-signin redirect. A relative path is safe and proxy-agnostic.
+    signInUrl.searchParams.set(
+      'callbackUrl',
+      request.nextUrl.pathname + request.nextUrl.search
+    )
     return NextResponse.redirect(signInUrl)
   }
 
