@@ -14,9 +14,21 @@ v5.0 Multi-Tenant SaaS is live at https://ynab-test-production.up.railway.app. U
 
 **However**: the multi-tenant machinery is overkill for the actual user base (one household). The next milestone walks it back.
 
-## Next Milestone: Single-Tenant Rollback (Planned)
+## Current Milestone: v6.0 Single-Tenant Rollback
 
-**Goal:** Simplify deployment by removing the multi-tenant layer while keeping everything users actually rely on — the settings UI, sender/currency routing rules, test mode, activity log, and email → YNAB pipeline. Scope to be defined via `/gsd:new-milestone`.
+**Goal:** Ship a free open-source self-hosted version of the YNAB automation on GitHub with a one-click Railway deploy button. Strip multi-tenant machinery, restore simpler single-user config (YNAB Personal Access Token, iron-session admin password, DB-backed settings), and add a first-install wizard that walks non-programmers through getting each API key.
+
+**Target user:** YNAB users who aren't programmers, self-hosting on Railway.
+
+**Target features:**
+- iron-session single admin password (restore v4.0 pattern)
+- YNAB Personal Access Token (restore pre-v5.0 pattern, drop OAuth)
+- First-install wizard with step-by-step instructions per API key (YNAB PAT, Claude, Resend, Pipedream, admin password)
+- Settings page editable for all API keys (YNAB PAT, Claude key, Resend key, Pipedream webhook, admin password)
+- Preserve activity log, sender rules, currency rules, test mode, replay tool
+- Data-preserving migration (drop Auth.js tables, drop userId columns, drop RLS)
+- Delete dead Phase 18 code (/api/email/inbound, forwarding address lib)
+- README + Railway deploy button + wizard walkthrough
 
 ## Requirements
 
@@ -51,7 +63,13 @@ v5.0 Multi-Tenant SaaS is live at https://ynab-test-production.up.railway.app. U
 
 <!-- Current scope. Building toward these. -->
 
-- [ ] Single-tenant rollback — scope TBD in next `/gsd:new-milestone`
+- [ ] Schema rollback migration (preserve data)
+- [ ] iron-session admin auth
+- [ ] YNAB Personal Access Token configuration
+- [ ] Settings page editable for all API keys
+- [ ] First-install wizard for non-programmers
+- [ ] Dead code removal (Phase 18 email path, Auth.js)
+- [ ] README + Railway deploy button
 
 ### Out of Scope
 
@@ -139,4 +157,4 @@ Phases: 16 (User Accounts + RLS), 17 (YNAB OAuth + encrypted tokens), 18 (per-us
 
 ---
 
-*Last updated: 2026-04-10 after v5.0 milestone completion*
+*Last updated: 2026-04-10 after v6.0 milestone started*

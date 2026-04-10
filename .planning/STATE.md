@@ -1,125 +1,53 @@
 ---
 gsd_state_version: 1.0
-milestone: v5.0
-milestone_name: Multi-Tenant SaaS
-status: completed
-stopped_at: Completed 04-02-PLAN.md (verify+document)
-last_updated: "2026-04-10T09:28:29.994Z"
-last_activity: "2026-04-04 - Completed quick task 3: Remove SENDERS config — use user's selected account"
+milestone: v6.0
+milestone_name: Single-Tenant Rollback
+status: defining_requirements
+stopped_at: null
+last_updated: "2026-04-10T10:45:00Z"
+last_activity: "2026-04-10 - Milestone v6.0 started"
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 20
-  completed_plans: 20
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Amazon to YNAB Automation — Project State
 
-**Updated:** 2026-03-28
+**Updated:** 2026-04-10
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-28)
+See: .planning/PROJECT.md (updated 2026-04-10)
 
-**Core value:** Forwarded order confirmation email → YNAB transaction, fully automated — for any user
-**Current focus:** v5.0 Multi-Tenant SaaS — COMPLETE
+**Core value:** Forwarded order confirmation email → YNAB transaction, fully automated, with zero per-transaction effort.
+**Current focus:** v6.0 Single-Tenant Rollback — Defining requirements
 
 ## Current Position
 
-Phase: 19 of 19 (Dashboard, Onboarding, Account Management)
-Plan: 05 complete — ALL PLANS COMPLETE
-Status: Complete
-Last activity: 2026-04-04 - Completed quick task 3: Remove SENDERS config — use user's selected account
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-10 — Milestone v6.0 started
 
-Progress: [██████████] 100%
-
-## Performance Metrics
-
-**Velocity:**
-- Total plans completed: 2 (v5.0)
-- Average duration: 49 min
-- Total execution time: ~97 min
-
-**By Phase:**
-
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| 16 (2 of N complete) | 2 | ~97 min | ~49 min |
-
-*Updated after each plan completion*
-| Phase 16-user-accounts-multi-tenant-foundation P01 | 80 min | 3 tasks | 14 files |
-| Phase 16-user-accounts-multi-tenant-foundation P02 | 17 min | 2 tasks | 7 files |
-| Phase 16-user-accounts-multi-tenant-foundation P03 | 9 | 3 tasks | 10 files |
-| Phase 16-user-accounts-multi-tenant-foundation P04 | 1440 | 1 tasks | 2 files |
-| Phase 17-ynab-oauth-token-management P02 | 4 min | 2 tasks | 4 files |
-| Phase 17-ynab-oauth-token-management P01 | 7 | 2 tasks | 4 files |
-| Phase 17-ynab-oauth-token-management P03 | 7 | 2 tasks | 4 files |
-| Phase 17-ynab-oauth-token-management P04 | 21 | 2 tasks | 10 files |
-| Phase 17-ynab-oauth-token-management P05 | 7 | 2 tasks | 7 files |
-| Phase 17-ynab-oauth-token-management P06 | 5 | 1 tasks | 0 files |
-| Phase 18 P02 | 130 | 1 tasks | 5 files |
-| Phase 18-per-user-inbound-email P01 | 4 | 2 tasks | 2 files |
-| Phase 18-per-user-inbound-email P03 | 7 | 2 tasks | 4 files |
-| Phase 18 P04 | 12 | 2 tasks | 7 files |
-| Phase 18-per-user-inbound-email P05 | 5 | 2 tasks | 0 files |
-| Phase 19-dashboard-onboarding-account-management P01 | 5 | 2 tasks | 9 files |
-| Phase 19-dashboard-onboarding-account-management P03 | 12 | 2 tasks | 8 files |
-| Phase 19-dashboard-onboarding-account-management P02 | 9 | 2 tasks | 9 files |
-| Phase 19-dashboard-onboarding-account-management P04 | 14 | 2 tasks | 12 files |
-| Phase 19-dashboard-onboarding-account-management P05 | 0 | 2 tasks | 0 files |
+Progress: [░░░░░░░░░░] 0%
 
 ## Accumulated Context
 
 ### Decisions
 
 Decisions logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
 
-- v5.0 kickoff: Auth.js replaces iron-session for multi-user support
-- v5.0 kickoff: Shared DB with user_id + PostgreSQL RLS for tenant isolation
-- v5.0 kickoff: Postmark or SendGrid for per-user inbound email (provider TBD in Phase 18 planning)
-- v5.0 kickoff: Phase ordering is sequential (16→17→18→19) — each phase has pitfalls that affect the next
-- [Phase 16-01]: Auth.js auth.ts lives at src/lib/auth.ts (not root lib/) because tsconfig @/ alias maps to ./src
-- [Phase 16-01]: Nullable userId added to Setting/ProcessedEmail/ActivityLog in plan 01; plan 02 will make them NOT NULL with data backfill
-- [Phase 16-01]: Railway PostgreSQL only reachable via private network — migrations deployed via railway up then verified via railway ssh
-- [Phase 16-02]: ProcessedEmail.id kept as Int (autoincrement) — changing INT to TEXT requires full table recreate; id is internal-only
-- [Phase 16-02]: Migration SQL hardcodes manuelkuhs@gmail.com — SQL cannot read env vars at runtime
-- [Phase 16-02]: Initial-user shim pattern (getInitialUserId()) established in settings.ts, activity-log.ts, webhook/route.ts — Phase 19 replaces with session.user.id
-- [Phase 16-02]: Vitest v4 requires Node.js v20+; Railway runs v18.20.5 — migration correctness verified via direct DB queries
-- [Phase 16-03]: FORCE ROW LEVEL SECURITY applied to ActivityLog, Setting, ProcessedEmail — superusers bypass regular RLS, FORCE ensures isolation even for privileged DB roles
-- [Phase 16-03]: getPrismaForUser uses set_config(..., TRUE) transaction-local scope — prevents session variable leakage in connection pools
-- [Phase 16-03]: activity-log-queries.ts getDashboardStats/getActivityLogs now require userId — old global unscoped queries removed to prevent cross-user data exposure
-- [Phase 16-04]: API routes excluded from middleware matcher so unauthenticated calls return 401 not 307 redirect
-- [Phase 16-04]: Auth.js signIn() must be called from server action not client-side fetch — avoids CSRF issues
-- [Phase 16-04]: Iron-session middleware replaced with Auth.js middleware — was left over from pre-Phase-16 code
-- [Phase 17-02]: it.todo() used for Wave 0 test stubs — renders as todo in vitest output (not failure), keeping suite green until Plans 03-05 implement routes
-- [Phase 17-ynab-oauth-token-management]: Node.js built-in crypto used for AES-256-GCM token encryption (no native deps like libsodium)
-- [Phase 17-ynab-oauth-token-management]: Error messages never include plaintext/ciphertext in crypto.ts — throws generic 'Decryption failed'
-- [Phase 17-ynab-oauth-token-management]: PKCE and state params omitted for v5.0 MVP (YNAB does not enforce for server-side clients); noted for future CSRF hardening
-- [Phase 17-ynab-oauth-token-management]: YNAB_CLIENT_SECRET used in POST body to token endpoint only — never in redirect URL or JSON response body
-- [Phase 17-ynab-oauth-token-management]: getValidYnabToken uses BigInt comparison for oauthExpiresAt stored as BigInt; concurrent refresh mutex via DB timestamp not in-process lock
-- [Phase 17-ynab-oauth-token-management]: Server component (page.tsx) reads YNAB status from DB and passes as props to YnabConnectionSection client component — avoids client-side auth status fetch
-- [Phase 17-ynab-oauth-token-management]: Automated test suite accepted as verification proxy for 17-06 checkpoint — full browser OAuth deferred pending YNAB developer credentials (YNAB_CLIENT_ID/YNAB_CLIENT_SECRET)
-- [Phase 18]: it.todo() stubs kept import-free so test runner never errors on missing source modules
-- [Phase 18-per-user-inbound-email]: Manually authored migration SQL (no local PostgreSQL) — followed existing patterns from Phase 16 migrations
-- [Phase 18-per-user-inbound-email]: RLS policy uses current_setting('app.user_id', true) directly — matches plan spec and works with getPrismaForUser()
-- [Phase 18]: ProcessedWebhook for unknown recipient uses global prisma (no real userId) — cannot scope RLS without a userId
-- [Phase 18]: ProcessedWebhook for known user always uses getPrismaForUser(userId) — satisfies FORCE RLS policy on ProcessedWebhook table
-- [Phase 18]: ProcessedWebhook inserted AFTER createYnabTransaction on success path — ensures retry is possible if YNAB fails
-- [Phase 18-per-user-inbound-email]: Automated test suite (27 passing tests) accepted as verification proxy for 18-05 checkpoint — live endpoint confirmed 403 for non-Postmark IPs
-- [Phase 19-01]: Wave 0 stubs use no source imports — avoids vitest errors when source modules don't exist yet (pattern from Phase 17/18)
-- [Phase 19-01]: DATABASE_URL mocked for local prisma validate since Railway PostgreSQL is not reachable
-- [Phase 19-03]: Onboarding redirect implemented in dashboard server component (not auth.ts redirect callback) — simpler pattern consistent with server component auth guard
-- [Phase 19-03]: prisma generate required after schema additions (onboardingCompleted, testMode) before TypeScript compiles — must be run as part of schema migration workflow
-- [Phase 19-02]: TestModeBanner extracted to client component so server layout can pass DB-read testMode as prop while keeping interactive toggle
-- [Phase 19-02]: formatParseResult uses whitelist approach (explicit fields only) - safer against future debug field additions
-- [Phase 19-02]: page.tsx: webhookUrl section removed (Pipedream was v4.0 single-user, not relevant in multi-tenant)
-- [Phase 19-04]: Dashboard URL moved from / to /dashboard — public homepage at / requires root page.tsx precedence
-- [Phase 19-04]: Account deletion uses single prisma.user.delete() — onDelete: Cascade handles all child rows
-- [Phase 19-04]: SettingsForm stripped of v4.0 admin tooling — per-user controls only (test mode, forwarding email, danger zone)
-- [Phase 19-05]: Automated test suite (30/30 passing) plus live endpoint verification accepted as human-verify proxy -- all 9 Phase 19 requirements confirmed working
-- [Phase 04-error-notification]: config.adminEmail used as notification target for unknown-sender branch — avoids hardcoding MANUEL_EMAIL in webhook handler
+**v6.0 kickoff decisions (2026-04-10):**
+- Target audience: non-programmers self-hosting via Railway one-click deploy
+- Auth: restore iron-session single admin password (v4.0 pattern)
+- YNAB: restore Personal Access Token, drop OAuth + encrypted token storage
+- Email ingestion: keep Pipedream `/api/webhook` (active path), delete Phase 18 `/api/email/inbound` as dead code
+- First-install wizard: DB-backed settings (not Railway API), step-by-step instructions per API
+- Data migration: preserve activity log, settings, sender/currency rules; drop Auth.js tables and userId columns
+- Multi-tenancy: parked for possible future commercialisation, not in this milestone
 
 ### Pending Todos
 
@@ -127,22 +55,11 @@ None yet.
 
 ### Blockers/Concerns
 
-- Email provider (Postmark vs SendGrid) decision deferred to Phase 18 planning — run technical spike then
-- GDPR compliance scope (audit log retention post-deletion) — clarify during Phase 16 planning
-- Railway Node.js version is v18.20.5 — Vitest v4 tests cannot run in Railway SSH (require v20+); consider upgrading Railway's Node version before Phase 16-03 testing
-
-### Quick Tasks Completed
-
-| # | Description | Date | Commit | Directory |
-|---|-------------|------|--------|-----------|
-| 2 | Add email indicator to onboarding welcome screen | 2026-04-04 | e303ed9 | [2-add-email-indicator-to-onboarding-welcom](./quick/2-add-email-indicator-to-onboarding-welcom/) |
-| 3 | Remove SENDERS config — use user's selected account | 2026-04-04 | afa76bd | [3-remove-senders-config-dependency-from-in](./quick/3-remove-senders-config-dependency-from-in/) |
-| 4 | Restore per-sender routing rules UI and pipeline | 2026-04-04 | f1e2703 | [4-restore-per-sender-routing-rules-ui-and-](./quick/4-restore-per-sender-routing-rules-ui-and-/) |
-| 5 | Add Edit button to sender routing rules | 2026-04-04 | 03bff61 | [5-add-edit-button-to-sender-routing-rules](./quick/5-add-edit-button-to-sender-routing-rules/) |
-| 6 | Restore currency-based account routing rules | 2026-04-04 | 58cb8be | [6-restore-currency-based-account-routing-r](./quick/6-restore-currency-based-account-routing-r/) |
+- 10 failing tests from v5.0 era need cleanup (webhook route tests, multi-tenant isolation, YNAB OAuth) — bundled into relevant phase cleanup
+- Existing production deployment has live data — migration must preserve it
 
 ## Session Continuity
 
-Last session: 2026-04-09T21:15:35.379Z
-Stopped at: Completed 04-02-PLAN.md (verify+document)
+Last session: 2026-04-10T10:45:00Z
+Stopped at: v6.0 milestone started, defining requirements
 Resume file: None
