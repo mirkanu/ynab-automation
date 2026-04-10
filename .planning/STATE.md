@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v6.0
 milestone_name: Single-Tenant Rollback
 status: completed
-stopped_at: Completed 20-01-PLAN.md (pre-migration backup)
-last_updated: "2026-04-10T16:11:50.338Z"
+stopped_at: Completed 20-02-PLAN.md (migration SQL)
+last_updated: "2026-04-10T16:21:42.341Z"
 last_activity: 2026-04-10 — v6.0 roadmap drafted
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 4
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
@@ -70,6 +70,8 @@ Decisions logged in PROJECT.md Key Decisions table.
 - Dead code removal (CLEAN-01/02/03) bundled into the phases that own the features; no final cleanup phase
 - [Phase 20-schema-rollback-migration]: Railway TCP proxy (mainline.proxy.rlwy.net:44022) created via GraphQL API to access internal PostgreSQL from outside Railway network — railway run containers cannot resolve internal DNS
 - [Phase 20-schema-rollback-migration]: Used postgresql-client-16 locally to match server version 16.13; pg_dump requires version match
+- [Phase 20-schema-rollback-migration]: Queried live Railway DB BEFORE writing migration SQL — all 13 constraint/index/policy names verified from pg_catalog
+- [Phase 20-schema-rollback-migration]: Used IF EXISTS on all DDL operations in migration SQL for idempotency
 
 ### Pending Todos
 
@@ -83,6 +85,6 @@ None yet. Next: `/gsd:plan-phase 20`.
 
 ## Session Continuity
 
-Last session: 2026-04-10T16:11:50.334Z
-Stopped at: Completed 20-01-PLAN.md (pre-migration backup)
+Last session: 2026-04-10T16:21:42.337Z
+Stopped at: Completed 20-02-PLAN.md (migration SQL)
 Resume file: None

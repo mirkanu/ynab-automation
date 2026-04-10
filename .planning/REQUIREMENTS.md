@@ -12,8 +12,8 @@ Requirements for this milestone. Each maps to a roadmap phase.
 
 - [x] **DATA-05**: Existing activity log entries survive the rollback migration with no data loss
 - [x] **DATA-06**: Existing settings (sender routing rules, currency routing rules, test mode, other Setting rows) survive the rollback migration
-- [ ] **DATA-07**: Auth.js tables (User, Account, Session, VerificationToken), Phase 18 tables (EmailForwardingAddress, ProcessedWebhook), and `userId` columns are dropped cleanly with no orphaned rows or broken foreign keys
-- [ ] **DATA-08**: PostgreSQL Row-Level Security policies are removed from all tables (no longer needed for single tenant)
+- [x] **DATA-07**: Auth.js tables (User, Account, Session, VerificationToken), Phase 18 tables (EmailForwardingAddress, ProcessedWebhook), and `userId` columns are dropped cleanly with no orphaned rows or broken foreign keys
+- [x] **DATA-08**: PostgreSQL Row-Level Security policies are removed from all tables (no longer needed for single tenant)
 
 ### Authentication
 
@@ -105,8 +105,8 @@ Explicitly excluded. Documented to prevent scope creep.
 |-------------|-------|--------|
 | DATA-05 | Phase 20 | Complete |
 | DATA-06 | Phase 20 | Complete |
-| DATA-07 | Phase 20 | Pending |
-| DATA-08 | Phase 20 | Pending |
+| DATA-07 | Phase 20 | Complete |
+| DATA-08 | Phase 20 | Complete |
 | AUTH-04 | Phase 21 | Pending |
 | AUTH-05 | Phase 21 | Pending |
 | AUTH-06 | Phase 21 | Pending |
