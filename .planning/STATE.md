@@ -4,7 +4,7 @@ milestone: v6.0
 milestone_name: Single-Tenant Rollback
 status: completed
 stopped_at: "Completed 21-05-PLAN.md (Phase 21 fully complete: all tasks done, human verification approved)"
-last_updated: "2026-04-10T20:05:38.417Z"
+last_updated: "2026-04-10T20:14:26.875Z"
 last_activity: 2026-04-10 — v6.0 roadmap drafted
 progress:
   total_phases: 5

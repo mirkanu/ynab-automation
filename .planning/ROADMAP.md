@@ -163,7 +163,7 @@ Plans:
 | 18. Per-User Inbound Email | v5.0 | 5/5 | Complete | 2026-03-30 |
 | 19. Dashboard, Onboarding & Account Management | v5.0 | 5/5 | Complete | 2026-03-30 |
 | 20. Schema Rollback Migration | v6.0 | 4/4 | Complete | 2026-04-10 |
-| 21. iron-session Admin Auth Restoration | 5/5 | Complete   | 2026-04-10 | — |
+| 21. iron-session Admin Auth Restoration | 5/5 | Complete    | 2026-04-10 | — |
 | 22. YNAB PAT & Settings API Keys | v6.0 | 0/4 | Not started | — |
 | 23. First-Install Wizard & Route State Machine | v6.0 | 0/4 | Not started | — |
 | 24. Test Suite Cleanup & Self-Host Docs | v6.0 | 0/4 | Not started | — |
