@@ -26,7 +26,7 @@ export default async function LogsPage({ searchParams }: Props) {
   const to = typeof params.to === 'string' ? params.to : undefined
   const page = typeof params.page === 'string' ? Math.max(1, parseInt(params.page, 10) || 1) : 1
 
-  const { logs, total, pageSize } = await getActivityLogs(session.user.id, { status, from, to, page })
+  const { logs, total, pageSize } = await getActivityLogs({ status, from, to, page })
 
   const baseParams: Record<string, string> = {}
   if (status) baseParams.status = status

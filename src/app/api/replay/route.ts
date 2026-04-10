@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
-import { getPrismaForUser } from '@/lib/db'
+import { prisma } from '@/lib/db'
 import { parseOrderEmail } from '@/lib/claude'
 import { createYnabTransaction, getAccountName } from '@/lib/ynab'
 import { loadConfig, getSenderByEmail, getAccountForCurrency } from '@/lib/config'
@@ -8,21 +7,14 @@ import { writeActivityLog } from '@/lib/activity-log'
 import { loadDbSettings } from '@/lib/settings'
 
 export async function POST(req: NextRequest) {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-  const userId = session.user.id
-
   await loadDbSettings()
   const { messageId, forceLive } = (await req.json()) as { messageId: string; forceLive?: boolean }
   if (!messageId) {
     return NextResponse.json({ error: 'messageId is required' }, { status: 400 })
   }
 
-  // 1. Fetch original log entry — scoped to the requesting user
-  const db = getPrismaForUser(userId)
-  const entry = await db.activityLog.findUnique({ where: { messageId, userId } })
+  // 1. Fetch original log entry
+  const entry = await prisma.activityLog.findUnique({ where: { messageId } })
   if (!entry) {
     return NextResponse.json({ error: 'Log entry not found' }, { status: 404 })
   }
@@ -47,7 +39,6 @@ export async function POST(req: NextRequest) {
   const parsed = await parseOrderEmail(entry.rawBody, senderInfo.name)
   if (!parsed) {
     await writeActivityLog({
-      userId,
       messageId: `replay-${messageId}-${Date.now()}`,
       status: 'parse_error',
       sender: entry.sender ?? undefined,
@@ -75,12 +66,11 @@ export async function POST(req: NextRequest) {
   const testMode = process.env.TEST_MODE === 'true' && !forceLive
 
   const memo = `${senderInfo.name}: ${parsed.description} - Automatically added from email`
-  const accountName = await getAccountName(userId, budgetId, accountId)
+  const accountName = await getAccountName(budgetId, accountId)
 
   // 5. If test mode (and not force-live), skip YNAB and log as test
   if (testMode) {
     await writeActivityLog({
-      userId,
       messageId: `replay-${messageId}-${Date.now()}`,
       status: 'test',
       sender: entry.sender ?? undefined,
@@ -106,7 +96,7 @@ export async function POST(req: NextRequest) {
 
   // 6. Create YNAB transaction
   try {
-    const transactionId = await createYnabTransaction(userId, {
+    const transactionId = await createYnabTransaction({
       budgetId,
       accountId,
       amount: parsed.amount,
@@ -118,7 +108,6 @@ export async function POST(req: NextRequest) {
 
     // 7. Write activity log for replay
     await writeActivityLog({
-      userId,
       messageId: `replay-${messageId}-${Date.now()}`,
       status: 'success',
       sender: entry.sender ?? undefined,
@@ -143,7 +132,6 @@ export async function POST(req: NextRequest) {
     })
   } catch (e) {
     await writeActivityLog({
-      userId,
       messageId: `replay-${messageId}-${Date.now()}`,
       status: 'ynab_error',
       sender: entry.sender ?? undefined,

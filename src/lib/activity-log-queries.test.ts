@@ -4,7 +4,7 @@ const mockFindMany = vi.fn()
 const mockFindFirst = vi.fn()
 const mockCount = vi.fn()
 
-const mockDb = {
+const mockPrisma = {
   activityLog: {
     findMany: mockFindMany,
     findFirst: mockFindFirst,
@@ -13,10 +13,8 @@ const mockDb = {
 }
 
 vi.mock('@/lib/db', () => ({
-  getPrismaForUser: vi.fn(() => mockDb),
+  prisma: mockPrisma,
 }))
-
-const TEST_USER_ID = 'test-user-id'
 
 describe('getDashboardStats', () => {
   beforeEach(() => {
@@ -32,7 +30,7 @@ describe('getDashboardStats', () => {
     mockFindFirst.mockResolvedValue(null)
 
     const { getDashboardStats } = await import('./activity-log-queries')
-    const stats = await getDashboardStats(TEST_USER_ID)
+    const stats = await getDashboardStats()
 
     expect(stats.thisWeek.total).toBe(3)
     expect(stats.thisWeek.successes).toBe(2)
@@ -44,7 +42,7 @@ describe('getDashboardStats', () => {
     mockFindFirst.mockResolvedValue(null)
 
     const { getDashboardStats } = await import('./activity-log-queries')
-    const stats = await getDashboardStats(TEST_USER_ID)
+    const stats = await getDashboardStats()
 
     expect(stats.lastTransaction).toBeNull()
   })
@@ -54,7 +52,7 @@ describe('getDashboardStats', () => {
     mockFindFirst.mockResolvedValue(null)
 
     const { getDashboardStats } = await import('./activity-log-queries')
-    const stats = await getDashboardStats(TEST_USER_ID)
+    const stats = await getDashboardStats()
 
     expect(stats.thisWeek.total).toBe(0)
     expect(stats.thisWeek.rate).toBe(0)
@@ -68,7 +66,7 @@ describe('getDashboardStats', () => {
     })
 
     const { getDashboardStats } = await import('./activity-log-queries')
-    const stats = await getDashboardStats(TEST_USER_ID)
+    const stats = await getDashboardStats()
 
     expect(stats.lastTransaction).toEqual({
       retailer: 'Amazon',
@@ -88,7 +86,7 @@ describe('getActivityLogs', () => {
 
   it('filters by status', async () => {
     const { getActivityLogs } = await import('./activity-log-queries')
-    await getActivityLogs(TEST_USER_ID, { status: 'success' })
+    await getActivityLogs({ status: 'success' })
 
     expect(mockFindMany).toHaveBeenCalledOnce()
     const args = mockFindMany.mock.calls[0][0]
@@ -97,7 +95,7 @@ describe('getActivityLogs', () => {
 
   it('paginates with correct skip/take', async () => {
     const { getActivityLogs, PAGE_SIZE } = await import('./activity-log-queries')
-    await getActivityLogs(TEST_USER_ID, { page: 3 })
+    await getActivityLogs({ page: 3 })
 
     const args = mockFindMany.mock.calls[0][0]
     expect(args.skip).toBe(2 * PAGE_SIZE)
@@ -106,7 +104,7 @@ describe('getActivityLogs', () => {
 
   it('filters by date range', async () => {
     const { getActivityLogs } = await import('./activity-log-queries')
-    await getActivityLogs(TEST_USER_ID, { from: '2026-03-01', to: '2026-03-27' })
+    await getActivityLogs({ from: '2026-03-01', to: '2026-03-27' })
 
     const args = mockFindMany.mock.calls[0][0]
     expect(args.where.receivedAt.gte).toEqual(new Date('2026-03-01'))
@@ -118,7 +116,7 @@ describe('getActivityLogs', () => {
     mockCount.mockResolvedValue(42)
 
     const { getActivityLogs, PAGE_SIZE } = await import('./activity-log-queries')
-    const result = await getActivityLogs(TEST_USER_ID, {})
+    const result = await getActivityLogs({})
 
     expect(result.logs).toHaveLength(2)
     expect(result.total).toBe(42)

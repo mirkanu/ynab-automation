@@ -37,7 +37,7 @@ export default async function DashboardPage() {
     redirect('/onboarding')
   }
 
-  const stats = await getDashboardStats(session.user.id)
+  const stats = await getDashboardStats()
   const inboundEmail = userRecord?.forwardingEmail ?? null
 
   // Build date filter for "this week" links

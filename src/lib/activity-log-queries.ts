@@ -1,4 +1,4 @@
-import { getPrismaForUser } from '@/lib/db'
+import { prisma } from '@/lib/db'
 
 export const PAGE_SIZE = 20
 
@@ -12,19 +12,18 @@ export interface DashboardStats {
   } | null
 }
 
-export async function getDashboardStats(userId: string): Promise<DashboardStats> {
-  const db = getPrismaForUser(userId)
+export async function getDashboardStats(): Promise<DashboardStats> {
   const startOfWeek = new Date()
   startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay())
   startOfWeek.setHours(0, 0, 0, 0)
 
   const [weekLogs, lastSuccess] = await Promise.all([
-    db.activityLog.findMany({
-      where: { userId, receivedAt: { gte: startOfWeek } },
+    prisma.activityLog.findMany({
+      where: { receivedAt: { gte: startOfWeek } },
       select: { status: true },
     }),
-    db.activityLog.findFirst({
-      where: { userId, status: 'success' },
+    prisma.activityLog.findFirst({
+      where: { status: 'success' },
       orderBy: { createdAt: 'desc' },
       select: { parseResult: true, receivedAt: true },
     }),
@@ -48,17 +47,13 @@ export async function getDashboardStats(userId: string): Promise<DashboardStats>
   return { thisWeek: { total, successes, rate }, lastTransaction }
 }
 
-export async function getActivityLogs(
-  userId: string,
-  params: {
-    status?: string
-    from?: string
-    to?: string
-    page?: number
-  },
-) {
-  const db = getPrismaForUser(userId)
-  const where: Record<string, unknown> = { userId }
+export async function getActivityLogs(params: {
+  status?: string
+  from?: string
+  to?: string
+  page?: number
+}) {
+  const where: Record<string, unknown> = {}
   if (params.status) where.status = params.status
   if (params.from || params.to) {
     const receivedAt: Record<string, Date> = {}
@@ -69,13 +64,13 @@ export async function getActivityLogs(
 
   const page = params.page ?? 1
   const [logs, total] = await Promise.all([
-    db.activityLog.findMany({
+    prisma.activityLog.findMany({
       where,
       orderBy: { createdAt: 'desc' },
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
     }),
-    db.activityLog.count({ where }),
+    prisma.activityLog.count({ where }),
   ])
 
   return { logs, total, pageSize: PAGE_SIZE }
