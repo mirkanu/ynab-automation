@@ -11,12 +11,6 @@ interface Field {
 
 const FIELDS: Field[] = [
   {
-    label: 'YNAB Personal Access Token',
-    key: 'YNAB_ACCESS_TOKEN',
-    type: 'password',
-    hint: 'Get your token at ynab.com/settings/developer',
-  },
-  {
     label: 'Anthropic Claude API Key',
     key: 'ANTHROPIC_API_KEY',
     type: 'password',
