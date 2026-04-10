@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { auth } from '@/lib/auth'
+import { getAdminSession } from '@/lib/admin-session'
 import { getActivityLogs } from '@/lib/activity-log-queries'
 import { loadDbSettings } from '@/lib/settings'
 import LogFilters from '../components/LogFilters'
@@ -13,9 +13,9 @@ interface Props {
 }
 
 export default async function LogsPage({ searchParams }: Props) {
-  const session = await auth()
-  if (!session?.user?.id) {
-    redirect('/auth/signin')
+  const session = await getAdminSession()
+  if (!session.isLoggedIn) {
+    redirect('/login')
   }
 
   await loadDbSettings()

@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation'
-import { auth } from '@/lib/auth'
+import { getAdminSession } from '@/lib/admin-session'
 import { getDashboardStats } from '@/lib/activity-log-queries'
+import { getSetting } from '@/lib/settings'
 import CopyButton from '../components/CopyButton'
-import { prisma } from '@/lib/db'
 
 export const dynamic = 'force-dynamic'
 
@@ -22,23 +22,13 @@ const clickableCard = {
 }
 
 export default async function DashboardPage() {
-  const session = await auth()
-  if (!session?.user?.id) {
-    redirect('/auth/signin')
-  }
-
-  // Fetch user data: onboarding status and forwarding email
-  const userRecord = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { onboardingCompleted: true, forwardingEmail: true },
-  })
-
-  if (!userRecord?.onboardingCompleted) {
-    redirect('/onboarding')
+  const session = await getAdminSession()
+  if (!session.isLoggedIn) {
+    redirect('/login')
   }
 
   const stats = await getDashboardStats()
-  const inboundEmail = userRecord?.forwardingEmail ?? null
+  const inboundEmail = await getSetting('INBOUND_EMAIL') ?? null
 
   // Build date filter for "this week" links
   const startOfWeek = new Date()
@@ -102,7 +92,7 @@ export default async function DashboardPage() {
         )}
       </div>
 
-      {/* Inbound email address — from User.forwardingEmail in DB */}
+      {/* Inbound email address — from INBOUND_EMAIL Setting in DB */}
       {inboundEmail && (
         <div style={{ ...card, marginBottom: '1.5rem' }}>
           <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>

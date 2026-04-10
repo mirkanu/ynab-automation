@@ -1,20 +1,20 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
+import { getAdminSession } from '@/lib/admin-session'
 import { prisma } from '@/lib/db'
 
 export async function POST(req: Request) {
-  const session = await auth()
-  if (!session?.user?.id) {
+  const session = await getAdminSession()
+  if (!session.isLoggedIn) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
-
   const body = (await req.json()) as { enabled?: boolean }
   const enabled = !!body.enabled
-
-  const updatedUser = await prisma.user.update({
-    where: { id: session.user.id },
-    data: { testMode: enabled },
+  await prisma.setting.upsert({
+    where: { key: 'TEST_MODE' },
+    update: { value: String(enabled) },
+    create: { key: 'TEST_MODE', value: String(enabled) },
   })
-
-  return NextResponse.json({ testMode: updatedUser.testMode })
+  // Also apply immediately to current process
+  process.env.TEST_MODE = String(enabled)
+  return NextResponse.json({ testMode: enabled })
 }

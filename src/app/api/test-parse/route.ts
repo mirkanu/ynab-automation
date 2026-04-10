@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
+import { getAdminSession } from '@/lib/admin-session'
 import { parseOrderEmail } from '@/lib/claude'
 
 export async function POST(req: NextRequest) {
-  const session = await auth()
-  if (!session?.user?.id) {
+  const session = await getAdminSession()
+  if (!session.isLoggedIn) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

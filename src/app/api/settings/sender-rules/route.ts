@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { prisma } from '@/lib/db';
+import { NextRequest, NextResponse } from 'next/server'
+import { getAdminSession } from '@/lib/admin-session'
+import { prisma } from '@/lib/db'
 
 interface SenderRule {
   email: string;
@@ -10,47 +10,47 @@ interface SenderRule {
   budgetId: string;
 }
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const session = await getAdminSession()
+  if (!session.isLoggedIn) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   const setting = await prisma.setting.findUnique({
-    where: { userId_key: { userId: session.user.id, key: 'SENDER_RULES' } },
-  });
+    where: { key: 'SENDER_RULES' },
+  })
 
   if (!setting) {
-    return NextResponse.json({ rules: [] });
+    return NextResponse.json({ rules: [] })
   }
 
   try {
-    const rules = JSON.parse(setting.value) as SenderRule[];
-    return NextResponse.json({ rules });
+    const rules = JSON.parse(setting.value) as SenderRule[]
+    return NextResponse.json({ rules })
   } catch {
-    return NextResponse.json({ rules: [] });
+    return NextResponse.json({ rules: [] })
   }
 }
 
 export async function PUT(request: NextRequest) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const session = await getAdminSession()
+  if (!session.isLoggedIn) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  let body: unknown;
+  let body: unknown
   try {
-    body = await request.json();
+    body = await request.json()
   } catch {
-    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { rules } = body as { rules: unknown };
+  const { rules } = body as { rules: unknown }
 
   if (!Array.isArray(rules)) {
-    return NextResponse.json({ error: 'Invalid rules' }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid rules' }, { status: 400 })
   }
 
   for (const rule of rules) {
@@ -59,16 +59,15 @@ export async function PUT(request: NextRequest) {
       typeof (rule as SenderRule).email !== 'string' || !(rule as SenderRule).email.trim() ||
       typeof (rule as SenderRule).accountId !== 'string' || !(rule as SenderRule).accountId.trim()
     ) {
-      return NextResponse.json({ error: 'Invalid rules' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid rules' }, { status: 400 })
     }
   }
 
-  const userId = session.user.id;
   await prisma.setting.upsert({
-    where: { userId_key: { userId, key: 'SENDER_RULES' } },
+    where: { key: 'SENDER_RULES' },
     update: { value: JSON.stringify(rules) },
-    create: { userId, key: 'SENDER_RULES', value: JSON.stringify(rules) },
-  });
+    create: { key: 'SENDER_RULES', value: JSON.stringify(rules) },
+  })
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true })
 }
