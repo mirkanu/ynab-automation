@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v6.0
 milestone_name: Single-Tenant Rollback
-status: defining_requirements
+status: roadmap_complete
 stopped_at: null
-last_updated: "2026-04-10T10:45:00Z"
-last_activity: "2026-04-10 - Milestone v6.0 started"
+last_updated: "2026-04-10T12:00:00Z"
+last_activity: "2026-04-10 - v6.0 roadmap drafted (5 phases, 20-24)"
 progress:
-  total_phases: 0
+  total_phases: 5
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -23,16 +23,28 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-10)
 
 **Core value:** Forwarded order confirmation email → YNAB transaction, fully automated, with zero per-transaction effort.
-**Current focus:** v6.0 Single-Tenant Rollback — Defining requirements
+**Current focus:** v6.0 Single-Tenant Rollback — Roadmap drafted, awaiting phase planning
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 20 (Schema Rollback Migration) — not yet planned
 Plan: —
-Status: Defining requirements
-Last activity: 2026-04-10 — Milestone v6.0 started
+Status: Roadmap complete; ready for `/gsd:plan-phase 20`
+Last activity: 2026-04-10 — v6.0 roadmap drafted
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [░░░░░░░░░░] 0% (0/5 phases complete)
+
+## Roadmap Summary (v6.0)
+
+| Phase | Name | Requirements | Depends On |
+|-------|------|--------------|------------|
+| 20 | Schema Rollback Migration | DATA-05/06/07/08 | — |
+| 21 | iron-session Admin Auth Restoration | AUTH-04/05/06/07, DASH-07, CLEAN-02 | 20 |
+| 22 | YNAB PAT & Settings API Keys | YNAB-06/07/08/09, CONFIG-01/02/03/04/05, DASH-06, CLEAN-01 | 21 |
+| 23 | First-Install Wizard & Route State Machine | WIZ-01/02/03/04/05, DASH-08, CLEAN-03 | 22 |
+| 24 | Test Suite Cleanup & Self-Host Docs | CLEAN-04, DOCS-01/02/03 | 23 |
+
+**Coverage:** 32/32 v1 requirements mapped (100%).
 
 ## Accumulated Context
 
@@ -49,17 +61,26 @@ Decisions logged in PROJECT.md Key Decisions table.
 - Data migration: preserve activity log, settings, sender/currency rules; drop Auth.js tables and userId columns
 - Multi-tenancy: parked for possible future commercialisation, not in this milestone
 
+**v6.0 roadmap decisions (2026-04-10):**
+- Phase 20 isolates data-preservation risk so it lands and gets verified before any code changes land
+- Phase 21 bundles Auth.js code removal with iron-session restore (no intermediate broken state)
+- Phase 22 couples YNAB OAuth removal with PAT restore and Phase 18 dead-code removal (all YNAB/email plumbing touches in one phase)
+- Phase 23 depends on 21+22 because the wizard writes into the same settings/API-key plumbing those phases create
+- Phase 24 ends the milestone with test cleanup + README so docs describe a working single-tenant app
+- Dead code removal (CLEAN-01/02/03) bundled into the phases that own the features; no final cleanup phase
+
 ### Pending Todos
 
-None yet.
+None yet. Next: `/gsd:plan-phase 20`.
 
 ### Blockers/Concerns
 
-- 10 failing tests from v5.0 era need cleanup (webhook route tests, multi-tenant isolation, YNAB OAuth) — bundled into relevant phase cleanup
-- Existing production deployment has live data — migration must preserve it
+- Production deployment has live data — Phase 20 migration must preserve it (pg_dump backup before running)
+- 10 failing tests from v5.0 era — bundled into Phase 24 cleanup
+- Test mode silent-wiring bug (v5.0 lesson) — Phase 22 success criterion 4 explicitly verifies test mode reaches the active `/api/webhook` handler
 
 ## Session Continuity
 
-Last session: 2026-04-10T10:45:00Z
-Stopped at: v6.0 milestone started, defining requirements
-Resume file: None
+Last session: 2026-04-10T12:00:00Z
+Stopped at: Roadmap drafted for v6.0 Single-Tenant Rollback
+Resume file: .planning/ROADMAP.md (v6.0 section)
