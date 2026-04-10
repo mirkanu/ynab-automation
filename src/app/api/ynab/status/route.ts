@@ -1,17 +1,7 @@
-import { auth } from '@/lib/auth'
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
 
+// Phase 22 will implement the PAT-based YNAB integration.
+// This stub prevents build errors from the removed YNAB OAuth code.
 export async function GET() {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { oauthToken: true },
-  })
-
-  return NextResponse.json({ connected: !!user?.oauthToken })
+  return NextResponse.json({ error: 'Not implemented — Phase 22 pending' }, { status: 501 })
 }

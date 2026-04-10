@@ -1,8 +1,8 @@
 // YNAB REST API client for creating budget transactions.
 // Uses native fetch — no YNAB SDK needed for a simple POST.
+// Phase 22 note: token is now read from the YNAB_ACCESS_TOKEN DB Setting (PAT-based).
 
-import { prisma } from '@/lib/db';
-import { encryptToken, decryptToken } from '@/lib/crypto';
+import { getSetting } from '@/lib/settings';
 
 export interface YnabCategory {
   id: string;
@@ -21,109 +21,15 @@ export interface YnabTransactionParams {
 }
 
 /**
- * Retrieves a valid YNAB access token for the given user.
+ * Retrieves a valid YNAB Personal Access Token from the YNAB_ACCESS_TOKEN DB setting.
+ * Phase 22 will expose a settings UI to set this value.
  *
- * Strategy:
- * - If the token is fresh (not within 5-min expiry window) → decrypt and return
- * - If another refresh was attempted within 30s (concurrent mutex) → re-read from DB and return
- * - Otherwise → refresh via YNAB OAuth token endpoint, store encrypted result, return plaintext token
- *
- * @throws Error('User has not connected YNAB account') if user has no OAuth token
- * @throws Error('YNAB token refresh failed — user must re-authorize') if refresh fails
+ * @throws Error('YNAB_ACCESS_TOKEN not configured in settings') if not set
  */
-export async function getValidYnabToken(userId: string): Promise<string> {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: {
-      oauthToken: true,
-      oauthRefreshToken: true,
-      oauthExpiresAt: true,
-      lastRefreshAttemptAt: true,
-    },
-  });
-
-  if (!user?.oauthToken) {
-    throw new Error('User has not connected YNAB account');
-  }
-
-  // Check if token is still fresh (more than 5 minutes remaining)
-  const fiveMinutesMs = BigInt(5 * 60 * 1000);
-  const nowBigInt = BigInt(Date.now());
-  const isExpiredOrNearExpiry =
-    nowBigInt >= (user.oauthExpiresAt ?? BigInt(0)) - fiveMinutesMs;
-
-  if (!isExpiredOrNearExpiry) {
-    return decryptToken(user.oauthToken);
-  }
-
-  // Concurrent mutex: if lastRefreshAttemptAt is within 30 seconds, re-read from DB
-  // to get the refreshed token from the concurrent call that already ran
-  if (
-    user.lastRefreshAttemptAt &&
-    Date.now() - user.lastRefreshAttemptAt.getTime() < 30_000
-  ) {
-    const freshUser = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        oauthToken: true,
-        oauthRefreshToken: true,
-        oauthExpiresAt: true,
-        lastRefreshAttemptAt: true,
-      },
-    });
-
-    const freshIsExpiredOrNearExpiry =
-      BigInt(Date.now()) >= (freshUser?.oauthExpiresAt ?? BigInt(0)) - fiveMinutesMs;
-
-    if (!freshIsExpiredOrNearExpiry && freshUser?.oauthToken) {
-      return decryptToken(freshUser.oauthToken);
-    }
-    // Fall through: the mutex holder may have failed, try our own refresh
-  }
-
-  // Perform token refresh
-  if (!user.oauthRefreshToken) {
-    throw new Error('User has not connected YNAB account');
-  }
-
-  const refreshToken = decryptToken(user.oauthRefreshToken);
-
-  const params = new URLSearchParams({
-    grant_type: 'refresh_token',
-    refresh_token: refreshToken,
-    client_id: process.env.YNAB_CLIENT_ID ?? '',
-    client_secret: process.env.YNAB_CLIENT_SECRET ?? '',
-  });
-
-  const refreshRes = await fetch('https://app.ynab.com/oauth/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: params.toString(),
-  });
-
-  if (!refreshRes.ok) {
-    throw new Error('YNAB token refresh failed — user must re-authorize');
-  }
-
-  const tokenData = await refreshRes.json() as {
-    access_token: string;
-    refresh_token: string;
-    expires_in: number;
-  };
-
-  const newExpiresAt = BigInt(Date.now() + tokenData.expires_in * 1000);
-
-  await prisma.user.update({
-    where: { id: userId },
-    data: {
-      oauthToken: encryptToken(tokenData.access_token),
-      oauthRefreshToken: encryptToken(tokenData.refresh_token),
-      oauthExpiresAt: newExpiresAt,
-      lastRefreshAttemptAt: new Date(),
-    },
-  });
-
-  return tokenData.access_token;
+async function getValidYnabToken(): Promise<string> {
+  const token = await getSetting('YNAB_ACCESS_TOKEN');
+  if (!token) throw new Error('YNAB_ACCESS_TOKEN not configured in settings');
+  return token;
 }
 
 /**
@@ -132,8 +38,8 @@ export async function getValidYnabToken(userId: string): Promise<string> {
  * @returns Flat array of {id, name} for every non-deleted category.
  * @throws Error with the HTTP status if YNAB returns a non-2xx response.
  */
-export async function getCategories(userId: string, budgetId: string): Promise<YnabCategory[]> {
-  const token = await getValidYnabToken(userId);
+export async function getCategories(budgetId: string): Promise<YnabCategory[]> {
+  const token = await getValidYnabToken();
   const url = `https://api.youneedabudget.com/v1/budgets/${budgetId}/categories`;
 
   const res = await fetch(url, {
@@ -180,9 +86,9 @@ export function findCategory(categories: YnabCategory[], hint: string): YnabCate
 /**
  * Looks up an account name by ID. Returns the ID if lookup fails.
  */
-export async function getAccountName(userId: string, budgetId: string, accountId: string): Promise<string> {
+export async function getAccountName(budgetId: string, accountId: string): Promise<string> {
   try {
-    const token = await getValidYnabToken(userId);
+    const token = await getValidYnabToken();
     const res = await fetch(`https://api.youneedabudget.com/v1/budgets/${budgetId}/accounts/${accountId}`, {
       headers: { 'Authorization': `Bearer ${token}` },
     });
@@ -206,12 +112,11 @@ export async function getAccountName(userId: string, budgetId: string, accountId
  * @throws Error with the HTTP status code if YNAB returns a non-2xx response.
  */
 export async function createYnabTransaction(
-  userId: string,
   params: YnabTransactionParams,
 ): Promise<string> {
   const { budgetId, accountId, amount, description, senderName, payeeName, date, categoryId } = params;
 
-  const token = await getValidYnabToken(userId);
+  const token = await getValidYnabToken();
 
   // Convert to milliunits, negate for outflow
   const milliunits = Math.round(amount * 1000) * -1;

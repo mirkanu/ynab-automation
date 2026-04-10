@@ -1,31 +1,17 @@
-import { prisma } from '@/lib/db';
+// Phase 18 dead code — this module was used by the multi-tenant Postmark forwarding system.
+// The active email ingestion path is /api/webhook (Pipedream), not /api/email/inbound.
+// Phase 22 will delete this file along with the Postmark inbound route.
 
 /**
- * Verifies that the request IP is in the Postmark IP allowlist.
- * POSTMARK_IPS env var: comma-separated list of allowed IPs.
- * Reference: https://postmarkapp.com/developer/user-guide/inbound/parse-an-email
+ * @deprecated Dead code from Phase 18. Phase 22 will delete this file.
  */
-export function verifyPostmarkIp(ip: string | null): boolean {
-  if (!ip) return false;
-  const allowlist = process.env.POSTMARK_IPS;
-  if (!allowlist) return false;
-  return allowlist.split(',').map(s => s.trim()).includes(ip);
+export function verifyPostmarkIp(_ip: string | null): boolean {
+  throw new Error('verifyPostmarkIp: dead code — Phase 22 will delete this')
 }
 
 /**
- * Maps a Postmark To address to a userId via EmailForwardingAddress lookup.
- * Extracts mailboxHash from the local part of the email address.
- * Returns userId if found, null if unknown address.
+ * @deprecated Dead code from Phase 18. Phase 22 will delete this file.
  */
-export async function getUserFromForwardingAddress(toAddress: string): Promise<string | null> {
-  if (!toAddress || !toAddress.includes('@')) return null;
-  const [localPart] = toAddress.split('@');
-  if (!localPart) return null;
-
-  const forwarding = await prisma.emailForwardingAddress.findUnique({
-    where: { mailboxHash: localPart },
-    select: { userId: true },
-  });
-
-  return forwarding?.userId ?? null;
+export async function getUserFromForwardingAddress(_toAddress: string): Promise<string | null> {
+  throw new Error('getUserFromForwardingAddress: dead code — Phase 22 will delete this')
 }
