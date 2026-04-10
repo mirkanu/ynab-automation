@@ -1,7 +1,38 @@
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
+import { getAdminSession } from '@/lib/admin-session';
+import { getSetting } from '@/lib/settings';
 
-// Phase 22 will implement the PAT-based YNAB integration.
-// This stub prevents build errors from the removed YNAB OAuth code.
 export async function GET() {
-  return NextResponse.json({ error: 'Not implemented — Phase 22 pending' }, { status: 501 })
+  try {
+    const session = await getAdminSession();
+    if (!session.isLoggedIn) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const token = await getSetting('YNAB_ACCESS_TOKEN');
+    if (!token) {
+      return NextResponse.json({ error: 'YNAB_ACCESS_TOKEN not configured' }, { status: 400 });
+    }
+
+    const res = await fetch('https://api.youneedabudget.com/v1/budgets', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) {
+      return NextResponse.json({ error: `YNAB API error: ${res.status}` }, { status: 502 });
+    }
+
+    const data = await res.json() as {
+      data: {
+        budgets: Array<{ id: string; name: string; last_modified_on: string }>;
+      };
+    };
+
+    const budgets = data.data.budgets.map((b) => ({ id: b.id, name: b.name }));
+    return NextResponse.json({ budgets });
+  } catch (err) {
+    return NextResponse.json({ error: String(err) }, { status: 500 });
+  }
 }
