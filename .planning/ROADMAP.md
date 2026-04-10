@@ -64,7 +64,13 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
   2. After the migration, the admin Settings page still loads the pre-migration `SENDERS`, `CURRENCY_ACCOUNTS`, `TEST_MODE`, and any other Setting rows; values match exactly what was in the DB before the migration (verified by snapshotting Setting rows pre/post and diffing).
   3. `psql` inspection of the production schema shows no `User`, `Account`, `Session`, `VerificationToken`, `EmailForwardingAddress`, or `ProcessedWebhook` tables; no `userId` columns on any remaining table; no RLS policies (`SELECT * FROM pg_policies` returns empty).
   4. The migration is idempotent and reversible-in-theory via a pre-migration `pg_dump` backup captured as part of the phase, so a failed migration can be rolled back without data loss.
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 20-01-PLAN.md — Capture pg_dump backup and pre-migration data snapshot
+- [ ] 20-02-PLAN.md — Write and verify the rollback migration SQL file
+- [ ] 20-03-PLAN.md — Deploy migration to Railway production and verify all success criteria
+- [ ] 20-04-PLAN.md — Update prisma/schema.prisma to single-tenant state and regenerate client
 
 ### Phase 21: iron-session Admin Auth Restoration
 **Milestone:** v6.0
@@ -77,7 +83,13 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
   3. The admin visits Settings, enters a new admin password, saves, logs out, and can log back in with the new password; the old password no longer works — all without a redeploy or env var change.
   4. `grep -r "next-auth\|@auth/core\|authOptions" src/` returns zero matches; `package.json` contains no `next-auth` or `@auth/*` dependencies; `/onboarding`, magic-link signin page, and GDPR account deletion UI return 404.
   5. `src/lib/db.ts` exports a plain `prisma` client with no `getPrismaForUser` helper and no RLS-setting `$extends` middleware (verified by file diff).
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 20-01-PLAN.md — Capture pg_dump backup and pre-migration data snapshot
+- [ ] 20-02-PLAN.md — Write and verify the rollback migration SQL file
+- [ ] 20-03-PLAN.md — Deploy migration to Railway production and verify all success criteria
+- [ ] 20-04-PLAN.md — Update prisma/schema.prisma to single-tenant state and regenerate client
 
 ### Phase 22: YNAB PAT & Settings API Keys
 **Milestone:** v6.0
@@ -90,7 +102,13 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
   3. The Settings page "API Keys" section shows editable fields for YNAB PAT, Anthropic Claude API key, Resend API key, and Pipedream webhook URL; changing the Claude key and submitting a replay immediately uses the new key (verified by rotating to an invalid key and seeing a Claude auth error in the replay trace).
   4. Sender routing rules, currency-based account routing rules, and the test mode toggle all load, edit, and save correctly on the restored Settings page; toggling test mode ON and forwarding an email produces an Activity Log entry with no corresponding YNAB transaction (confirms test mode reaches the active `/api/webhook` handler, closing the v5.0 UAT gap).
   5. `grep -r "authorize\|oauthToken\|oauthRefreshToken\|ynabEncryption\|mailboxHash\|email-routing" src/` returns zero matches; `/api/ynab/authorize`, `/api/ynab/callback`, `/api/email/inbound`, `src/lib/crypto.ts`, `src/lib/email-routing.ts`, and `src/lib/mailbox-hash.ts` do not exist on disk.
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 20-01-PLAN.md — Capture pg_dump backup and pre-migration data snapshot
+- [ ] 20-02-PLAN.md — Write and verify the rollback migration SQL file
+- [ ] 20-03-PLAN.md — Deploy migration to Railway production and verify all success criteria
+- [ ] 20-04-PLAN.md — Update prisma/schema.prisma to single-tenant state and regenerate client
 
 ### Phase 23: First-Install Wizard & Route State Machine
 **Milestone:** v6.0
@@ -103,7 +121,13 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
   3. Each wizard step displays numbered plain-language instructions and a direct link to the provider's API key page (ynab.com/settings/developer, console.anthropic.com, resend.com/api-keys, pipedream.com) — verified by eyeballing the rendered `/setup/*` pages.
   4. After wizard completion, `wizard_complete` is `true` in the DB; manually visiting `/setup` redirects to `/dashboard` (authenticated) or `/login` (unauthenticated); the wizard cannot be accidentally re-run.
   5. `src/app/onboarding/`, `src/app/(dashboard)/settings/DangerZone.tsx`, and `src/app/api/account/delete/` do not exist on disk; test mode toggling is handled by the single Settings endpoint (no separate DangerZone handler).
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 20-01-PLAN.md — Capture pg_dump backup and pre-migration data snapshot
+- [ ] 20-02-PLAN.md — Write and verify the rollback migration SQL file
+- [ ] 20-03-PLAN.md — Deploy migration to Railway production and verify all success criteria
+- [ ] 20-04-PLAN.md — Update prisma/schema.prisma to single-tenant state and regenerate client
 
 ### Phase 24: Test Suite Cleanup & Self-Host Docs
 **Milestone:** v6.0
@@ -115,7 +139,13 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
   2. The README's "Deploy on Railway" button, when clicked by the roadmapper as a dry-run test, produces a Railway deployment template that provisions PostgreSQL, sets `DATABASE_URL`, and auto-generates an `IRON_SESSION_SECRET` — verified by the Railway template preview screen.
   3. The README walks end-to-end from "click deploy" through "complete wizard" to "forward first email" with numbered steps and at least one screenshot per major step; the flow has been dry-run by the roadmapper or user against the live deployment without consulting any file outside the README.
   4. The README's "costs" section names each paid provider (Claude, Resend, Railway hobby tier) with a link to its pricing page and a plain-language expectation ("likely a few cents per month at household volume") — no hard dollar amounts that will age.
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 20-01-PLAN.md — Capture pg_dump backup and pre-migration data snapshot
+- [ ] 20-02-PLAN.md — Write and verify the rollback migration SQL file
+- [ ] 20-03-PLAN.md — Deploy migration to Railway production and verify all success criteria
+- [ ] 20-04-PLAN.md — Update prisma/schema.prisma to single-tenant state and regenerate client
 
 ## Progress
 
@@ -131,7 +161,7 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
 | 17. YNAB OAuth & Token Management | v5.0 | 6/6 | Complete | 2026-03-30 |
 | 18. Per-User Inbound Email | v5.0 | 5/5 | Complete | 2026-03-30 |
 | 19. Dashboard, Onboarding & Account Management | v5.0 | 5/5 | Complete | 2026-03-30 |
-| 20. Schema Rollback Migration | v6.0 | 0/? | Not started | — |
+| 20. Schema Rollback Migration | v6.0 | 0/4 | Not started | — |
 | 21. iron-session Admin Auth Restoration | v6.0 | 0/? | Not started | — |
 | 22. YNAB PAT & Settings API Keys | v6.0 | 0/? | Not started | — |
 | 23. First-Install Wizard & Route State Machine | v6.0 | 0/? | Not started | — |
