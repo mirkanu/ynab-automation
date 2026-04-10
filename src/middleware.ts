@@ -2,27 +2,24 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 /**
- * Lightweight middleware that checks for session cookie existence only.
- * Actual session validation happens in server components/API routes via auth().
+ * Lightweight middleware that checks for iron-session cookie existence only.
+ * Actual session validation (isLoggedIn=true) happens in server components
+ * via getAdminSession() which has Node.js runtime access.
  *
- * We cannot use `export { auth as middleware }` with database session strategy
- * because PrismaClient does not support Edge Runtime (where middleware runs).
+ * Cannot decrypt the iron-session cookie here — Edge Runtime cannot run
+ * Node.js crypto. Cookie presence is sufficient to let the server component
+ * perform the real check.
  */
 export function middleware(request: NextRequest) {
-  const sessionToken =
-    request.cookies.get('authjs.session-token') ??
-    request.cookies.get('__Secure-authjs.session-token')
+  const sessionCookie = request.cookies.get('admin_session')
 
-  if (!sessionToken) {
-    const signInUrl = new URL('/auth/signin', request.url)
-    // Use pathname+search only — `request.url` resolves to the internal bind
-    // address (e.g. https://localhost:8080) behind Railway's proxy, which would
-    // break the post-signin redirect. A relative path is safe and proxy-agnostic.
-    signInUrl.searchParams.set(
+  if (!sessionCookie) {
+    const loginUrl = new URL('/login', request.url)
+    loginUrl.searchParams.set(
       'callbackUrl',
       request.nextUrl.pathname + request.nextUrl.search
     )
-    return NextResponse.redirect(signInUrl)
+    return NextResponse.redirect(loginUrl)
   }
 
   return NextResponse.next()
@@ -30,8 +27,8 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Protect page routes only — API routes handle their own auth (return 401 instead of redirect)
-    // Exclude root / (public homepage), auth pages, API routes, and static files
-    '/((?!$|auth|api|_next/static|_next/image|favicon.ico).*)',
+    // Protect page routes only.
+    // Excludes: login, logout, setup wizard, API routes, Next.js internals, favicon
+    '/((?!login|logout|setup|api|_next/static|_next/image|favicon.ico).*)',
   ],
 }
