@@ -14,13 +14,13 @@ import { loadDbSettings } from '@/lib/settings';
 
 const INITIAL_USER_EMAIL = process.env.ADMIN_EMAIL ?? 'manuelkuhs@gmail.com';
 
-async function getInitialUserId(): Promise<string | null> {
+async function getInitialUser(): Promise<{ id: string; testMode: boolean } | null> {
   try {
     const user = await prisma.user.findUnique({
       where: { email: INITIAL_USER_EMAIL },
-      select: { id: true },
+      select: { id: true, testMode: true },
     });
-    return user?.id ?? null;
+    return user ?? null;
   } catch {
     return null;
   }
@@ -49,11 +49,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Step 2: Look up the user who owns this webhook (Phase 16-19 shim: initial user)
-    const userId = await getInitialUserId();
-    if (!userId) {
+    const initialUser = await getInitialUser();
+    if (!initialUser) {
       console.error('Webhook: no initial user found — cannot process email');
       return NextResponse.json({ received: true }, { status: 200 });
     }
+    const userId = initialUser.id;
 
     // Step 3: Deduplicate
     const existing = await prisma.processedEmail.findUnique({
@@ -157,7 +158,8 @@ export async function POST(req: NextRequest) {
 
     // Step 8: Create YNAB transaction (or skip in test mode)
     const accountId = getAccountForCurrency(config, senderInfo.accountId, parsed.currency);
-    const testMode = process.env.TEST_MODE === 'true';
+    // Read test mode from the user's DB row (not env var) so the Settings toggle controls it.
+    const testMode = initialUser.testMode;
 
     const memo = `${senderInfo.name}: ${parsed.description} - Automatically added from email`;
     const accountName = await getAccountName(userId, budgetId, accountId);
