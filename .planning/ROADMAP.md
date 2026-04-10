@@ -47,7 +47,7 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
 ### 🚧 v6.0 Single-Tenant Rollback (Phases 20-24)
 
 - [x] **Phase 20: Schema Rollback Migration** — Drop multi-tenant schema (Auth.js, userId, RLS, Phase 18 tables) while preserving activity log, settings, and routing rules (completed 2026-04-10)
-- [ ] **Phase 21: iron-session Admin Auth Restoration** — Replace Auth.js with single-admin iron-session auth and delete all Auth.js code paths
+- [x] **Phase 21: iron-session Admin Auth Restoration** — Replace Auth.js with single-admin iron-session auth and delete all Auth.js code paths (completed 2026-04-10)
 - [ ] **Phase 22: YNAB PAT & Settings API Keys** — Swap YNAB OAuth for a DB-stored Personal Access Token and surface all API keys as editable settings
 - [ ] **Phase 23: First-Install Wizard & Route State Machine** — Add a non-programmer multi-step setup wizard and unify root routing based on install/auth state
 - [ ] **Phase 24: Test Suite Cleanup & Self-Host Docs** — Fix or delete stale v5.0 tests and ship README + Railway deploy button for non-programmers
@@ -83,7 +83,7 @@ Plans:
   3. The admin visits Settings, enters a new admin password, saves, logs out, and can log back in with the new password; the old password no longer works — all without a redeploy or env var change.
   4. `grep -r "next-auth\|@auth/core\|authOptions" src/` returns zero matches; `package.json` contains no `next-auth` or `@auth/*` dependencies; `/onboarding`, magic-link signin page, and GDPR account deletion UI return 404.
   5. `src/lib/db.ts` exports a plain `prisma` client with no `getPrismaForUser` helper and no RLS-setting `$extends` middleware (verified by file diff).
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans complete
 
 Plans:
 - [ ] 21-01-PLAN.md — Rewrite data-layer libs (db.ts, settings.ts, activity-log.ts, activity-log-queries.ts) to single-tenant schema
@@ -163,7 +163,7 @@ Plans:
 | 18. Per-User Inbound Email | v5.0 | 5/5 | Complete | 2026-03-30 |
 | 19. Dashboard, Onboarding & Account Management | v5.0 | 5/5 | Complete | 2026-03-30 |
 | 20. Schema Rollback Migration | v6.0 | 4/4 | Complete | 2026-04-10 |
-| 21. iron-session Admin Auth Restoration | 4/5 | In Progress|  | — |
+| 21. iron-session Admin Auth Restoration | 5/5 | Complete   | 2026-04-10 | — |
 | 22. YNAB PAT & Settings API Keys | v6.0 | 0/4 | Not started | — |
 | 23. First-Install Wizard & Route State Machine | v6.0 | 0/4 | Not started | — |
 | 24. Test Suite Cleanup & Self-Host Docs | v6.0 | 0/4 | Not started | — |

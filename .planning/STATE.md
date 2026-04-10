@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v6.0
 milestone_name: Single-Tenant Rollback
 status: completed
-stopped_at: Completed 21-04-PLAN.md (Auth.js removal and build gate)
-last_updated: "2026-04-10T19:40:56.010Z"
+stopped_at: Completed 21-05-PLAN.md (Railway deploy + smoke tests; awaiting human verification of Task 2)
+last_updated: "2026-04-10T19:51:33.650Z"
 last_activity: 2026-04-10 — v6.0 roadmap drafted
 progress:
   total_phases: 5
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 9
-  completed_plans: 8
+  completed_plans: 9
   percent: 0
 ---
 
@@ -85,6 +85,8 @@ Decisions logged in PROJECT.md Key Decisions table.
 - [Phase 21-iron-session-admin-auth-restoration]: inboundEmail on dashboard sourced from getSetting('INBOUND_EMAIL') instead of User.forwardingEmail — consistent with single-tenant Setting model
 - [Phase 21-iron-session-admin-auth-restoration]: getValidYnabToken now reads YNAB_ACCESS_TOKEN from DB Setting — no userId, single-tenant PAT pattern matches Phase 22 final design
 - [Phase 21-iron-session-admin-auth-restoration]: YNAB function signatures drop userId — createYnabTransaction/getCategories/getAccountName are now single-tenant; webhook and replay routes already used new signatures
+- [Phase 21-iron-session-admin-auth-restoration]: IRON_SESSION_SECRET already set in Railway env; no new secret needed for deploy
+- [Phase 21-iron-session-admin-auth-restoration]: DEPLOY FREEZE lifted 2026-04-10 by Phase 21 Plan 05 — Railway build successful with iron-session auth and zero next-auth imports
 
 ### Pending Todos
 
@@ -98,6 +100,6 @@ None yet. Next: `/gsd:plan-phase 20`.
 
 ## Session Continuity
 
-Last session: 2026-04-10T19:40:56.003Z
-Stopped at: Completed 21-04-PLAN.md (Auth.js removal and build gate)
+Last session: 2026-04-10T19:51:33.646Z
+Stopped at: Completed 21-05-PLAN.md (Railway deploy + smoke tests; awaiting human verification of Task 2)
 Resume file: None
