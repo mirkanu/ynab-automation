@@ -1,5 +1,14 @@
 # Milestones
 
+## v5.0 Multi-Tenant SaaS (Shipped: 2026-04-10)
+
+**Phases completed:** 4 phases, 20 plans, 6 tasks
+
+**Key accomplishments:**
+- (none recorded)
+
+---
+
 ## v4.0 — Admin Backend UI
 
 **Shipped:** 2026-03-28
