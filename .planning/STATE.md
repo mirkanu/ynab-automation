@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v6.0
 milestone_name: Single-Tenant Rollback
 status: completed
-stopped_at: Completed 21-05-PLAN.md (Railway deploy + smoke tests; awaiting human verification of Task 2)
-last_updated: "2026-04-10T19:51:33.650Z"
+stopped_at: "Completed 21-05-PLAN.md (Phase 21 fully complete: all tasks done, human verification approved)"
+last_updated: "2026-04-10T20:05:38.417Z"
 last_activity: 2026-04-10 — v6.0 roadmap drafted
 progress:
   total_phases: 5
@@ -87,6 +87,7 @@ Decisions logged in PROJECT.md Key Decisions table.
 - [Phase 21-iron-session-admin-auth-restoration]: YNAB function signatures drop userId — createYnabTransaction/getCategories/getAccountName are now single-tenant; webhook and replay routes already used new signatures
 - [Phase 21-iron-session-admin-auth-restoration]: IRON_SESSION_SECRET already set in Railway env; no new secret needed for deploy
 - [Phase 21-iron-session-admin-auth-restoration]: DEPLOY FREEZE lifted 2026-04-10 by Phase 21 Plan 05 — Railway build successful with iron-session auth and zero next-auth imports
+- [Phase 21-iron-session-admin-auth-restoration]: Human verification approved 2026-04-10 — all 15 browser test steps passed; /onboarding and /auth/signin returning 404 for authenticated users is correct behavior matching roadmap success criterion 4
 
 ### Pending Todos
 
@@ -100,6 +101,6 @@ None yet. Next: `/gsd:plan-phase 20`.
 
 ## Session Continuity
 
-Last session: 2026-04-10T19:51:33.646Z
-Stopped at: Completed 21-05-PLAN.md (Railway deploy + smoke tests; awaiting human verification of Task 2)
+Last session: 2026-04-10T20:05:24.021Z
+Stopped at: Completed 21-05-PLAN.md (Phase 21 fully complete: all tasks done, human verification approved)
 Resume file: None

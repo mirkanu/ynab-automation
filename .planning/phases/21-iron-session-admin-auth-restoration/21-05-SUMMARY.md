@@ -12,6 +12,7 @@ provides:
   - Live Railway deployment at https://ynab-test-production.up.railway.app with iron-session auth
   - DEPLOY FREEZE lifted (first successful Railway build since 2026-04-10 16:26:56 UTC)
   - All automated smoke tests passing (redirect, 401, grep checks)
+  - Human-verified: login, session persistence, dashboard/logs/settings pages, password change flow, old password rejection, dead routes 404
 affects:
   - 22 (YNAB PAT and settings API keys — live infrastructure available)
   - 23 (First-install wizard — auth flow confirmed end-to-end on production)
@@ -32,6 +33,7 @@ key-decisions:
   - "IRON_SESSION_SECRET was already set in Railway env vars — no new secret needed"
   - "ADMIN_PASSWORD env var (forge-flint-lemon) confirmed in Railway — bootstrap login path works"
   - "/onboarding and /auth/signin return 307 → /login for unauthenticated curl (middleware intercepts before Next.js 404) — this is correct behavior; authenticated users navigating there get 404"
+  - "Human verification approved 2026-04-10 — all 15 browser test steps passed including login, dashboard, logs, settings, password change, old password rejection, and dead routes returning 404"
 
 requirements-completed: [AUTH-04, AUTH-05, AUTH-06, DASH-07]
 
@@ -42,15 +44,15 @@ completed: 2026-04-10
 
 # Phase 21 Plan 05: Railway Deploy & Smoke Tests Summary
 
-**DEPLOY FREEZE lifted: iron-session auth deployed to Railway; /dashboard → /login, /api/settings → 401 JSON, zero next-auth imports, all automated smoke tests pass**
+**DEPLOY FREEZE lifted: iron-session auth deployed to Railway; /dashboard → /login, /api/settings → 401 JSON, zero next-auth imports, all automated smoke tests and human browser verification passed**
 
 ## Performance
 
-- **Duration:** ~12 min
+- **Duration:** ~15 min
 - **Started:** 2026-04-10T~19:45Z
-- **Completed:** 2026-04-10T~19:57Z
-- **Tasks:** 1 auto (+ 1 checkpoint:human-verify pending user)
-- **Files modified:** 0 (deploy-only task)
+- **Completed:** 2026-04-10T~20:00Z
+- **Tasks:** 2 (1 auto + 1 human-verify, both complete)
+- **Files modified:** 0 (deploy-only plan)
 
 ## Accomplishments
 
@@ -58,7 +60,7 @@ completed: 2026-04-10
 - `railway up --detach` triggered new build (context `mzv4-Zr5l`) — compiled successfully, healthcheck passed
 - DEPLOY FREEZE lifted: first successful Railway build since Phase 20 migration on 2026-04-10 16:26:56 UTC
 - All 6 automated smoke tests passed (see below)
-- Human checkpoint prepared for browser-based login and password-change verification
+- Human verification (Task 2) approved: all 15 browser test steps passed — login works with admin password, cookie persists on reload, /logs and /settings load, password change takes effect in DB immediately, old password correctly rejected, /onboarding and /auth/signin return 404 for authenticated users
 
 ## Automated Smoke Test Results
 
@@ -75,11 +77,14 @@ completed: 2026-04-10
 
 ## Task Commits
 
-1. **Task 1: Deploy to Railway and verify automated success criteria** — no source changes; deploy-only task
+1. **Task 1: Deploy to Railway and verify automated success criteria** — `fa02b88` (docs) — no source changes; deploy-only task
+2. **Task 2: Human verification of admin login and password change** — no commit (checkpoint:human-verify; user approved)
+
+**Plan metadata:** (this docs commit — see PLAN COMPLETE message)
 
 ## Files Created/Modified
 
-None — Task 1 was a deployment and smoke test task with no source file changes.
+None — this was a deploy-only plan. All source changes landed in Plans 01-04.
 
 ## Decisions Made
 
@@ -106,11 +111,11 @@ None — deploy succeeded on first attempt, all smoke tests passed.
 
 ## Human Checkpoint Status
 
-Task 2 (checkpoint:human-verify) is pending user confirmation of:
-- Interactive login flow with admin password `forge-flint-lemon`
-- Dashboard and logs pages load correctly
-- Admin password change in Settings works (new password succeeds, old fails)
-- Logout and re-login with new password
+Task 2 (checkpoint:human-verify) — APPROVED 2026-04-10. All 15 browser steps verified:
+- Login with admin password redirected correctly and session cookie persisted on reload
+- Dashboard, /logs, and /settings all loaded correctly
+- Password change flow: new password saved, logout successful, re-login with new password succeeded, old password rejected with "Invalid password"
+- /onboarding and /auth/signin returned 404 (correct — authenticated users see Next.js 404 for deleted routes)
 
 ## Next Phase Readiness
 
@@ -120,4 +125,4 @@ Task 2 (checkpoint:human-verify) is pending user confirmation of:
 
 ---
 *Phase: 21-iron-session-admin-auth-restoration*
-*Completed: 2026-04-10 (Task 1 auto; Task 2 human-verify pending)*
+*Completed: 2026-04-10*
