@@ -83,13 +83,14 @@ Plans:
   3. The admin visits Settings, enters a new admin password, saves, logs out, and can log back in with the new password; the old password no longer works — all without a redeploy or env var change.
   4. `grep -r "next-auth\|@auth/core\|authOptions" src/` returns zero matches; `package.json` contains no `next-auth` or `@auth/*` dependencies; `/onboarding`, magic-link signin page, and GDPR account deletion UI return 404.
   5. `src/lib/db.ts` exports a plain `prisma` client with no `getPrismaForUser` helper and no RLS-setting `$extends` middleware (verified by file diff).
-**Plans:** 4 plans
+**Plans:** 5 plans
 
 Plans:
-- [ ] 20-01-PLAN.md — Capture pg_dump backup and pre-migration data snapshot
-- [ ] 20-02-PLAN.md — Write and verify the rollback migration SQL file
-- [ ] 20-03-PLAN.md — Deploy migration to Railway production and verify all success criteria
-- [ ] 20-04-PLAN.md — Update prisma/schema.prisma to single-tenant state and regenerate client
+- [ ] 21-01-PLAN.md — Rewrite data-layer libs (db.ts, settings.ts, activity-log.ts, activity-log-queries.ts) to single-tenant schema
+- [ ] 21-02-PLAN.md — Replace Auth.js middleware; delete auth.ts, /auth pages, /onboarding pages
+- [ ] 21-03-PLAN.md — Rewire UI routes and API routes to iron-session; add password-change Settings section
+- [ ] 21-04-PLAN.md — Remove next-auth/@auth/prisma-adapter from package.json; stub YNAB OAuth routes; verify local build
+- [ ] 21-05-PLAN.md — Deploy to Railway (lift DEPLOY FREEZE); smoke-test all success criteria; human checkpoint
 
 ### Phase 22: YNAB PAT & Settings API Keys
 **Milestone:** v6.0
@@ -105,10 +106,10 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
-- [ ] 20-01-PLAN.md — Capture pg_dump backup and pre-migration data snapshot
-- [ ] 20-02-PLAN.md — Write and verify the rollback migration SQL file
-- [ ] 20-03-PLAN.md — Deploy migration to Railway production and verify all success criteria
-- [ ] 20-04-PLAN.md — Update prisma/schema.prisma to single-tenant state and regenerate client
+- [ ] 22-01-PLAN.md — TBD
+- [ ] 22-02-PLAN.md — TBD
+- [ ] 22-03-PLAN.md — TBD
+- [ ] 22-04-PLAN.md — TBD
 
 ### Phase 23: First-Install Wizard & Route State Machine
 **Milestone:** v6.0
@@ -124,10 +125,10 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
-- [ ] 20-01-PLAN.md — Capture pg_dump backup and pre-migration data snapshot
-- [ ] 20-02-PLAN.md — Write and verify the rollback migration SQL file
-- [ ] 20-03-PLAN.md — Deploy migration to Railway production and verify all success criteria
-- [ ] 20-04-PLAN.md — Update prisma/schema.prisma to single-tenant state and regenerate client
+- [ ] 23-01-PLAN.md — TBD
+- [ ] 23-02-PLAN.md — TBD
+- [ ] 23-03-PLAN.md — TBD
+- [ ] 23-04-PLAN.md — TBD
 
 ### Phase 24: Test Suite Cleanup & Self-Host Docs
 **Milestone:** v6.0
@@ -142,10 +143,10 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
-- [ ] 20-01-PLAN.md — Capture pg_dump backup and pre-migration data snapshot
-- [ ] 20-02-PLAN.md — Write and verify the rollback migration SQL file
-- [ ] 20-03-PLAN.md — Deploy migration to Railway production and verify all success criteria
-- [ ] 20-04-PLAN.md — Update prisma/schema.prisma to single-tenant state and regenerate client
+- [ ] 24-01-PLAN.md — TBD
+- [ ] 24-02-PLAN.md — TBD
+- [ ] 24-03-PLAN.md — TBD
+- [ ] 24-04-PLAN.md — TBD
 
 ## Progress
 
@@ -161,8 +162,8 @@ Plans:
 | 17. YNAB OAuth & Token Management | v5.0 | 6/6 | Complete | 2026-03-30 |
 | 18. Per-User Inbound Email | v5.0 | 5/5 | Complete | 2026-03-30 |
 | 19. Dashboard, Onboarding & Account Management | v5.0 | 5/5 | Complete | 2026-03-30 |
-| 20. Schema Rollback Migration | 4/4 | Complete    | 2026-04-10 | — |
-| 21. iron-session Admin Auth Restoration | v6.0 | 0/? | Not started | — |
-| 22. YNAB PAT & Settings API Keys | v6.0 | 0/? | Not started | — |
-| 23. First-Install Wizard & Route State Machine | v6.0 | 0/? | Not started | — |
-| 24. Test Suite Cleanup & Self-Host Docs | v6.0 | 0/? | Not started | — |
+| 20. Schema Rollback Migration | v6.0 | 4/4 | Complete | 2026-04-10 |
+| 21. iron-session Admin Auth Restoration | v6.0 | 0/5 | Not started | — |
+| 22. YNAB PAT & Settings API Keys | v6.0 | 0/4 | Not started | — |
+| 23. First-Install Wizard & Route State Machine | v6.0 | 0/4 | Not started | — |
+| 24. Test Suite Cleanup & Self-Host Docs | v6.0 | 0/4 | Not started | — |
