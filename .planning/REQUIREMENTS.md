@@ -19,8 +19,8 @@ Requirements for this milestone. Each maps to a roadmap phase.
 
 - [ ] **AUTH-04**: A single admin password protects the dashboard and settings via iron-session cookie-based auth
 - [ ] **AUTH-05**: Admin can change the admin password via the settings page without editing env vars or redeploying
-- [ ] **AUTH-06**: Unauthenticated visitors to `/dashboard`, `/settings`, and other protected routes are redirected to `/login`; unauthenticated API calls return HTTP 401
-- [ ] **AUTH-07**: Auth.js dependency is fully removed from `package.json`, `src/lib/auth.ts`, signin/signout pages, and all middleware imports
+- [x] **AUTH-06**: Unauthenticated visitors to `/dashboard`, `/settings`, and other protected routes are redirected to `/login`; unauthenticated API calls return HTTP 401
+- [x] **AUTH-07**: Auth.js dependency is fully removed from `package.json`, `src/lib/auth.ts`, signin/signout pages, and all middleware imports
 
 ### YNAB Configuration
 
@@ -48,13 +48,13 @@ Requirements for this milestone. Each maps to a roadmap phase.
 ### Dashboard & UX
 
 - [ ] **DASH-06**: Dashboard stats, activity log, parse transparency, and replay tool all continue to work after the single-tenant rollback
-- [ ] **DASH-07**: Public homepage (`/`), onboarding page (`/onboarding`), GDPR account deletion UI, and magic-link signin page are removed
+- [x] **DASH-07**: Public homepage (`/`), onboarding page (`/onboarding`), GDPR account deletion UI, and magic-link signin page are removed
 - [ ] **DASH-08**: `/` routes based on state: first install → `/setup`, unauthenticated → `/login`, authenticated → `/dashboard`
 
 ### Dead Code Removal
 
 - [ ] **CLEAN-01**: Delete `/api/email/inbound` route, `src/lib/email-routing.ts`, `src/lib/mailbox-hash.ts`, and all Phase 18 per-user forwarding address code
-- [ ] **CLEAN-02**: Remove `getPrismaForUser` middleware and RLS-setting `$extends` from `src/lib/db.ts`
+- [x] **CLEAN-02**: Remove `getPrismaForUser` middleware and RLS-setting `$extends` from `src/lib/db.ts`
 - [ ] **CLEAN-03**: Delete `src/app/onboarding/`, `src/app/(dashboard)/settings/DangerZone.tsx`, `src/app/api/account/delete/`, and unify test-mode toggling into the main settings endpoint
 - [ ] **CLEAN-04**: Fix or delete the 10 failing tests that accumulated during v5.0 (webhook route tests, multi-tenant isolation tests, YNAB OAuth tests, migration tests)
 
@@ -109,8 +109,8 @@ Explicitly excluded. Documented to prevent scope creep.
 | DATA-08 | Phase 20 | Complete |
 | AUTH-04 | Phase 21 | Pending |
 | AUTH-05 | Phase 21 | Pending |
-| AUTH-06 | Phase 21 | Pending |
-| AUTH-07 | Phase 21 | Pending |
+| AUTH-06 | Phase 21 | Complete |
+| AUTH-07 | Phase 21 | Complete |
 | YNAB-06 | Phase 22 | Pending |
 | YNAB-07 | Phase 22 | Pending |
 | YNAB-08 | Phase 22 | Pending |
@@ -126,10 +126,10 @@ Explicitly excluded. Documented to prevent scope creep.
 | WIZ-04 | Phase 23 | Pending |
 | WIZ-05 | Phase 23 | Pending |
 | DASH-06 | Phase 22 | Pending |
-| DASH-07 | Phase 21 | Pending |
+| DASH-07 | Phase 21 | Complete |
 | DASH-08 | Phase 23 | Pending |
 | CLEAN-01 | Phase 22 | Pending |
-| CLEAN-02 | Phase 21 | Pending |
+| CLEAN-02 | Phase 21 | Complete |
 | CLEAN-03 | Phase 23 | Pending |
 | CLEAN-04 | Phase 24 | Pending |
 | DOCS-01 | Phase 24 | Pending |
