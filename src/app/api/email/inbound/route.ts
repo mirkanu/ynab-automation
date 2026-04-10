@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     // Step 4: Verify user has connected YNAB and selected budget/account
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { oauthToken: true, selectedBudgetId: true, selectedAccountId: true },
+      select: { oauthToken: true, selectedBudgetId: true, selectedAccountId: true, testMode: true },
     });
 
     if (!user?.oauthToken) {
@@ -149,8 +149,32 @@ export async function POST(request: NextRequest) {
 
     const accountName = await getAccountName(userId, budgetId, accountId);
 
-    // Step 7: Create YNAB transaction
+    // Step 7: Create YNAB transaction (or skip if user is in test mode)
     const memo = `${parsed.retailer}: ${parsed.description} - Automatically added from email`;
+
+    if (user.testMode) {
+      console.log('TEST MODE — skipping YNAB transaction for user', userId, parsed.retailer);
+      await userPrisma.processedWebhook.create({
+        data: { provider: 'postmark', providerId, userId, status: 'success' },
+      });
+      await writeActivityLog({
+        userId,
+        messageId: providerId,
+        status: 'test',
+        sender,
+        subject,
+        rawBody: html || undefined,
+        parseResult: {
+          retailer: parsed.retailer,
+          amount: parsed.amount,
+          date: parsed.date,
+          currency: parsed.currency,
+          description: parsed.description,
+        },
+      });
+      return NextResponse.json({ status: 'test_mode', parsed: true }, { status: 200 });
+    }
+
     const transactionId = await createYnabTransaction(userId, {
       budgetId,
       accountId,
