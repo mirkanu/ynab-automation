@@ -31,11 +31,11 @@ Requirements for this milestone. Each maps to a roadmap phase.
 
 ### Settings & Config UI
 
-- [ ] **CONFIG-01**: Settings page shows an "API Keys" section with fields for YNAB PAT, Anthropic Claude API key, Resend API key, and Pipedream webhook URL
-- [ ] **CONFIG-02**: Admin can edit any API key in the settings page; changes save to the DB and take effect without restart
-- [ ] **CONFIG-03**: Sender routing rules UI (from Quick-4/5) is preserved and functional after rollback
-- [ ] **CONFIG-04**: Currency-based account routing UI (from Quick-6) is preserved and functional after rollback
-- [ ] **CONFIG-05**: Test mode toggle (from post-UAT fix) is preserved and continues to skip YNAB writes when enabled
+- [x] **CONFIG-01**: Settings page shows an "API Keys" section with fields for YNAB PAT, Anthropic Claude API key, Resend API key, and Pipedream webhook URL
+- [x] **CONFIG-02**: Admin can edit any API key in the settings page; changes save to the DB and take effect without restart
+- [x] **CONFIG-03**: Sender routing rules UI (from Quick-4/5) is preserved and functional after rollback
+- [x] **CONFIG-04**: Currency-based account routing UI (from Quick-6) is preserved and functional after rollback
+- [x] **CONFIG-05**: Test mode toggle (from post-UAT fix) is preserved and continues to skip YNAB writes when enabled
 
 ### First-Install Wizard
 
@@ -47,7 +47,7 @@ Requirements for this milestone. Each maps to a roadmap phase.
 
 ### Dashboard & UX
 
-- [ ] **DASH-06**: Dashboard stats, activity log, parse transparency, and replay tool all continue to work after the single-tenant rollback
+- [x] **DASH-06**: Dashboard stats, activity log, parse transparency, and replay tool all continue to work after the single-tenant rollback
 - [x] **DASH-07**: Public homepage (`/`), onboarding page (`/onboarding`), GDPR account deletion UI, and magic-link signin page are removed
 - [ ] **DASH-08**: `/` routes based on state: first install → `/setup`, unauthenticated → `/login`, authenticated → `/dashboard`
 
@@ -115,17 +115,17 @@ Explicitly excluded. Documented to prevent scope creep.
 | YNAB-07 | Phase 22 | Complete |
 | YNAB-08 | Phase 22 | Complete |
 | YNAB-09 | Phase 22 | Complete |
-| CONFIG-01 | Phase 22 | Pending |
-| CONFIG-02 | Phase 22 | Pending |
-| CONFIG-03 | Phase 22 | Pending |
-| CONFIG-04 | Phase 22 | Pending |
-| CONFIG-05 | Phase 22 | Pending |
+| CONFIG-01 | Phase 22 | Complete |
+| CONFIG-02 | Phase 22 | Complete |
+| CONFIG-03 | Phase 22 | Complete |
+| CONFIG-04 | Phase 22 | Complete |
+| CONFIG-05 | Phase 22 | Complete |
 | WIZ-01 | Phase 23 | Pending |
 | WIZ-02 | Phase 23 | Pending |
 | WIZ-03 | Phase 23 | Pending |
 | WIZ-04 | Phase 23 | Pending |
 | WIZ-05 | Phase 23 | Pending |
-| DASH-06 | Phase 22 | Pending |
+| DASH-06 | Phase 22 | Complete |
 | DASH-07 | Phase 21 | Complete |
 | DASH-08 | Phase 23 | Pending |
 | CLEAN-01 | Phase 22 | Complete |

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v6.0
 milestone_name: Single-Tenant Rollback
 status: completed
-stopped_at: Completed 22-01-PLAN.md
-last_updated: "2026-04-10T21:31:04.299Z"
+stopped_at: Completed 22-03-PLAN.md
+last_updated: "2026-04-10T21:40:04.715Z"
 last_activity: 2026-04-10 — v6.0 roadmap drafted
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 13
-  completed_plans: 11
+  completed_plans: 12
   percent: 0
 ---
 
@@ -92,6 +92,8 @@ Decisions logged in PROJECT.md Key Decisions table.
 - [Phase 22-02]: grep 'authorize' pattern matches 'Unauthorized' in legitimate 401 responses; specific OAuth tokens (oauthToken|ynabEncryption|mailboxHash|email-routing) return zero matches — CLEAN-01 satisfied
 - [Phase 22-ynab-pat-settings-api-keys]: PAT read inline with getSetting directly in route handlers — getValidYnabToken in ynab.ts is unexported by design
 - [Phase 22-ynab-pat-settings-api-keys]: Accounts route filters both deleted and closed YNAB accounts — closed accounts are archived and no longer usable
+- [Phase 22-ynab-pat-settings-api-keys]: ApiKeysSection duplicates YNAB PAT field intentionally — CONFIG-01 requires all keys visible in one place; sections sync via DB on page refresh
+- [Phase 22-ynab-pat-settings-api-keys]: settings/page.tsx reads budgetId server-side from getSetting — avoids client-side waterfall for initial connected state passed to SenderRules/CurrencyRules
 
 ### Pending Todos
 
@@ -105,6 +107,6 @@ None yet. Next: `/gsd:plan-phase 20`.
 
 ## Session Continuity
 
-Last session: 2026-04-10T21:31:04.295Z
-Stopped at: Completed 22-01-PLAN.md
+Last session: 2026-04-10T21:40:04.711Z
+Stopped at: Completed 22-03-PLAN.md
 Resume file: None
