@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v6.0
 milestone_name: Single-Tenant Rollback
 status: completed
-stopped_at: Completed 22-02-PLAN.md (all OAuth routes and dead libs deleted)
-last_updated: "2026-04-10T21:22:11.352Z"
+stopped_at: Completed 22-01-PLAN.md
+last_updated: "2026-04-10T21:31:04.299Z"
 last_activity: 2026-04-10 — v6.0 roadmap drafted
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 13
-  completed_plans: 10
+  completed_plans: 11
   percent: 0
 ---
 
@@ -90,6 +90,8 @@ Decisions logged in PROJECT.md Key Decisions table.
 - [Phase 21-iron-session-admin-auth-restoration]: Human verification approved 2026-04-10 — all 15 browser test steps passed; /onboarding and /auth/signin returning 404 for authenticated users is correct behavior matching roadmap success criterion 4
 - [Phase 22-02]: SIGABRT in npm run build is pre-existing env issue (CA cert/OpenSSL); TypeScript compilation passes cleanly — Railway CI is authoritative build check
 - [Phase 22-02]: grep 'authorize' pattern matches 'Unauthorized' in legitimate 401 responses; specific OAuth tokens (oauthToken|ynabEncryption|mailboxHash|email-routing) return zero matches — CLEAN-01 satisfied
+- [Phase 22-ynab-pat-settings-api-keys]: PAT read inline with getSetting directly in route handlers — getValidYnabToken in ynab.ts is unexported by design
+- [Phase 22-ynab-pat-settings-api-keys]: Accounts route filters both deleted and closed YNAB accounts — closed accounts are archived and no longer usable
 
 ### Pending Todos
 
@@ -103,6 +105,6 @@ None yet. Next: `/gsd:plan-phase 20`.
 
 ## Session Continuity
 
-Last session: 2026-04-10T21:22:11.348Z
-Stopped at: Completed 22-02-PLAN.md (all OAuth routes and dead libs deleted)
+Last session: 2026-04-10T21:31:04.295Z
+Stopped at: Completed 22-01-PLAN.md
 Resume file: None

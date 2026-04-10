@@ -24,10 +24,10 @@ Requirements for this milestone. Each maps to a roadmap phase.
 
 ### YNAB Configuration
 
-- [ ] **YNAB-06**: YNAB API calls use a Personal Access Token stored as a DB setting (not OAuth)
-- [ ] **YNAB-07**: Admin can paste a new YNAB PAT in settings and it takes effect immediately (no redeploy)
+- [x] **YNAB-06**: YNAB API calls use a Personal Access Token stored as a DB setting (not OAuth)
+- [x] **YNAB-07**: Admin can paste a new YNAB PAT in settings and it takes effect immediately (no redeploy)
 - [x] **YNAB-08**: YNAB OAuth flow code is fully removed: `/api/ynab/authorize`, `/api/ynab/callback`, `src/lib/crypto.ts`, proactive refresh logic, and the `oauthToken`/`oauthRefreshToken`/`oauthExpiresAt` schema fields
-- [ ] **YNAB-09**: Admin selects a YNAB budget and account via live dropdowns in settings (values fetched from YNAB API using the configured PAT)
+- [x] **YNAB-09**: Admin selects a YNAB budget and account via live dropdowns in settings (values fetched from YNAB API using the configured PAT)
 
 ### Settings & Config UI
 
@@ -111,10 +111,10 @@ Explicitly excluded. Documented to prevent scope creep.
 | AUTH-05 | Phase 21 | Complete |
 | AUTH-06 | Phase 21 | Complete |
 | AUTH-07 | Phase 21 | Complete |
-| YNAB-06 | Phase 22 | Pending |
-| YNAB-07 | Phase 22 | Pending |
+| YNAB-06 | Phase 22 | Complete |
+| YNAB-07 | Phase 22 | Complete |
 | YNAB-08 | Phase 22 | Complete |
-| YNAB-09 | Phase 22 | Pending |
+| YNAB-09 | Phase 22 | Complete |
 | CONFIG-01 | Phase 22 | Pending |
 | CONFIG-02 | Phase 22 | Pending |
 | CONFIG-03 | Phase 22 | Pending |
