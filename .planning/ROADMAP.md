@@ -106,10 +106,10 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
-- [ ] 22-01-PLAN.md — TBD
-- [ ] 22-02-PLAN.md — TBD
-- [ ] 22-03-PLAN.md — TBD
-- [ ] 22-04-PLAN.md — TBD
+- [ ] 22-01-PLAN.md — Implement YNAB PAT API routes (budgets, accounts, status)
+- [ ] 22-02-PLAN.md — Delete YNAB OAuth and Phase 18 email dead code
+- [ ] 22-03-PLAN.md — Build Settings UI: YnabConnectionSection, ApiKeysSection, wire page
+- [ ] 22-04-PLAN.md — Deploy to Railway and verify all 5 success criteria (human checkpoint)
 
 ### Phase 23: First-Install Wizard & Route State Machine
 **Milestone:** v6.0
