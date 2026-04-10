@@ -64,7 +64,7 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
   2. After the migration, the admin Settings page still loads the pre-migration `SENDERS`, `CURRENCY_ACCOUNTS`, `TEST_MODE`, and any other Setting rows; values match exactly what was in the DB before the migration (verified by snapshotting Setting rows pre/post and diffing).
   3. `psql` inspection of the production schema shows no `User`, `Account`, `Session`, `VerificationToken`, `EmailForwardingAddress`, or `ProcessedWebhook` tables; no `userId` columns on any remaining table; no RLS policies (`SELECT * FROM pg_policies` returns empty).
   4. The migration is idempotent and reversible-in-theory via a pre-migration `pg_dump` backup captured as part of the phase, so a failed migration can be rolled back without data loss.
-**Plans:** 4 plans
+**Plans:** 1/4 plans executed
 
 Plans:
 - [ ] 20-01-PLAN.md — Capture pg_dump backup and pre-migration data snapshot
@@ -161,7 +161,7 @@ Plans:
 | 17. YNAB OAuth & Token Management | v5.0 | 6/6 | Complete | 2026-03-30 |
 | 18. Per-User Inbound Email | v5.0 | 5/5 | Complete | 2026-03-30 |
 | 19. Dashboard, Onboarding & Account Management | v5.0 | 5/5 | Complete | 2026-03-30 |
-| 20. Schema Rollback Migration | v6.0 | 0/4 | Not started | — |
+| 20. Schema Rollback Migration | 1/4 | In Progress|  | — |
 | 21. iron-session Admin Auth Restoration | v6.0 | 0/? | Not started | — |
 | 22. YNAB PAT & Settings API Keys | v6.0 | 0/? | Not started | — |
 | 23. First-Install Wizard & Route State Machine | v6.0 | 0/? | Not started | — |

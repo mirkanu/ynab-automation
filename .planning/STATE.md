@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v6.0
 milestone_name: Single-Tenant Rollback
-status: roadmap_complete
-stopped_at: null
-last_updated: "2026-04-10T12:00:00Z"
-last_activity: "2026-04-10 - v6.0 roadmap drafted (5 phases, 20-24)"
+status: completed
+stopped_at: Completed 20-01-PLAN.md (pre-migration backup)
+last_updated: "2026-04-10T16:11:50.338Z"
+last_activity: 2026-04-10 — v6.0 roadmap drafted
 progress:
   total_phases: 5
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 4
+  completed_plans: 1
   percent: 0
 ---
 
@@ -68,6 +68,8 @@ Decisions logged in PROJECT.md Key Decisions table.
 - Phase 23 depends on 21+22 because the wizard writes into the same settings/API-key plumbing those phases create
 - Phase 24 ends the milestone with test cleanup + README so docs describe a working single-tenant app
 - Dead code removal (CLEAN-01/02/03) bundled into the phases that own the features; no final cleanup phase
+- [Phase 20-schema-rollback-migration]: Railway TCP proxy (mainline.proxy.rlwy.net:44022) created via GraphQL API to access internal PostgreSQL from outside Railway network — railway run containers cannot resolve internal DNS
+- [Phase 20-schema-rollback-migration]: Used postgresql-client-16 locally to match server version 16.13; pg_dump requires version match
 
 ### Pending Todos
 
@@ -81,6 +83,6 @@ None yet. Next: `/gsd:plan-phase 20`.
 
 ## Session Continuity
 
-Last session: 2026-04-10T12:00:00Z
-Stopped at: Roadmap drafted for v6.0 Single-Tenant Rollback
-Resume file: .planning/ROADMAP.md (v6.0 section)
+Last session: 2026-04-10T16:11:50.334Z
+Stopped at: Completed 20-01-PLAN.md (pre-migration backup)
+Resume file: None
