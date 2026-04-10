@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v6.0
 milestone_name: Single-Tenant Rollback
 status: completed
-stopped_at: Completed 21-02-PLAN.md (iron-session middleware + Auth.js dead code removal)
-last_updated: "2026-04-10T19:03:50.814Z"
+stopped_at: Completed 21-01-PLAN.md (data layer single-tenant rewrite)
+last_updated: "2026-04-10T19:11:13.463Z"
 last_activity: 2026-04-10 — v6.0 roadmap drafted
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 9
-  completed_plans: 5
+  completed_plans: 6
   percent: 0
 ---
 
@@ -77,6 +77,9 @@ Decisions logged in PROJECT.md Key Decisions table.
 - [Phase 20-schema-rollback-migration]: schema.prisma rewritten to 3-model single-tenant: Setting/ProcessedEmail/ActivityLog only; Auth.js models and userId fields removed; Prisma client regenerated successfully
 - [Phase 21-02]: Middleware checks admin_session cookie existence only — Edge Runtime cannot decrypt iron-session; actual isLoggedIn validation deferred to server components
 - [Phase 21-02]: Auth.js code surface fully removed (auth.ts, next-auth.d.ts, /auth/* pages, /onboarding, [...nextauth] route)
+- [Phase 21-01]: Plain prisma singleton replaces getPrismaForUser — no RLS, no per-query session variable injection
+- [Phase 21-01]: Setting uses key as sole primary key — upsert/findUnique by key only, no compound userId_key
+- [Phase 21-01]: getSetting(key) bridges ADMIN_PASSWORD from Setting DB row to loginAction in Plan 02
 
 ### Pending Todos
 
@@ -90,6 +93,6 @@ None yet. Next: `/gsd:plan-phase 20`.
 
 ## Session Continuity
 
-Last session: 2026-04-10T19:03:50.809Z
-Stopped at: Completed 21-02-PLAN.md (iron-session middleware + Auth.js dead code removal)
+Last session: 2026-04-10T19:11:13.459Z
+Stopped at: Completed 21-01-PLAN.md (data layer single-tenant rewrite)
 Resume file: None

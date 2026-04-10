@@ -17,8 +17,8 @@ Requirements for this milestone. Each maps to a roadmap phase.
 
 ### Authentication
 
-- [ ] **AUTH-04**: A single admin password protects the dashboard and settings via iron-session cookie-based auth
-- [ ] **AUTH-05**: Admin can change the admin password via the settings page without editing env vars or redeploying
+- [x] **AUTH-04**: A single admin password protects the dashboard and settings via iron-session cookie-based auth
+- [x] **AUTH-05**: Admin can change the admin password via the settings page without editing env vars or redeploying
 - [x] **AUTH-06**: Unauthenticated visitors to `/dashboard`, `/settings`, and other protected routes are redirected to `/login`; unauthenticated API calls return HTTP 401
 - [x] **AUTH-07**: Auth.js dependency is fully removed from `package.json`, `src/lib/auth.ts`, signin/signout pages, and all middleware imports
 
@@ -107,8 +107,8 @@ Explicitly excluded. Documented to prevent scope creep.
 | DATA-06 | Phase 20 | Complete |
 | DATA-07 | Phase 20 | Complete |
 | DATA-08 | Phase 20 | Complete |
-| AUTH-04 | Phase 21 | Pending |
-| AUTH-05 | Phase 21 | Pending |
+| AUTH-04 | Phase 21 | Complete |
+| AUTH-05 | Phase 21 | Complete |
 | AUTH-06 | Phase 21 | Complete |
 | AUTH-07 | Phase 21 | Complete |
 | YNAB-06 | Phase 22 | Pending |
