@@ -1,34 +1,21 @@
-import { redirect } from 'next/navigation';
-import { auth } from '@/lib/auth';
-import { prisma } from '@/lib/db';
-import SettingsForm from './SettingsForm';
-import YnabConnectionSection from './YnabConnectionSection';
-import SenderRulesSection from './SenderRulesSection';
-import CurrencyRulesSection from './CurrencyRulesSection';
-import DangerZone from './DangerZone';
+import { redirect } from 'next/navigation'
+import { getAdminSession } from '@/lib/admin-session'
+import { getSetting } from '@/lib/settings'
+import SettingsForm from './SettingsForm'
+import SenderRulesSection from './SenderRulesSection'
+import CurrencyRulesSection from './CurrencyRulesSection'
+import { AdminPasswordSection } from './AdminPasswordSection'
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
 
 export default async function SettingsPage() {
-  const session = await auth();
-  if (!session?.user?.id) {
-    redirect('/auth/signin');
+  const session = await getAdminSession()
+  if (!session.isLoggedIn) {
+    redirect('/login')
   }
 
-  // Load YNAB connection status, current selection, and per-user settings from DB
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: {
-      oauthToken: true,
-      selectedBudgetId: true,
-      selectedAccountId: true,
-      testMode: true,
-      forwardingEmail: true,
-      email: true,
-    },
-  });
-
-  const ynabConnected = !!user?.oauthToken;
+  const testModeValue = await getSetting('TEST_MODE')
+  const testMode = testModeValue === 'true'
 
   return (
     <div>
@@ -39,28 +26,13 @@ export default async function SettingsPage() {
         Manage your account settings and preferences.
       </p>
 
-      <YnabConnectionSection
-        connected={ynabConnected}
-        initialBudgetId={user?.selectedBudgetId}
-        initialAccountId={user?.selectedAccountId}
-      />
+      <SettingsForm testMode={testMode} />
 
-      <SenderRulesSection
-        connected={ynabConnected}
-        initialBudgetId={user?.selectedBudgetId}
-      />
+      <SenderRulesSection connected={false} initialBudgetId={null} />
 
-      <CurrencyRulesSection
-        connected={ynabConnected}
-        initialBudgetId={user?.selectedBudgetId}
-      />
+      <CurrencyRulesSection connected={false} initialBudgetId={null} />
 
-      <SettingsForm
-        testMode={user?.testMode ?? false}
-        forwardingEmail={user?.forwardingEmail ?? null}
-      />
-
-      <DangerZone />
+      <AdminPasswordSection />
     </div>
-  );
+  )
 }

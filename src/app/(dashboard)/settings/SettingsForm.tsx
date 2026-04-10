@@ -1,9 +1,8 @@
-'use client';
-import { useState } from 'react';
+'use client'
+import { useState } from 'react'
 
 interface SettingsFormProps {
-  testMode: boolean;
-  forwardingEmail: string | null;
+  testMode: boolean
 }
 
 const S = {
@@ -26,48 +25,42 @@ const S = {
     margin: '0 0 1.25rem',
     lineHeight: 1.5,
   },
-  hint: {
-    fontSize: '0.75rem',
-    color: '#9ca3af',
-    marginTop: '0.25rem',
-    lineHeight: 1.4,
-  },
   fieldRow: {
     marginBottom: '0.625rem',
   },
-};
+}
 
-export default function SettingsForm({ testMode: initialTestMode, forwardingEmail }: SettingsFormProps) {
-  const [testMode, setTestMode] = useState(initialTestMode);
-  const [saving, setSaving] = useState(false);
-  const [saveResult, setSaveResult] = useState<'idle' | 'success' | 'error'>('idle');
+export default function SettingsForm({ testMode: initialTestMode }: SettingsFormProps) {
+  const [testMode, setTestMode] = useState(initialTestMode)
+  const [saving, setSaving] = useState(false)
+  const [saveResult, setSaveResult] = useState<'idle' | 'success' | 'error'>('idle')
 
   async function handleTestModeToggle() {
-    const newValue = !testMode;
+    const newValue = !testMode
     // Optimistic update
-    setTestMode(newValue);
-    setSaving(true);
-    setSaveResult('idle');
+    setTestMode(newValue)
+    setSaving(true)
+    setSaveResult('idle')
 
     try {
       const res = await fetch('/api/settings/test-mode', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ enabled: newValue }),
-      });
+      })
       if (!res.ok) {
         // Revert on failure
-        setTestMode(!newValue);
-        setSaveResult('error');
+        setTestMode(!newValue)
+        setSaveResult('error')
       } else {
-        setSaveResult('success');
+        setSaveResult('success')
       }
     } catch {
       // Revert on failure
-      setTestMode(!newValue);
-      setSaveResult('error');
+      setTestMode(!newValue)
+      setSaveResult('error')
     } finally {
-      setSaving(false);
+      setSaving(false)
     }
   }
 
@@ -102,7 +95,7 @@ export default function SettingsForm({ testMode: initialTestMode, forwardingEmai
             </div>
           </div>
           <button
-            onClick={handleTestModeToggle}
+            onClick={() => void handleTestModeToggle()}
             disabled={saving}
             style={{
               position: 'relative' as const,
@@ -143,32 +136,6 @@ export default function SettingsForm({ testMode: initialTestMode, forwardingEmai
           </div>
         )}
       </div>
-
-      {/* Forwarding Email */}
-      {forwardingEmail && (
-        <div style={S.section}>
-          <h2 style={S.sectionTitle}>Forwarding Address</h2>
-          <p style={S.sectionDesc}>
-            Your unique email address for forwarding order confirmation emails. This address is assigned at signup and cannot be changed.
-          </p>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            padding: '0.625rem 0.875rem',
-            backgroundColor: '#f9fafb',
-            border: '1px solid #e5e7eb',
-            borderRadius: '8px',
-            fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
-            fontSize: '0.875rem',
-            color: '#111827',
-          }}>
-            {forwardingEmail}
-          </div>
-          <p style={S.hint}>
-            Forward order confirmation emails to this address for automatic processing.
-          </p>
-        </div>
-      )}
     </div>
-  );
+  )
 }
