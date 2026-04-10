@@ -103,7 +103,7 @@ Plans:
   3. The Settings page "API Keys" section shows editable fields for YNAB PAT, Anthropic Claude API key, Resend API key, and Pipedream webhook URL; changing the Claude key and submitting a replay immediately uses the new key (verified by rotating to an invalid key and seeing a Claude auth error in the replay trace).
   4. Sender routing rules, currency-based account routing rules, and the test mode toggle all load, edit, and save correctly on the restored Settings page; toggling test mode ON and forwarding an email produces an Activity Log entry with no corresponding YNAB transaction (confirms test mode reaches the active `/api/webhook` handler, closing the v5.0 UAT gap).
   5. `grep -r "authorize\|oauthToken\|oauthRefreshToken\|ynabEncryption\|mailboxHash\|email-routing" src/` returns zero matches; `/api/ynab/authorize`, `/api/ynab/callback`, `/api/email/inbound`, `src/lib/crypto.ts`, `src/lib/email-routing.ts`, and `src/lib/mailbox-hash.ts` do not exist on disk.
-**Plans:** 4 plans
+**Plans:** 1/4 plans executed
 
 Plans:
 - [ ] 22-01-PLAN.md — Implement YNAB PAT API routes (budgets, accounts, status)
@@ -164,6 +164,6 @@ Plans:
 | 19. Dashboard, Onboarding & Account Management | v5.0 | 5/5 | Complete | 2026-03-30 |
 | 20. Schema Rollback Migration | v6.0 | 4/4 | Complete | 2026-04-10 |
 | 21. iron-session Admin Auth Restoration | 5/5 | Complete    | 2026-04-10 | — |
-| 22. YNAB PAT & Settings API Keys | v6.0 | 0/4 | Not started | — |
+| 22. YNAB PAT & Settings API Keys | 1/4 | In Progress|  | — |
 | 23. First-Install Wizard & Route State Machine | v6.0 | 0/4 | Not started | — |
 | 24. Test Suite Cleanup & Self-Host Docs | v6.0 | 0/4 | Not started | — |

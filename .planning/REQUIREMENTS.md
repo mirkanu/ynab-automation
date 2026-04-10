@@ -26,7 +26,7 @@ Requirements for this milestone. Each maps to a roadmap phase.
 
 - [ ] **YNAB-06**: YNAB API calls use a Personal Access Token stored as a DB setting (not OAuth)
 - [ ] **YNAB-07**: Admin can paste a new YNAB PAT in settings and it takes effect immediately (no redeploy)
-- [ ] **YNAB-08**: YNAB OAuth flow code is fully removed: `/api/ynab/authorize`, `/api/ynab/callback`, `src/lib/crypto.ts`, proactive refresh logic, and the `oauthToken`/`oauthRefreshToken`/`oauthExpiresAt` schema fields
+- [x] **YNAB-08**: YNAB OAuth flow code is fully removed: `/api/ynab/authorize`, `/api/ynab/callback`, `src/lib/crypto.ts`, proactive refresh logic, and the `oauthToken`/`oauthRefreshToken`/`oauthExpiresAt` schema fields
 - [ ] **YNAB-09**: Admin selects a YNAB budget and account via live dropdowns in settings (values fetched from YNAB API using the configured PAT)
 
 ### Settings & Config UI
@@ -53,7 +53,7 @@ Requirements for this milestone. Each maps to a roadmap phase.
 
 ### Dead Code Removal
 
-- [ ] **CLEAN-01**: Delete `/api/email/inbound` route, `src/lib/email-routing.ts`, `src/lib/mailbox-hash.ts`, and all Phase 18 per-user forwarding address code
+- [x] **CLEAN-01**: Delete `/api/email/inbound` route, `src/lib/email-routing.ts`, `src/lib/mailbox-hash.ts`, and all Phase 18 per-user forwarding address code
 - [x] **CLEAN-02**: Remove `getPrismaForUser` middleware and RLS-setting `$extends` from `src/lib/db.ts`
 - [ ] **CLEAN-03**: Delete `src/app/onboarding/`, `src/app/(dashboard)/settings/DangerZone.tsx`, `src/app/api/account/delete/`, and unify test-mode toggling into the main settings endpoint
 - [ ] **CLEAN-04**: Fix or delete the 10 failing tests that accumulated during v5.0 (webhook route tests, multi-tenant isolation tests, YNAB OAuth tests, migration tests)
@@ -113,7 +113,7 @@ Explicitly excluded. Documented to prevent scope creep.
 | AUTH-07 | Phase 21 | Complete |
 | YNAB-06 | Phase 22 | Pending |
 | YNAB-07 | Phase 22 | Pending |
-| YNAB-08 | Phase 22 | Pending |
+| YNAB-08 | Phase 22 | Complete |
 | YNAB-09 | Phase 22 | Pending |
 | CONFIG-01 | Phase 22 | Pending |
 | CONFIG-02 | Phase 22 | Pending |
@@ -128,7 +128,7 @@ Explicitly excluded. Documented to prevent scope creep.
 | DASH-06 | Phase 22 | Pending |
 | DASH-07 | Phase 21 | Complete |
 | DASH-08 | Phase 23 | Pending |
-| CLEAN-01 | Phase 22 | Pending |
+| CLEAN-01 | Phase 22 | Complete |
 | CLEAN-02 | Phase 21 | Complete |
 | CLEAN-03 | Phase 23 | Pending |
 | CLEAN-04 | Phase 24 | Pending |

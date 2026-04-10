@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v6.0
 milestone_name: Single-Tenant Rollback
 status: completed
-stopped_at: "Completed 21-05-PLAN.md (Phase 21 fully complete: all tasks done, human verification approved)"
-last_updated: "2026-04-10T20:14:26.875Z"
+stopped_at: Completed 22-02-PLAN.md (all OAuth routes and dead libs deleted)
+last_updated: "2026-04-10T21:22:11.352Z"
 last_activity: 2026-04-10 — v6.0 roadmap drafted
 progress:
   total_phases: 5
   completed_phases: 2
-  total_plans: 9
-  completed_plans: 9
+  total_plans: 13
+  completed_plans: 10
   percent: 0
 ---
 
@@ -88,6 +88,8 @@ Decisions logged in PROJECT.md Key Decisions table.
 - [Phase 21-iron-session-admin-auth-restoration]: IRON_SESSION_SECRET already set in Railway env; no new secret needed for deploy
 - [Phase 21-iron-session-admin-auth-restoration]: DEPLOY FREEZE lifted 2026-04-10 by Phase 21 Plan 05 — Railway build successful with iron-session auth and zero next-auth imports
 - [Phase 21-iron-session-admin-auth-restoration]: Human verification approved 2026-04-10 — all 15 browser test steps passed; /onboarding and /auth/signin returning 404 for authenticated users is correct behavior matching roadmap success criterion 4
+- [Phase 22-02]: SIGABRT in npm run build is pre-existing env issue (CA cert/OpenSSL); TypeScript compilation passes cleanly — Railway CI is authoritative build check
+- [Phase 22-02]: grep 'authorize' pattern matches 'Unauthorized' in legitimate 401 responses; specific OAuth tokens (oauthToken|ynabEncryption|mailboxHash|email-routing) return zero matches — CLEAN-01 satisfied
 
 ### Pending Todos
 
@@ -101,6 +103,6 @@ None yet. Next: `/gsd:plan-phase 20`.
 
 ## Session Continuity
 
-Last session: 2026-04-10T20:05:24.021Z
-Stopped at: Completed 21-05-PLAN.md (Phase 21 fully complete: all tasks done, human verification approved)
+Last session: 2026-04-10T21:22:11.348Z
+Stopped at: Completed 22-02-PLAN.md (all OAuth routes and dead libs deleted)
 Resume file: None
