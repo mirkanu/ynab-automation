@@ -1,0 +1,152 @@
+POST-MIGRATION VERIFICATION
+Migration: 20260410000000_single_tenant_rollback
+Executed: 2026-04-10T16:26:56.988321+00
+Verified: 2026-04-10T16:27:00Z
+DB: mainline.proxy.rlwy.net:44022 (Railway TCP proxy -> PostgreSQL 16)
+
+Pre-migration baselines (from pre-migration-snapshot.sql):
+  ActivityLog count: 23
+  ProcessedEmail count: 23
+  Setting rows: 8 keys (ADMIN_EMAIL, CURRENCY_ACCOUNTS, CURRENCY_RULES, INBOUND_EMAIL, SENDER_RULES, SENDERS, TEST_MODE, YNAB_BUDGET_ID)
+
+================================================================================
+SUCCESS CRITERION 1 — Data preservation: ActivityLog row count
+================================================================================
+Query: SELECT COUNT(*) as activitylog_count FROM "ActivityLog";
+
+ activitylog_count
+-------------------
+                23
+(1 row)
+
+RESULT: PASS — 23 rows match pre-migration snapshot (expected: 23)
+
+================================================================================
+SUCCESS CRITERION 2 — Data preservation: Setting rows match pre-migration snapshot
+================================================================================
+Query: SELECT key, value FROM "Setting" ORDER BY key;
+
+        key        |                                                                                                                                                                                    value
+-------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ ADMIN_EMAIL       | manuelkuhs@gmail.com
+ CURRENCY_ACCOUNTS | {"EUR":"f53855ba-ce7a-46bd-beae-cb8c1035a9e5"}
+ CURRENCY_RULES    | [{"currency":"EUR","accountId":"f53855ba-ce7a-46bd-beae-cb8c1035a9e5","accountName":"€Wise Euro"}]
+ INBOUND_EMAIL     | empk1lk0u08wjyn@upload.pipedream.net
+ SENDER_RULES      | [{"email":"manuelkuhs@gmail.com","name":"Manuel","accountId":"6f470dd5-67e4-4580-82ee-74154cd26f3c","accountName":"Wise (GBP)","budgetId":"ed4cf96d-aa98-4ff9-bb59-f0ae967aa6af"},{"email":"kuhs.emilykate@gmail.com","name":"Emily-Kate","accountId":"5bfba3fe-b8d4-41e1-8acb-c10459c99534","accountName":"UK Current","budgetId":"ed4cf96d-aa98-4ff9-bb59-f0ae967aa6af"}]
+ SENDERS           | [{"email":"manuelkuhs@gmail.com","name":"Manuel","accountId":"6f470dd5-67e4-4580-82ee-74154cd26f3c"},{"email":"kuhs.emilykate@gmail.com","name":"Emily-Kate","accountId":"5bfba3fe-b8d4-41e1-8acb-c10459c99534"}]
+ TEST_MODE         | false
+ YNAB_BUDGET_ID    | ed4cf96d-aa98-4ff9-bb59-f0ae967aa6af
+(8 rows)
+
+RESULT: PASS — all 8 key/value pairs match pre-migration snapshot exactly
+NOTE: Snapshot file comment said "7 rows" but listed 8 keys; actual data has 8 rows, all match.
+
+================================================================================
+SUCCESS CRITERION 2b — Data preservation: ProcessedEmail row count
+================================================================================
+Query: SELECT COUNT(*) as processedemail_count FROM "ProcessedEmail";
+
+ processedemail_count
+----------------------
+                   23
+(1 row)
+
+RESULT: PASS — 23 rows match pre-migration snapshot (expected: 23)
+
+================================================================================
+SUCCESS CRITERION 3a — Dropped tables: only expected tables remain
+================================================================================
+Query: SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename;
+
+     tablename
+--------------------
+ ActivityLog
+ ProcessedEmail
+ Setting
+ _prisma_migrations
+(4 rows)
+
+RESULT: PASS — exactly 4 tables remain (ActivityLog, ProcessedEmail, Setting, _prisma_migrations)
+DROPPED: Account, EmailForwardingAddress, ProcessedWebhook, Session, User, VerificationToken (6 tables gone)
+
+================================================================================
+SUCCESS CRITERION 3b — No userId columns on surviving tables
+================================================================================
+Query: SELECT table_name, column_name FROM information_schema.columns WHERE table_schema = 'public' AND column_name = 'userId';
+
+ table_name | column_name
+------------+-------------
+(0 rows)
+
+RESULT: PASS — 0 rows returned, userId column absent from all tables
+
+================================================================================
+SUCCESS CRITERION 3c — No RLS policies remain
+================================================================================
+Query: SELECT * FROM pg_policies WHERE schemaname = 'public';
+
+ schemaname | tablename | policyname | permissive | roles | cmd | qual | with_check
+------------+-----------+------------+------------+-------+-----+------+------------
+(0 rows)
+
+RESULT: PASS — 0 RLS policies remain in public schema
+
+================================================================================
+SUCCESS CRITERION 3d — Setting PK is key-only (no id, no userId)
+================================================================================
+Query: \d "Setting"
+
+                           Table "public.Setting"
+  Column   |              Type              | Collation | Nullable | Default
+-----------+--------------------------------+-----------+----------+---------
+ key       | text                           |           | not null |
+ value     | text                           |           | not null |
+ updatedAt | timestamp(3) without time zone |           | not null |
+Indexes:
+    "Setting_pkey" PRIMARY KEY, btree (key)
+
+RESULT: PASS — No id column, no userId column. Primary key is on key only.
+
+================================================================================
+SUCCESS CRITERION 3e — ProcessedEmail has messageId-only unique index
+================================================================================
+Query: \d "ProcessedEmail"
+
+                                           Table "public.ProcessedEmail"
+   Column    |              Type              | Collation | Nullable |                   Default
+-------------+--------------------------------+-----------+----------+----------------------------------------------
+ id          | integer                        |           | not null | nextval('"ProcessedEmail_id_seq"'::regclass)
+ messageId   | text                           |           | not null |
+ sender      | text                           |           | not null |
+ processedAt | timestamp(3) without time zone |           | not null | CURRENT_TIMESTAMP
+Indexes:
+    "ProcessedEmail_pkey" PRIMARY KEY, btree (id)
+    "ProcessedEmail_messageId_key" UNIQUE, btree ("messageId")
+
+RESULT: PASS — No userId column. Unique index ProcessedEmail_messageId_key on messageId only.
+
+================================================================================
+MIGRATION RECORD VERIFICATION
+================================================================================
+Query: SELECT migration_name, finished_at FROM _prisma_migrations WHERE migration_name = '20260410000000_single_tenant_rollback';
+
+            migration_name             |          finished_at
+---------------------------------------+-------------------------------
+ 20260410000000_single_tenant_rollback | 2026-04-10 16:26:56.988321+00
+(1 row)
+
+RESULT: PASS — Migration recorded with non-null finished_at
+
+================================================================================
+OVERALL RESULT: ALL 7 SUCCESS CRITERIA PASSED
+================================================================================
+
+DEPLOY FREEZE IN EFFECT:
+The v5.0 app code references userId columns and Auth.js tables that no longer exist.
+The app will throw Prisma errors until Phase 21 lands.
+Do NOT redeploy the app until Phase 21 is complete.
+Estimated freeze window: until Phase 21 executes (target: within 24 hours of this migration).
+
+BACKUP ESCAPE HATCH:
+File: .planning/phases/20-schema-rollback-migration/pre-migration-backup.sql (765 lines, 874KB)
+Restore: PGPASSWORD="..." psql -h mainline.proxy.rlwy.net -p 44022 -U postgres -d railway -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;" && PGPASSWORD="..." psql -h mainline.proxy.rlwy.net -p 44022 -U postgres -d railway < .planning/phases/20-schema-rollback-migration/pre-migration-backup.sql
