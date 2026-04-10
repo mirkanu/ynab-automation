@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v6.0
 milestone_name: Single-Tenant Rollback
 status: completed
-stopped_at: Completed 20-02-PLAN.md (migration SQL)
-last_updated: "2026-04-10T16:21:42.341Z"
+stopped_at: Completed 20-03-PLAN.md (production migration + verification)
+last_updated: "2026-04-10T16:32:26.374Z"
 last_activity: 2026-04-10 — v6.0 roadmap drafted
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 4
-  completed_plans: 2
+  completed_plans: 3
   percent: 0
 ---
 
@@ -72,6 +72,8 @@ Decisions logged in PROJECT.md Key Decisions table.
 - [Phase 20-schema-rollback-migration]: Used postgresql-client-16 locally to match server version 16.13; pg_dump requires version match
 - [Phase 20-schema-rollback-migration]: Queried live Railway DB BEFORE writing migration SQL — all 13 constraint/index/policy names verified from pg_catalog
 - [Phase 20-schema-rollback-migration]: Used IF EXISTS on all DDL operations in migration SQL for idempotency
+- [Phase 20]: Used DATABASE_URL env override (TCP proxy URL) with npx prisma migrate deploy directly — railway run cannot reach internal Railway PostgreSQL
+- [Phase 20]: Migration applied 2026-04-10 16:26:56 UTC — DEPLOY FREEZE in effect until Phase 21 lands
 
 ### Pending Todos
 
@@ -85,6 +87,6 @@ None yet. Next: `/gsd:plan-phase 20`.
 
 ## Session Continuity
 
-Last session: 2026-04-10T16:21:42.337Z
-Stopped at: Completed 20-02-PLAN.md (migration SQL)
+Last session: 2026-04-10T16:32:26.369Z
+Stopped at: Completed 20-03-PLAN.md (production migration + verification)
 Resume file: None
