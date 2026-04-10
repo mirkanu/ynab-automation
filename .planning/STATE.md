@@ -4,7 +4,7 @@ milestone: v6.0
 milestone_name: Single-Tenant Rollback
 status: completed
 stopped_at: Completed 20-04-PLAN.md (schema.prisma sync to single-tenant)
-last_updated: "2026-04-10T16:38:55.045Z"
+last_updated: "2026-04-10T16:44:27.413Z"
 last_activity: 2026-04-10 — v6.0 roadmap drafted
 progress:
   total_phases: 5
