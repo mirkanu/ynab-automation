@@ -56,7 +56,7 @@ Requirements for this milestone. Each maps to a roadmap phase.
 - [x] **CLEAN-01**: Delete `/api/email/inbound` route, `src/lib/email-routing.ts`, `src/lib/mailbox-hash.ts`, and all Phase 18 per-user forwarding address code
 - [x] **CLEAN-02**: Remove `getPrismaForUser` middleware and RLS-setting `$extends` from `src/lib/db.ts`
 - [x] **CLEAN-03**: Delete `src/app/onboarding/`, `src/app/(dashboard)/settings/DangerZone.tsx`, `src/app/api/account/delete/`, and unify test-mode toggling into the main settings endpoint
-- [ ] **CLEAN-04**: Fix or delete the 10 failing tests that accumulated during v5.0 (webhook route tests, multi-tenant isolation tests, YNAB OAuth tests, migration tests)
+- [x] **CLEAN-04**: Fix or delete the 10 failing tests that accumulated during v5.0 (webhook route tests, multi-tenant isolation tests, YNAB OAuth tests, migration tests)
 
 ### Docs & Distribution
 
@@ -131,7 +131,7 @@ Explicitly excluded. Documented to prevent scope creep.
 | CLEAN-01 | Phase 22 | Complete |
 | CLEAN-02 | Phase 21 | Complete |
 | CLEAN-03 | Phase 23 | Complete |
-| CLEAN-04 | Phase 24 | Pending |
+| CLEAN-04 | Phase 24 | Complete |
 | DOCS-01 | Phase 24 | Pending |
 | DOCS-02 | Phase 24 | Pending |
 | DOCS-03 | Phase 24 | Pending |
