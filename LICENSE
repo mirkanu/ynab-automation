@@ -1,0 +1,37 @@
+NOTICE — AI-Generated Code, No Warranty
+========================================
+
+Every file in this repository — source code, tests, configuration, and this
+LICENSE file — was written by Claude (Anthropic's language model) under human
+direction. No human wrote any code by hand.
+
+This software is provided "as is", without warranty of any kind, express or
+implied. The authors and contributors accept no liability for financial losses,
+data corruption, budget mispostings, or any other consequences of using this
+software. See the MIT License terms below.
+
+Nothing in this repository constitutes financial advice.
+
+========================================
+
+MIT License
+
+Copyright (c) 2026 Manuel
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
