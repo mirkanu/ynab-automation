@@ -5,7 +5,8 @@ import { getSetting } from '@/lib/settings';
 export async function GET() {
   try {
     const session = await getAdminSession();
-    if (!session.isLoggedIn) {
+    const wizardComplete = await getSetting('WIZARD_COMPLETE');
+    if (!session.isLoggedIn && wizardComplete === 'true') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
