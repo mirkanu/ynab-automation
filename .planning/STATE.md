@@ -4,14 +4,14 @@ milestone: v6.0
 milestone_name: Single-Tenant Rollback
 status: completed
 stopped_at: Completed 22-03-PLAN.md
-last_updated: "2026-04-10T21:40:04.715Z"
-last_activity: 2026-04-10 — v6.0 roadmap drafted
+last_updated: "2026-04-11T00:00:00.000Z"
+last_activity: 2026-04-11 — Phase 22 verified live and closed
 progress:
   total_phases: 5
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 13
-  completed_plans: 12
-  percent: 0
+  completed_plans: 13
+  percent: 60
 ---
 
 # Amazon to YNAB Automation — Project State
@@ -23,16 +23,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-10)
 
 **Core value:** Forwarded order confirmation email → YNAB transaction, fully automated, with zero per-transaction effort.
-**Current focus:** v6.0 Single-Tenant Rollback — Roadmap drafted, awaiting phase planning
+**Current focus:** v6.0 Single-Tenant Rollback — Phase 22 complete; Phase 23 next
 
 ## Current Position
 
-Phase: 20 (Schema Rollback Migration) — not yet planned
+Phase: 23 (First-Install Wizard & Route State Machine) — not yet planned
 Plan: —
-Status: Roadmap complete; ready for `/gsd:plan-phase 20`
-Last activity: 2026-04-10 — v6.0 roadmap drafted
+Status: Phase 22 verified live; ready for `/gsd:plan-phase 23` (or `/gsd:discuss-phase 23` first)
+Last activity: 2026-04-11 — Phase 22 VERIFICATION.md written, all 5 success criteria passed
 
-Progress: [░░░░░░░░░░] 0% (0/5 phases complete)
+Progress: [██████░░░░] 60% (3/5 phases complete: 20, 21, 22)
 
 ## Roadmap Summary (v6.0)
 
@@ -107,6 +107,6 @@ None yet. Next: `/gsd:plan-phase 20`.
 
 ## Session Continuity
 
-Last session: 2026-04-10T21:40:04.711Z
-Stopped at: Completed 22-03-PLAN.md
+Last session: 2026-04-11
+Stopped at: Phase 22 complete — VERIFICATION.md written, all 5 success criteria passed live on Railway. User approved all 21 human-verify steps (1-17 pre-crash, 18-21 post-resume bulk approval). Ready for Phase 23.
 Resume file: None
