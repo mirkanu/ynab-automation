@@ -143,10 +143,10 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
-- [ ] 24-01-PLAN.md — TBD
-- [ ] 24-02-PLAN.md — TBD
-- [ ] 24-03-PLAN.md — TBD
-- [ ] 24-04-PLAN.md — TBD
+- [ ] 24-01-PLAN.md — Delete tests/ (20 v5.0-era files) + rewrite settings.ts DB-only + add settings.test.ts
+- [ ] 24-02-PLAN.md — Rename PIPEDREAM_WEBHOOK_URL to INBOUND_EMAIL + capture wizard screenshots
+- [ ] 24-03-PLAN.md — Write Railway deploy template + full README rewrite
+- [ ] 24-04-PLAN.md — Human verification: fresh Railway deploy dry-run (v6.0 final gate)
 
 ## Progress
 
