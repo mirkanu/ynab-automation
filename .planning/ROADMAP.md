@@ -161,7 +161,7 @@ Plans:
   4. README has a new "Features" section showing three screenshots — the dashboard, the settings page, and the activity log — each with a short blurb explaining what the page does. Screenshots are captured from a disposable local dev instance (not the user's live Railway deployment) seeded with plausible dummy data; no personal information appears in any image.
   5. The wizard install screenshots currently in the README are demoted to a collapsible `<details>` section since they are self-explanatory — the top-of-README showcase emphasizes the working app, not the install process.
   6. The README's "Deploy on Railway" button URL resolves to a real published Railway template (`https://railway.com/template/<hash>`) — not the current Deploy-from-GitHub fallback. Clicking the button on a fresh Railway account produces a single-click deploy that auto-provisions PostgreSQL, sets `DATABASE_URL`, and auto-generates `IRON_SESSION_SECRET`, verified by a user-led dry-run in incognito on a brand-new Railway project.
-**Plans:** 4 plans
+**Plans:** 1/4 plans executed
 
 Plans:
 - [ ] 25-01-PLAN.md — README legal amendments (no-warranty paragraph, AI-generated disclosure, LICENSE comment block)

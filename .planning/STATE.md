@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v6.0
 milestone_name: Single-Tenant Rollback
 status: verifying
-stopped_at: Completed 24-02-PLAN.md
-last_updated: "2026-04-11T18:50:38.198Z"
+stopped_at: Completed 25-01-PLAN.md
+last_updated: "2026-04-11T20:38:10.203Z"
 last_activity: 2026-04-11 — Phase 22 VERIFICATION.md written, all 5 success criteria passed
 progress:
-  total_phases: 5
+  total_phases: 6
   completed_phases: 4
-  total_plans: 21
-  completed_plans: 20
+  total_plans: 25
+  completed_plans: 21
   percent: 60
 ---
 
@@ -106,6 +106,8 @@ Decisions logged in PROJECT.md Key Decisions table.
 - [Phase 24-test-suite-cleanup-and-self-host-docs]: README replaces v5.0 env-var setup guide entirely — wizard is the only install path documented for non-programmers
 - [Phase 24-02]: INBOUND_EMAIL is the single key for Pipedream forwarding address — aligns wizard step 6 with dashboard which already reads this key
 - [Phase 24-02]: Wizard screenshots captured via Railway TCP proxy psql (clear WIZARD_COMPLETE, Playwright capture, restore) — safe atomic operation
+- [Phase 25-self-host-polish]: LICENSE file created from scratch (did not exist) — MIT text with NOTICE preamble
+- [Phase 25-self-host-polish]: No-warranty and AI-generated disclosures placed as blockquotes above the Deploy button in README.md
 
 ### Pending Todos
 
@@ -119,6 +121,6 @@ None yet. Next: `/gsd:plan-phase 20`.
 
 ## Session Continuity
 
-Last session: 2026-04-11T18:50:38.194Z
-Stopped at: Completed 24-02-PLAN.md
+Last session: 2026-04-11T20:38:10.199Z
+Stopped at: Completed 25-01-PLAN.md
 Resume file: None

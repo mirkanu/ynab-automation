@@ -66,8 +66,8 @@ Requirements for this milestone. Each maps to a roadmap phase.
 
 ### Legal & Polish
 
-- [ ] **LEGAL-01**: `README.md` top-of-file has a plain-language "No warranty" paragraph stating the project is a personal side project provided as-is with zero liability for financial or data consequences — readable by a non-programmer without opening `LICENSE`
-- [ ] **LEGAL-02**: `README.md` top-of-file has a prominent "AI-generated" disclosure stating every line of code, test, doc, and the README itself was produced by Claude under human direction
+- [x] **LEGAL-01**: `README.md` top-of-file has a plain-language "No warranty" paragraph stating the project is a personal side project provided as-is with zero liability for financial or data consequences — readable by a non-programmer without opening `LICENSE`
+- [x] **LEGAL-02**: `README.md` top-of-file has a prominent "AI-generated" disclosure stating every line of code, test, doc, and the README itself was produced by Claude under human direction
 - [ ] **LEGAL-03**: `docs/LICENSE-AUDIT.md` enumerates every runtime dependency with its license, confirms zero GPL/LGPL/AGPL/MPL/copyleft in the runtime tree, and notes attribution requirements
 - [ ] **POLISH-01**: `README.md` has a "Features" section showcasing three screenshots (dashboard, settings, activity log) with short blurbs; wizard install screenshots demoted to a collapsible `<details>` block
 - [ ] **POLISH-02**: "Deploy on Railway" button URL is a real published Railway template (`railway.com/template/<hash>`) producing true one-click deploy with auto-provisioned Postgres, `DATABASE_URL`, and `IRON_SESSION_SECRET`
