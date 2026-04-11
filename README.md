@@ -45,7 +45,15 @@ parse reasoning. Replay any email with one click.
 
 ---
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.com/deploy?template=https%3A%2F%2Fgithub.com%2Fmirkanu%2Fynab-automation)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.com/template/9Qs37P)
+
+> **Near one-click.** The button opens a real Railway template that provisions
+> PostgreSQL, wires `DATABASE_URL`, and deploys the app. Railway will prompt you
+> for **one** value at deploy time — `IRON_SESSION_SECRET` — which protects your
+> login cookies. Paste any random 32-character string (for example, run
+> `openssl rand -base64 32` in a terminal, or use any password generator). Every
+> other value — API keys, YNAB token, Pipedream address, admin password — is
+> collected by the setup wizard after the app is running.
 
 ---
 
@@ -123,23 +131,17 @@ and validates your inputs before moving on.
 
 1. Click the **Deploy on Railway** button at the top of this page. If you do not
    have a Railway account yet, sign up (the GitHub login option is fastest).
-2. On the "New Project" screen, choose **"Deploy from GitHub repo"**, then select
-   `mirkanu/ynab-automation` from the list. (If the repo is not listed, click
-   "Configure GitHub App" and give Railway access to the repo first, then come
-   back.)
-3. Railway will start building. While the build is running, click the **`+ New`**
-   button in the project view and choose **"Database" → "Add PostgreSQL"**. This
-   provisions the database and automatically sets `DATABASE_URL` for the app
-   service.
-4. Open the app service's **Variables** tab and confirm `DATABASE_URL` is present.
-   If `IRON_SESSION_SECRET` is not yet set, click **"New Variable"**, name it
-   `IRON_SESSION_SECRET`, and use Railway's **"Generate"** button (or paste any
-   random 32-character string). Save.
-5. Railway will redeploy with the new variables. Wait for the service to show a
-   green check.
-6. Click the service to open its page. Under **Settings → Networking**, click
-   **"Generate Domain"** to create a public URL for the app. Copy the URL —
-   something like `https://your-app.up.railway.app` — and open it in a browser.
+2. You land on the template preview screen titled **"YNAB Automation"**. It shows
+   two services — the app and a PostgreSQL database — and a **Deploy Now** button.
+3. Click **Deploy Now**. Railway prompts you for **one** environment variable:
+   `IRON_SESSION_SECRET`. Paste any random 32-character string. If you do not have
+   one handy, open a terminal and run `openssl rand -base64 32`, or use any online
+   password generator set to 32 characters. Click **Deploy**.
+4. Railway starts building. Wait for the service to show a green check (this
+   takes 2–4 minutes the first time).
+5. Click the app service to open its page. Under **Settings → Networking**, click
+   **"Generate Domain"** to create a public URL. Copy the URL — something like
+   `https://your-app.up.railway.app` — and open it in a browser.
 
 **If you get stuck at any step**, the [Troubleshooting](#troubleshooting) section
 covers the most common first-deploy issues.
