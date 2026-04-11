@@ -7,6 +7,11 @@ import TestModeBanner from './components/TestModeBanner'
 export const dynamic = 'force-dynamic'
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
+  const wizardComplete = await getSetting('WIZARD_COMPLETE')
+  if (wizardComplete !== 'true') {
+    redirect('/setup')
+  }
+
   const session = await getAdminSession()
   if (!session.isLoggedIn) {
     redirect('/login')
