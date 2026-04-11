@@ -4,7 +4,14 @@ Automatically creates YNAB transactions from forwarded order confirmation emails
 Forward an order confirmation to a dedicated address — a transaction appears in your
 budget within seconds, with no manual entry.
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.com/new/template?template=https://github.com/mirkanu/ynab-automation&plugins=postgresql)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.com/deploy?template=https%3A%2F%2Fgithub.com%2Fmirkanu%2Fynab-automation)
+
+> **Heads up on the Deploy button:** Railway's one-click template marketplace does not
+> auto-provision add-ons for arbitrary public repos. After clicking the button you will
+> need to click **"Deploy from GitHub repo"**, pick this repo, and then manually add a
+> PostgreSQL service to the project. Step 1 of the Install section below walks through
+> exactly what to click. The total effort is about three clicks, not one — we'd rather
+> be honest than pretend otherwise.
 
 ---
 
@@ -30,8 +37,8 @@ subscription. You deploy it once and it keeps running.
 
 ```mermaid
 flowchart LR
-    A[Your inbox] -->|Forward email| B[Pipedream\ninbound address]
-    B -->|HTTP POST| C[/api/webhook\non Railway]
+    A[Your inbox] -->|Forward email| B["Pipedream<br/>inbound address"]
+    B -->|HTTP POST| C["Railway app<br/>/api/webhook"]
     C -->|Parse email| D[Claude API]
     D -->|Amount · payee · date| C
     C -->|Create transaction| E[YNAB API]
@@ -62,9 +69,11 @@ page at the step where you need it.
 | [Pipedream](https://pipedream.com/) | Receives forwarded emails and passes them to the app | Step 8 (workflow) |
 | [Resend](https://resend.com/) | Sends you an email when something goes wrong | Step 7 (API key) |
 
-You do not need to set any environment variables manually. The wizard collects each
-value and stores it in the database. Railway automatically sets `DATABASE_URL` when
-it provisions PostgreSQL, and auto-generates `IRON_SESSION_SECRET` on first deploy.
+With two exceptions, you do not need to set any environment variables manually —
+the wizard collects each value and stores it in the database. The two exceptions
+are set once during Step 1 (deploy) and never touched again: `DATABASE_URL` (set
+automatically when you add the PostgreSQL plugin) and `IRON_SESSION_SECRET` (a
+random string you generate once on the Variables page).
 
 See [Costs](#costs) for what each service charges.
 
@@ -76,18 +85,30 @@ Follow these steps in order. Each step links to the place where you get the valu
 or perform the action described. The wizard in the app guides you through each step
 and validates your inputs before moving on.
 
-### Step 1 — Click Deploy
+### Step 1 — Deploy to Railway
 
-Click the **Deploy on Railway** button at the top of this page. Railway will:
+1. Click the **Deploy on Railway** button at the top of this page. If you do not
+   have a Railway account yet, sign up (the GitHub login option is fastest).
+2. On the "New Project" screen, choose **"Deploy from GitHub repo"**, then select
+   `mirkanu/ynab-automation` from the list. (If the repo is not listed, click
+   "Configure GitHub App" and give Railway access to the repo first, then come
+   back.)
+3. Railway will start building. While the build is running, click the **`+ New`**
+   button in the project view and choose **"Database" → "Add PostgreSQL"**. This
+   provisions the database and automatically sets `DATABASE_URL` for the app
+   service.
+4. Open the app service's **Variables** tab and confirm `DATABASE_URL` is present.
+   If `IRON_SESSION_SECRET` is not yet set, click **"New Variable"**, name it
+   `IRON_SESSION_SECRET`, and use Railway's **"Generate"** button (or paste any
+   random 32-character string). Save.
+5. Railway will redeploy with the new variables. Wait for the service to show a
+   green check.
+6. Click the service to open its page. Under **Settings → Networking**, click
+   **"Generate Domain"** to create a public URL for the app. Copy the URL —
+   something like `https://your-app.up.railway.app` — and open it in a browser.
 
-- Ask you to sign in or create an account (GitHub login is easiest)
-- Fork this repository to your GitHub account
-- Provision a PostgreSQL database
-- Deploy the app
-
-Wait for the build to complete — the Railway dashboard shows a green check when
-the service is running. Then find the public URL for your service (it looks like
-`https://your-app-name.up.railway.app`) and open it in a browser.
+**If you get stuck at any step**, the [Troubleshooting](#troubleshooting) section
+covers the most common first-deploy issues.
 
 ### Step 2 — Open the Setup Wizard
 
