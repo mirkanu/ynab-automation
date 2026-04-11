@@ -125,10 +125,10 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
-- [ ] 23-01-PLAN.md — TBD
-- [ ] 23-02-PLAN.md — TBD
-- [ ] 23-03-PLAN.md — TBD
-- [ ] 23-04-PLAN.md — TBD
+- [ ] 23-01-PLAN.md — Wizard plumbing: deriveWizardStep helper, POST /api/setup/step, CLEAN-03 dead-code removal
+- [ ] 23-02-PLAN.md — Wizard UI: /setup/layout + /setup/1 through /setup/6 step pages + /setup/done
+- [ ] 23-03-PLAN.md — Route state machine: rewrite / page and add WIZARD_COMPLETE gate to dashboard layout
+- [ ] 23-04-PLAN.md — Deploy to Railway; backup Setting table; verify all 5 success criteria; restore production data (human checkpoint)
 
 ### Phase 24: Test Suite Cleanup & Self-Host Docs
 **Milestone:** v6.0
