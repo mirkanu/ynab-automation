@@ -1,244 +1,400 @@
 # YNAB Automation
 
-Automatically creates YNAB transactions from forwarded order confirmation emails. Forward any order confirmation email to a dedicated address — a transaction appears in YNAB within seconds, no manual entry needed.
+Automatically creates YNAB transactions from forwarded order confirmation emails.
+Forward an order confirmation to a dedicated address — a transaction appears in your
+budget within seconds, with no manual entry.
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/ynab-automation)
-
-> **Note:** This project was planned and coded exclusively using [Claude Code](https://claude.ai/claude-code) with the [GSD (Get Shit Done)](https://github.com/punkpeye/get-shit-done) workflow system. No code was written by hand.
-
----
-
-## Quickest Path (No Coding Required)
-
-You don't need to write any code or use a terminal to run this. Everything deploys through web dashboards.
-
-> **Does this need Claude Code running somewhere?** No. Claude Code is the tool used to *build* this app — it's not part of how it runs. At runtime, the app is a standard web service on Railway that calls the Anthropic API to parse emails. Once deployed, it runs entirely on Railway's servers, 24/7, with no local tooling needed.
-
-**Steps at a glance:**
-
-1. **Click the "Deploy on Railway" button** above. Sign in to Railway, click through the prompts — Railway will fork the repo to your GitHub account, provision a PostgreSQL database, and deploy the app automatically.
-2. **Create accounts and get API keys** for the services in the [Prerequisites](#prerequisites) table below (Anthropic, YNAB, Pipedream, Resend).
-3. **Open the setup wizard** — once deployed, visit your Railway app's public URL in a browser. The app detects it's unconfigured and shows an interactive wizard that fetches your YNAB accounts and builds the configuration for you.
-4. **Paste the generated values** into Railway's Variables tab (your service → Variables). Railway redeploys automatically.
-5. **Set up Pipedream** — create a workflow with an Email trigger, add an HTTP action that POSTs to `https://your-app.railway.app/api/webhook`. Forward a test order email and check Railway logs.
-
-> **Note:** The setup wizard (step 3) is coming soon. Until then, follow the [manual setup guide](#setup-guide) below.
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.com/new/template?template=https://github.com/mirkanu/ynab-automation&plugins=postgresql)
 
 ---
 
-## What It Does
+## What This Is
 
-YNAB Automation bridges your email inbox and your budget. When you receive an order confirmation from any online retailer, forward it to a Pipedream inbound address. The app parses the email using Claude, extracts the amount, payee, currency, and order date, and creates a transaction in the correct YNAB account — all within a few seconds.
+When you receive an order confirmation from any online retailer — Amazon, eBay, Costco,
+Apple, or anywhere else — you forward that email to a Pipedream inbound address. The app
+reads the email, asks Claude to extract the amount, retailer name, currency, and order
+date, and creates a YNAB transaction in your chosen account. The whole process takes a
+few seconds.
+
+The app runs on your own Railway account. It connects to your YNAB budget through a
+personal access token (a kind of password for the YNAB API), and to Claude through an
+Anthropic API key. You own the data; nothing is shared with a third party beyond the
+API calls themselves.
+
+This is self-hosted, open-source software. There is no managed version and no
+subscription. You deploy it once and it keeps running.
 
 ---
 
 ## How It Works
 
+```mermaid
+flowchart LR
+    A[Your inbox] -->|Forward email| B[Pipedream\ninbound address]
+    B -->|HTTP POST| C[/api/webhook\non Railway]
+    C -->|Parse email| D[Claude API]
+    D -->|Amount · payee · date| C
+    C -->|Create transaction| E[YNAB API]
+    C -->|Log result| F[Activity Log]
 ```
-Forward email → Pipedream (inbound email) → Railway webhook → Claude (parse) → YNAB API
-```
 
-1. You forward an order confirmation email to your Pipedream inbound address
-2. Pipedream fires a webhook to the Railway-hosted Next.js app
-3. Claude extracts the amount, retailer, currency, and order date from the email HTML
-4. The app looks up the sender in the `SENDERS` config and routes the transaction to the correct YNAB account
-5. A YNAB transaction is created with the retailer as payee and the order date as the transaction date
-
----
-
-## Features
-
-- **Any retailer** — Amazon, eBay, Costco, Apple, or anywhere else; Claude infers the retailer from the email
-- **Multi-user routing** — configure separate YNAB accounts for each household member, routed by sender email
-- **Currency routing** — transactions in foreign currencies are automatically routed to a designated account (e.g. a Euro account)
-- **Category tagging** — type a category hint on the first line of a forwarded email to assign a YNAB category
-- **Deduplication** — message IDs tracked in PostgreSQL; Pipedream retries are safe
-- **Error notifications** — unknown sender, parse failure, or YNAB API error sends an email alert via Resend
-- **Order date accuracy** — date extracted from the email itself, not the processing date
+1. You set an auto-forward rule in your email client (or forward manually) to send
+   order confirmation emails to your Pipedream inbound address.
+2. Pipedream fires an HTTP request to your Railway app.
+3. The app sends the email body to Claude, which extracts the amount, payee (retailer),
+   currency, and order date.
+4. The app calls the YNAB API and creates a transaction in your chosen account.
+5. The result — success or error — is recorded in the Activity Log on your dashboard.
 
 ---
 
 ## Prerequisites
 
-You will need accounts and credentials for the following services:
+You need accounts with the following services before starting. You can create the
+accounts as you go through the wizard — the wizard links to each service's relevant
+page at the step where you need it.
 
-| Service | Purpose | Notes |
-|---------|---------|-------|
-| [Railway](https://railway.app/) | App hosting + PostgreSQL | Free tier sufficient to start |
-| [YNAB](https://www.ynab.com/) | Budget API | Requires a personal access token |
-| [Anthropic](https://www.anthropic.com/) | Claude API (email parsing) | Pay-as-you-go; cost is minimal |
-| [Pipedream](https://pipedream.com/) | Inbound email → webhook | Free tier sufficient |
-| [Resend](https://resend.com/) | Error notification emails | Free tier sufficient |
+| Service | What it does in this app | When you need it |
+|---------|--------------------------|-----------------|
+| [Railway](https://railway.app/) | Hosts the app and the PostgreSQL database | Step 1 (deploy) |
+| [YNAB](https://www.ynab.com/) | The budget where transactions are created | Step 4 (token) |
+| [Anthropic](https://www.anthropic.com/) | Claude API — parses the email into structured transaction data | Step 6 (API key) |
+| [Pipedream](https://pipedream.com/) | Receives forwarded emails and passes them to the app | Step 8 (workflow) |
+| [Resend](https://resend.com/) | Sends you an email when something goes wrong | Step 7 (API key) |
 
----
+You do not need to set any environment variables manually. The wizard collects each
+value and stores it in the database. Railway automatically sets `DATABASE_URL` when
+it provisions PostgreSQL, and auto-generates `IRON_SESSION_SECRET` on first deploy.
 
-## Setup Guide
-
-### 1. Fork and clone the repo
-
-```bash
-git clone https://github.com/your-username/ynab-automation.git
-cd ynab-automation
-npm install
-```
-
-### 2. Deploy to Railway
-
-1. Create a new project at [railway.app](https://railway.app/)
-2. Add a **PostgreSQL** service to the project (Railway provisions `DATABASE_URL` automatically)
-3. Add a new service from your GitHub repo
-4. Railway will build and deploy the Next.js app automatically
-
-See the [Railway documentation](https://docs.railway.app/) for full deployment instructions.
-
-### 3. Configure Pipedream
-
-1. Create a new workflow in [Pipedream](https://pipedream.com/)
-2. Add an **Email** trigger — Pipedream will give you a unique inbound email address
-3. Add an **HTTP / Webhook** action that POSTs the full email payload to your Railway webhook URL:
-   ```
-   https://your-app.railway.app/api/webhook
-   ```
-4. Deploy the workflow
-
-Forward any order confirmation email to the Pipedream inbound address to trigger the workflow.
-
-### 4. Set Railway environment variables
-
-In your Railway service settings, set the following environment variables:
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `DATABASE_URL` | Yes | Auto-set by Railway PostgreSQL add-on |
-| `ANTHROPIC_API_KEY` | Yes | Your Anthropic API key |
-| `YNAB_PERSONAL_ACCESS_TOKEN` | Yes | Your YNAB personal access token |
-| `YNAB_BUDGET_ID` | Yes | The ID of your YNAB budget (from the YNAB web app URL) |
-| `SENDERS` | Yes | JSON array of sender configs (see below) |
-| `RESEND_API_KEY` | Yes | Your Resend API key |
-| `ADMIN_EMAIL` | Yes | Email address that receives error notifications |
-| `CURRENCY_ACCOUNTS` | No | JSON object mapping currency codes to YNAB account IDs |
-
-### 5. Set the SENDERS environment variable
-
-`SENDERS` is a JSON array where each entry maps a sender's email address to their YNAB account. Set the value as a raw JSON string in Railway.
-
-**Format:**
-
-```json
-[
-  {
-    "email": "alice@example.com",
-    "name": "Alice",
-    "accountId": "ynab-account-uuid-alice",
-    "notificationLabel": "Alice"
-  },
-  {
-    "email": "bob@example.com",
-    "name": "Bob",
-    "accountId": "ynab-account-uuid-bob"
-  }
-]
-```
-
-- `email` — the address this person forwards from
-- `name` — display name (used internally)
-- `accountId` — the YNAB account UUID to post transactions to (find this in the YNAB API or budget settings)
-- `notificationLabel` — optional; if set, appears in error notification subjects (e.g. `failed to parse order email (Alice)`)
-
-See `config.example.json` for the full annotated structure.
-
-### 6. Test the integration
-
-1. Forward an order confirmation email to your Pipedream inbound address
-2. Check Railway logs — you should see the webhook received and processed
-3. Open YNAB and verify the transaction appears in the correct account with the correct amount, payee, and date
+See [Costs](#costs) for what each service charges.
 
 ---
 
-## Optional: Category Tagging
+## Install
 
-When forwarding an email, type a YNAB category name on the **first line** of the forwarded message body before sending:
+Follow these steps in order. Each step links to the place where you get the value
+or perform the action described. The wizard in the app guides you through each step
+and validates your inputs before moving on.
 
-```
-Groceries
----------- Forwarded message ----------
-...
-```
+### Step 1 — Click Deploy
 
-The app performs a case-insensitive partial match against your YNAB category list. If a match is found, the transaction is assigned that category. If no match is found, the transaction is created without a category (no error).
+Click the **Deploy on Railway** button at the top of this page. Railway will:
+
+- Ask you to sign in or create an account (GitHub login is easiest)
+- Fork this repository to your GitHub account
+- Provision a PostgreSQL database
+- Deploy the app
+
+Wait for the build to complete — the Railway dashboard shows a green check when
+the service is running. Then find the public URL for your service (it looks like
+`https://your-app-name.up.railway.app`) and open it in a browser.
+
+### Step 2 — Open the Setup Wizard
+
+Visiting the app URL for the first time shows the setup wizard. The wizard stores
+each value in the database as you go, so you can close the browser and return later
+— it will resume where you left off.
+
+### Step 3 — Admin Password (Wizard Step 1)
+
+![Wizard step 1 — set admin password](docs/images/wizard-step-1.png)
+
+Choose a password for the admin interface. This is the password you will use to log
+in to the dashboard each time. Pick something you will remember; you can change it
+later from the Settings page.
+
+### Step 4 — YNAB Personal Access Token (Wizard Step 2)
+
+![Wizard step 2 — YNAB personal access token](docs/images/wizard-step-2.png)
+
+A personal access token is a long string that gives the app read/write access to your
+YNAB budget. You generate one in your YNAB account settings.
+
+1. Open [YNAB Developer Settings](https://app.ynab.com/settings/developer) in a
+   new tab.
+2. Click **New Token**, give it a name (e.g. "Railway automation"), and click
+   **Generate**.
+3. Copy the token — YNAB will only show it once.
+4. Paste it into the wizard and click Next.
+
+### Step 5 — Budget and Account (Wizard Step 3)
+
+![Wizard step 3 — choose budget and account](docs/images/wizard-step-3.png)
+
+After you enter a valid YNAB token, the wizard loads your budgets and accounts from
+the YNAB API. Select the budget you want transactions to appear in, then select the
+specific account (e.g. "Visa Checking").
+
+If the dropdowns show an error, your personal access token from step 4 may be
+incorrect. Go back and re-enter it.
+
+### Step 6 — Anthropic API Key (Wizard Step 4)
+
+![Wizard step 4 — Anthropic API key](docs/images/wizard-step-4.png)
+
+The Anthropic API key allows the app to call Claude to parse your email text. API
+keys are account credentials — treat them like a password.
+
+1. Open the [Anthropic Console API Keys page](https://console.anthropic.com/settings/keys)
+   in a new tab.
+2. Click **Create Key**, give it a name, and copy the key.
+3. Paste it into the wizard and click Next.
+
+Note: you will need to add a credit card to your Anthropic account to activate API
+access. See [Costs](#costs) for expected usage.
+
+### Step 7 — Resend API Key (Wizard Step 5)
+
+![Wizard step 5 — Resend API key](docs/images/wizard-step-5.png)
+
+Resend sends you an email when the app encounters an error — for example, if Claude
+cannot parse an email or YNAB rejects a transaction. Without this key the app still
+works, but errors are silent.
+
+1. Open [Resend API Keys](https://resend.com/api-keys) in a new tab.
+2. Click **Create API Key**, name it, and copy it.
+3. Paste it into the wizard and click Next.
+
+### Step 8 — Pipedream Inbound Email (Wizard Step 6)
+
+![Wizard step 6 — Pipedream inbound email address](docs/images/wizard-step-6.png)
+
+Pipedream is the service that receives your forwarded emails and passes them to the
+app. In this step you create a Pipedream workflow and paste the inbound email address
+it gives you.
+
+1. Open [Pipedream](https://pipedream.com) and sign in or create a free account.
+2. Click **New Project** (or go directly to **Workflows**) and create a new workflow.
+3. When asked for a trigger, choose **Email**. Pipedream generates a unique inbound
+   email address for this workflow — something like
+   `incoming@mhtr.m.pipedream.net`. This is the address you will forward emails to.
+4. Add a step to the workflow. Choose **HTTP / Webhook** from the step library (it may
+   be listed as "Send HTTP Request").
+   - Set the method to **POST**.
+   - Set the URL to your Railway app's webhook URL:
+     ```
+     https://your-app-name.up.railway.app/api/webhook
+     ```
+     Replace `your-app-name` with the actual subdomain shown in your Railway dashboard.
+   - Under the request body, choose "Use entire trigger event body" or "Pass raw body
+     as-is" — the exact wording varies by Pipedream version, but the goal is to send
+     the full email payload from the trigger to your app.
+5. Click **Deploy** to activate the Pipedream workflow.
+6. Copy the inbound email address shown on the Email trigger step.
+7. Paste that email address into the wizard field and click **Finish Setup**.
+
+The Pipedream inbound address is also stored in Settings after the wizard completes,
+in case you need to refer back to it. It is the address you will add to your email
+forwarding rules in Step 10.
+
+### Step 9 — Finish Setup
+
+![Wizard done — setup complete](docs/images/wizard-done.png)
+
+Clicking Finish Setup saves all your settings and marks the wizard as complete. The
+app redirects you to the dashboard. From here you can view the Activity Log, adjust
+settings at any time, and replay past emails if something went wrong the first time
+through.
+
+### Step 10 — Set Up Email Forwarding
+
+Now tell your email client to automatically forward order confirmation emails to the
+Pipedream inbound address you entered in Step 8.
+
+**In Gmail:**
+
+1. Open **Settings** (the gear icon, top right) and click **See all settings**.
+2. Go to the **Filters and Blocked Addresses** tab and click **Create a new filter**.
+3. In the "From" field, enter the sender address you want to forward — for example,
+   `ship-confirm@amazon.com` for Amazon shipment confirmations.
+4. Click **Create filter**, tick **Forward it to**, and select (or add) the Pipedream
+   inbound email address.
+5. Click **Create filter** to save.
+
+You can repeat this process for each retailer you want to track. Common sender
+addresses to forward:
+
+| Retailer | Common sender address |
+|----------|-----------------------|
+| Amazon | `ship-confirm@amazon.com` or `order-update@amazon.com` |
+| eBay | `auto-confirm@ebay.com` |
+| Costco | `no-reply@costco.com` |
+| Apple | `no_reply@email.apple.com` |
+
+If you are unsure of the exact sender address for a retailer, forward one email
+manually first and check the Activity Log — the sender address is recorded there.
+
+**In Apple Mail:**
+
+Go to **Mail → Settings → Rules**, click **Add Rule**, set the condition to
+"From contains [sender address]", and set the action to "Forward Message" with the
+Pipedream address.
+
+**In Outlook:**
+
+Go to **Settings → Mail → Rules**, click **Add a new rule**, match on the sender
+address, and set the action to "Forward to" the Pipedream address.
+
+Each forwarded email is processed independently. Forwarding the same email twice
+is safe — the app deduplicates by message ID, so the transaction will only be
+created once.
+
+### Step 11 — Send a Test Email
+
+Forward any real order confirmation email to the Pipedream address manually. Within
+60 seconds, open the Activity Log in your dashboard. You should see one new entry:
+
+- **Status: success** — a transaction was created in YNAB. Check YNAB to confirm.
+- **Status: error** — the app tried but something went wrong. Click the row to see
+  the error detail. See [Troubleshooting](#troubleshooting) for next steps.
+
+If nothing appears in the Activity Log after 60 seconds, Pipedream may not be
+forwarding the request. Check the Pipedream workflow logs first.
 
 ---
 
-## Optional: Currency Accounts
+## Costs
 
-If you have transactions in multiple currencies (e.g. you hold a Euro account alongside a default account), set the `CURRENCY_ACCOUNTS` environment variable to route foreign-currency transactions to a dedicated YNAB account.
+All costs are pay-as-you-go or metered on free tiers. At household forwarding volume
+(a few emails per week), total spending is well under a few dollars per month.
 
-**Format:**
-
-```json
-{
-  "EUR": "ynab-euro-account-uuid",
-  "GBP": "ynab-gbp-account-uuid"
-}
-```
-
-When Claude detects that a transaction's currency matches a key in `CURRENCY_ACCOUNTS`, the transaction is routed to that account instead of the sender's default account.
-
-If `CURRENCY_ACCOUNTS` is not set, all transactions go to the sender's default account.
+| Service | What you pay | Pricing page |
+|---------|-------------|--------------|
+| Railway | Hobby tier: flat monthly fee for always-on hosting and the included PostgreSQL database | [railway.app/pricing](https://railway.app/pricing) |
+| Anthropic | Pay per API call. Each email parse costs a fraction of a cent — at household volume, expect well under the price of a cup of coffee per month | [anthropic.com/pricing](https://anthropic.com/pricing) |
+| Resend | Free tier covers 3,000 emails per month. This app only sends emails on errors, so you will rarely approach the limit | [resend.com/pricing](https://resend.com/pricing) |
+| YNAB | Requires an active YNAB subscription, which you already have if you are using YNAB | [ynab.com/pricing](https://www.youneedabudget.com/pricing) |
+| Pipedream | Free tier is sufficient for household forwarding volume | [pipedream.com/pricing](https://pipedream.com/pricing) |
 
 ---
 
-## Stack
+## Troubleshooting
 
-| Layer | Technology |
-|-------|-----------|
-| App | [Next.js 14](https://nextjs.org/) (App Router, API routes) |
-| Hosting | [Railway](https://railway.app/) |
-| Database | PostgreSQL (Railway add-on) |
-| ORM | [Prisma](https://www.prisma.io/) |
-| Email inbound | [Pipedream](https://pipedream.com/) (inbound email → webhook) |
-| AI parsing | [Claude Haiku](https://www.anthropic.com/) via Anthropic SDK |
-| YNAB | [YNAB REST API](https://api.youneedabudget.com/) |
-| Notifications | [Resend](https://resend.com/) |
-| Tests | [Vitest](https://vitest.dev/) |
+### Nothing appears in the Activity Log after forwarding an email
+
+Check Pipedream first. Open your Pipedream workflow and look at the execution history
+— did the workflow run when you forwarded the email? If not, the email may not have
+matched your forwarding rule, or the rule has not taken effect yet (Gmail can take a
+few minutes).
+
+If the Pipedream workflow ran but the Activity Log is still empty, confirm the HTTP
+action in Pipedream is pointing at the correct Railway URL:
+`https://your-app-name.up.railway.app/api/webhook`
+
+### Activity Log shows "YNAB error"
+
+The app reached YNAB but the API rejected the transaction. Common causes:
+
+- **Expired or invalid YNAB personal access token** — Go to Settings, re-enter the
+  token, and save. Then open [YNAB Developer Settings](https://app.ynab.com/settings/developer)
+  to confirm the token has not been revoked.
+- **Wrong budget or account ID** — Go to Settings and confirm the budget and account
+  selections. If the dropdowns are empty, your YNAB token may have expired.
+
+### Activity Log shows "parse error" or Claude-related error
+
+The app reached Anthropic but something went wrong. Common causes:
+
+- **Invalid Anthropic API key** — Go to Settings and re-enter the key. Then confirm
+  the key is still active in the [Anthropic Console](https://console.anthropic.com/settings/keys).
+- **Anthropic account has no credits** — The Anthropic API requires a payment method
+  and a positive credit balance. Add credits at [console.anthropic.com](https://console.anthropic.com).
+
+### Error notification emails are not arriving
+
+If you expect an error email but never receive one:
+
+- Confirm the Resend API key in Settings is correct.
+- In your Resend dashboard, check that your sending domain is verified. Resend
+  requires domain verification before it will deliver email.
+- Check your spam folder.
+
+### The budget dropdown at Step 3 shows "could not load budgets"
+
+The YNAB personal access token entered in Step 2 is invalid or does not have access
+to any budgets. Go back to Step 2 and re-enter the token. Generate a new one from
+[YNAB Developer Settings](https://app.ynab.com/settings/developer) if needed.
+
+### The app returns a 404 or 500 on every page
+
+The Railway deployment may have failed. Open your Railway dashboard, select the
+service, and check the build and deploy logs. If the build failed, look for a
+TypeScript or dependency error in the logs.
+
+If the deploy succeeded but the app is returning 500, check that the DATABASE_URL
+environment variable is set (Railway should set this automatically when PostgreSQL
+is provisioned).
+
+### The setup wizard keeps restarting from the beginning
+
+The wizard resumes from the last completed step on each visit. If it is starting
+over, the `WIZARD_COMPLETE` setting may have been accidentally deleted from the
+database. Open Settings and confirm your configuration is intact. If all settings
+are missing, re-run the wizard from the beginning.
+
+### The dashboard redirects to the login page even after logging in
+
+Your session may have expired, or the `IRON_SESSION_SECRET` environment variable
+changed between deploys. Log in again. If the loop persists, check that
+`IRON_SESSION_SECRET` is set in your Railway service's environment variables and has
+not changed since the initial deploy.
+
+### Email arrives in Pipedream but no transaction appears and no Activity Log entry
+
+If the Pipedream workflow shows a successful run but nothing appears in the Activity
+Log, the HTTP action in Pipedream may be posting to the wrong URL or using the wrong
+HTTP method.
+
+Confirm:
+- The URL is exactly `https://your-app-name.up.railway.app/api/webhook` (no trailing
+  slash, `https`, your actual subdomain).
+- The method is **POST**, not GET.
+- The body is set to pass through the original request body from the Email trigger.
+
+In Pipedream, you can click the HTTP step in a completed run to see what was sent and
+what the response code was. A `200` response means the app received and processed it.
+A `401` or `500` indicates a configuration problem on the app side — check Railway logs.
+
+### An email was processed but the transaction amount is wrong
+
+Claude extracts the amount from the email text. If the email contains multiple amounts
+(e.g. subtotal, shipping, tax, and total on separate lines), Claude may occasionally
+pick the wrong one.
+
+If this happens:
+1. Open the Activity Log and click the row for that email.
+2. The parse result shows what Claude extracted. Review the fields.
+3. If Claude consistently misreads emails from a particular retailer, open an issue
+   with a sample email (remove personal details) so the prompt can be adjusted.
+
+The transaction created in YNAB is not automatically corrected — you will need to
+edit it manually in YNAB.
 
 ---
 
-## Development
+## Self-Hosting Note
 
-```bash
-npm install
-npm test          # run Vitest test suite
-npx tsc --noEmit  # type check
-npm run build     # production build
-```
+This is self-hosted, open-source software. You deploy it to your own Railway account,
+and all data — your YNAB token, Anthropic key, and activity log — stays in your own
+PostgreSQL database. There is no managed hosted version and no telemetry sent back to
+anyone.
 
----
-
-## Project Structure
-
-```
-src/
-  app/api/webhook/route.ts   # main webhook handler
-  lib/
-    config.ts                # SENDERS + CURRENCY_ACCOUNTS config loading
-    email.ts                 # Pipedream payload parsing + category hint extraction
-    claude.ts                # Claude API integration (order parsing)
-    ynab.ts                  # YNAB API client
-    notify.ts                # Resend error notification helper
-    db.ts                    # Prisma client singleton
-prisma/
-  schema.prisma              # ProcessedEmail model (dedup tracking)
-config.example.json          # annotated config structure reference
-```
+Railway is the recommended host because the deploy button handles PostgreSQL
+provisioning automatically, but any platform that runs a Node.js app with a PostgreSQL
+database will work. The only required environment variables for a cold-start deploy are
+`DATABASE_URL` and `IRON_SESSION_SECRET`; all other configuration is entered through the
+wizard and stored in the database.
 
 ---
 
-## Built With
+## Contributing
 
-This project was planned and built entirely using:
+Issues and pull requests welcome. This project follows the [GSD workflow](https://github.com/punkpeye/get-shit-done) — changes are planned in `.planning/` and implemented phase by phase.
 
-- **[Claude Code](https://claude.ai/claude-code)** — Anthropic's CLI coding agent
-- **[GSD (Get Shit Done)](https://github.com/punkpeye/get-shit-done)** — a structured agentic workflow system for Claude Code that provides phase-based planning, atomic commits, human verification checkpoints, and milestone archival
+## License
 
-Every file, test, and commit in this repository was produced by Claude Code executing GSD plans. The planning artifacts (phase plans, summaries, roadmap, requirements) are preserved in `.planning/`.
+MIT. See [LICENSE](LICENSE).
+
+---
+
+*Built entirely with [Claude Code](https://claude.ai/claude-code).*
