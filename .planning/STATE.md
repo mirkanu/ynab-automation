@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v6.0
 milestone_name: Single-Tenant Rollback
 status: verifying
-stopped_at: Completed 24-03-PLAN.md
-last_updated: "2026-04-11T18:42:56.766Z"
+stopped_at: Completed 24-02-PLAN.md
+last_updated: "2026-04-11T18:50:38.198Z"
 last_activity: 2026-04-11 — Phase 22 VERIFICATION.md written, all 5 success criteria passed
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 21
-  completed_plans: 19
+  completed_plans: 20
   percent: 60
 ---
 
@@ -104,6 +104,8 @@ Decisions logged in PROJECT.md Key Decisions table.
 - [Phase 24-01]: process.env.TEST_MODE and process.env.YNAB_BUDGET_ID in route handlers replaced with getSetting() calls; framework secrets (DATABASE_URL, IRON_SESSION_SECRET) remain as direct process.env.X reads
 - [Phase 24-test-suite-cleanup-and-self-host-docs]: Deploy button uses railway.com/new/template?template=<github-url>&plugins=postgresql — no Railway dashboard registration required
 - [Phase 24-test-suite-cleanup-and-self-host-docs]: README replaces v5.0 env-var setup guide entirely — wizard is the only install path documented for non-programmers
+- [Phase 24-02]: INBOUND_EMAIL is the single key for Pipedream forwarding address — aligns wizard step 6 with dashboard which already reads this key
+- [Phase 24-02]: Wizard screenshots captured via Railway TCP proxy psql (clear WIZARD_COMPLETE, Playwright capture, restore) — safe atomic operation
 
 ### Pending Todos
 
@@ -117,6 +119,6 @@ None yet. Next: `/gsd:plan-phase 20`.
 
 ## Session Continuity
 
-Last session: 2026-04-11T18:42:56.762Z
-Stopped at: Completed 24-03-PLAN.md
+Last session: 2026-04-11T18:50:38.194Z
+Stopped at: Completed 24-02-PLAN.md
 Resume file: None
