@@ -7,7 +7,8 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "db:migrate": "prisma migrate deploy",
-    "test": "vitest run"
+    "test": "vitest run",
+    "docs:screenshots": "npx tsx scripts/capture-wizard-screenshots.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.20.0",
@@ -22,7 +23,9 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18.3.7",
+    "playwright": "^1.59.1",
     "prisma": "^5.13.0",
+    "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^4.1.1"
   }
