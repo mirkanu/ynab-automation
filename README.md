@@ -4,14 +4,19 @@ Automatically creates YNAB transactions from forwarded order confirmation emails
 Forward an order confirmation to a dedicated address — a transaction appears in your
 budget within seconds, with no manual entry.
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.com/deploy?template=https%3A%2F%2Fgithub.com%2Fmirkanu%2Fynab-automation)
+> **No warranty.** This is a personal side project, provided as-is, with no warranty
+> and no support. If the app misposts a transaction to your YNAB budget, corrupts a
+> setting, loses data, or does anything else unexpected, you are responsible for fixing
+> it. Running it against real money is your call. The MIT license at the bottom of this
+> repo spells out the formal terms. Nothing on this page is financial advice.
 
-> **Heads up on the Deploy button:** Railway's one-click template marketplace does not
-> auto-provision add-ons for arbitrary public repos. After clicking the button you will
-> need to click **"Deploy from GitHub repo"**, pick this repo, and then manually add a
-> PostgreSQL service to the project. Step 1 of the Install section below walks through
-> exactly what to click. The total effort is about three clicks, not one — we'd rather
-> be honest than pretend otherwise.
+> **AI-generated.** Every line of code, every test, every line of this README —
+> everything in this repository was written by Claude (Anthropic's language model) under
+> human direction. No human wrote any code by hand. This is a deliberate experiment in
+> AI-assisted software delivery. You should evaluate whether that matches your risk
+> tolerance before running it against real money.
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.com/deploy?template=https%3A%2F%2Fgithub.com%2Fmirkanu%2Fynab-automation)
 
 ---
 
