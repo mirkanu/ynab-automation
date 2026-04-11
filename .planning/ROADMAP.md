@@ -140,7 +140,7 @@ Plans:
   2. The README's "Deploy on Railway" button, when clicked by the roadmapper as a dry-run test, produces a Railway deployment template that provisions PostgreSQL, sets `DATABASE_URL`, and auto-generates an `IRON_SESSION_SECRET` — verified by the Railway template preview screen.
   3. The README walks end-to-end from "click deploy" through "complete wizard" to "forward first email" with numbered steps and at least one screenshot per major step; the flow has been dry-run by the roadmapper or user against the live deployment without consulting any file outside the README.
   4. The README's "costs" section names each paid provider (Claude, Resend, Railway hobby tier) with a link to its pricing page and a plain-language expectation ("likely a few cents per month at household volume") — no hard dollar amounts that will age.
-**Plans:** 1/4 plans executed
+**Plans:** 2/4 plans executed
 
 Plans:
 - [ ] 24-01-PLAN.md — Delete tests/ (20 v5.0-era files) + rewrite settings.ts DB-only + add settings.test.ts
@@ -166,4 +166,4 @@ Plans:
 | 21. iron-session Admin Auth Restoration | 5/5 | Complete    | 2026-04-10 | — |
 | 22. YNAB PAT & Settings API Keys | 3/4 | In Progress|  | — |
 | 23. First-Install Wizard & Route State Machine | 3/4 | Complete    | 2026-04-11 | — |
-| 24. Test Suite Cleanup & Self-Host Docs | 1/4 | In Progress|  | — |
+| 24. Test Suite Cleanup & Self-Host Docs | 2/4 | In Progress|  | — |

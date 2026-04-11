@@ -60,9 +60,9 @@ Requirements for this milestone. Each maps to a roadmap phase.
 
 ### Docs & Distribution
 
-- [ ] **DOCS-01**: `README.md` has a "Deploy on Railway" one-click button that creates a fresh deployment with the required env vars (DATABASE_URL provisioned, IRON_SESSION_SECRET auto-generated)
-- [ ] **DOCS-02**: `README.md` walks a non-programmer end-to-end: click deploy → open deployment URL → complete setup wizard → start forwarding emails, with numbered steps and screenshots
-- [ ] **DOCS-03**: `README.md` explains in principle what services cost the user (e.g. "Claude API charges per email processed — you'll probably pay a few cents a month") with direct links to each provider's pricing page — no hard numbers that will age
+- [x] **DOCS-01**: `README.md` has a "Deploy on Railway" one-click button that creates a fresh deployment with the required env vars (DATABASE_URL provisioned, IRON_SESSION_SECRET auto-generated)
+- [x] **DOCS-02**: `README.md` walks a non-programmer end-to-end: click deploy → open deployment URL → complete setup wizard → start forwarding emails, with numbered steps and screenshots
+- [x] **DOCS-03**: `README.md` explains in principle what services cost the user (e.g. "Claude API charges per email processed — you'll probably pay a few cents a month") with direct links to each provider's pricing page — no hard numbers that will age
 
 ## v2 Requirements
 
@@ -132,9 +132,9 @@ Explicitly excluded. Documented to prevent scope creep.
 | CLEAN-02 | Phase 21 | Complete |
 | CLEAN-03 | Phase 23 | Complete |
 | CLEAN-04 | Phase 24 | Complete |
-| DOCS-01 | Phase 24 | Pending |
-| DOCS-02 | Phase 24 | Pending |
-| DOCS-03 | Phase 24 | Pending |
+| DOCS-01 | Phase 24 | Complete |
+| DOCS-02 | Phase 24 | Complete |
+| DOCS-03 | Phase 24 | Complete |
 
 **Coverage:**
 - v1 requirements: 32 total
