@@ -44,13 +44,14 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
 
 </details>
 
-### 🚧 v6.0 Single-Tenant Rollback (Phases 20-24)
+### 🚧 v6.0 Single-Tenant Rollback (Phases 20-25)
 
 - [x] **Phase 20: Schema Rollback Migration** — Drop multi-tenant schema (Auth.js, userId, RLS, Phase 18 tables) while preserving activity log, settings, and routing rules (completed 2026-04-10)
 - [x] **Phase 21: iron-session Admin Auth Restoration** — Replace Auth.js with single-admin iron-session auth and delete all Auth.js code paths (completed 2026-04-10)
 - [ ] **Phase 22: YNAB PAT & Settings API Keys** — Swap YNAB OAuth for a DB-stored Personal Access Token and surface all API keys as editable settings
 - [x] **Phase 23: First-Install Wizard & Route State Machine** — Add a non-programmer multi-step setup wizard and unify root routing based on install/auth state (completed 2026-04-11)
 - [ ] **Phase 24: Test Suite Cleanup & Self-Host Docs** — Fix or delete stale v5.0 tests and ship README + Railway deploy button for non-programmers
+- [ ] **Phase 25: Self-Host Polish — Legal, Screenshots, Published Railway Template** — Plain-language no-warranty + AI-generated disclosure in README, per-dependency license audit confirming no GPL contamination, admin-feature screenshots (dashboard/settings/logs) seeded from a disposable local instance, and a real published Railway template for true one-click deploy
 
 ## Phase Details
 
@@ -147,6 +148,26 @@ Plans:
 - [ ] 24-02-PLAN.md — Rename PIPEDREAM_WEBHOOK_URL to INBOUND_EMAIL + capture wizard screenshots
 - [ ] 24-03-PLAN.md — Write Railway deploy template + full README rewrite
 - [ ] 24-04-PLAN.md — Human verification: fresh Railway deploy dry-run (v6.0 final gate)
+
+### Phase 25: Self-Host Polish — Legal, Screenshots, Published Railway Template
+**Milestone:** v6.0
+**Goal:** The README reads like a product page for a polished self-host tool: plain-language legal disclaimer at the top, proud AI-generated disclosure, verified no-GPL dependency tree, feature screenshots that sell the dashboard/settings/activity-log experience, and a true one-click Railway Deploy button backed by a real published template.
+**Depends on:** Phase 24 (README exists and is ready to amend; dependency tree stable after test cleanup)
+**Requirements:** LEGAL-01, LEGAL-02, LEGAL-03, POLISH-01, POLISH-02
+**Success Criteria** (what must be TRUE):
+  1. README top-of-file (above or immediately after the banner) contains a plain-language "No warranty" paragraph stating that the project is a personal side project provided as-is, that the operator is responsible for any budget/data/financial consequences, and that there is no support — written so a non-programmer understands it without opening LICENSE.
+  2. README top-of-file also contains an "AI-generated" disclosure stating that every line of code, every test, every doc, and the README itself was produced by Claude under human direction — written in one short paragraph, not buried in a footnote.
+  3. A committed `docs/LICENSE-AUDIT.md` enumerates every runtime dependency with its license, confirms zero GPL/LGPL/AGPL/MPL/copyleft licenses are present in the runtime tree, and notes any attribution requirements. Generated via `license-checker` or equivalent then manually verified.
+  4. README has a new "Features" section showing three screenshots — the dashboard, the settings page, and the activity log — each with a short blurb explaining what the page does. Screenshots are captured from a disposable local dev instance (not the user's live Railway deployment) seeded with plausible dummy data; no personal information appears in any image.
+  5. The wizard install screenshots currently in the README are demoted to a collapsible `<details>` section since they are self-explanatory — the top-of-README showcase emphasizes the working app, not the install process.
+  6. The README's "Deploy on Railway" button URL resolves to a real published Railway template (`https://railway.com/template/<hash>`) — not the current Deploy-from-GitHub fallback. Clicking the button on a fresh Railway account produces a single-click deploy that auto-provisions PostgreSQL, sets `DATABASE_URL`, and auto-generates `IRON_SESSION_SECRET`, verified by a user-led dry-run in incognito on a brand-new Railway project.
+**Plans:** 4 plans
+
+Plans:
+- [ ] 25-01-PLAN.md — README legal amendments (no-warranty paragraph, AI-generated disclosure, LICENSE comment block)
+- [ ] 25-02-PLAN.md — License audit: generate and commit docs/LICENSE-AUDIT.md, verify zero copyleft in runtime tree
+- [ ] 25-03-PLAN.md — Feature screenshots via disposable local instance + README Features section rewrite + demote wizard screenshots to collapsible
+- [ ] 25-04-PLAN.md — Human-verify checkpoint: publish Railway template via UI walkthrough, update button URL, incognito one-click dry-run
 
 ## Progress
 
