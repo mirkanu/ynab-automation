@@ -36,7 +36,8 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // Protect page routes only.
-    // Excludes: login, logout, setup wizard, API routes, Next.js internals, favicon
-    '/((?!login|logout|setup|api|_next/static|_next/image|favicon.ico).*)',
+    // Excludes: root / (handled by page.tsx state machine), login, logout,
+    //   setup wizard, API routes, Next.js internals, favicon
+    '/((?!$|login|logout|setup|api|_next/static|_next/image|favicon.ico).*)',
   ],
 }
