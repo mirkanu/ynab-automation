@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v6.0
 milestone_name: Single-Tenant Rollback
 status: verifying
-stopped_at: Completed 23-01-PLAN.md
-last_updated: "2026-04-11T00:51:26.805Z"
+stopped_at: Completed 23-02-PLAN.md
+last_updated: "2026-04-11T01:05:28.621Z"
 last_activity: 2026-04-11 — Phase 22 VERIFICATION.md written, all 5 success criteria passed
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 17
-  completed_plans: 14
+  completed_plans: 15
   percent: 60
 ---
 
@@ -97,6 +97,7 @@ Decisions logged in PROJECT.md Key Decisions table.
 - [Phase 23-01]: deriveWizardStep() is read-only — writing WIZARD_COMPLETE is the responsibility of the step 6 save action
 - [Phase 23-01]: Step API route POST /api/setup/step is public (no auth guard) — wizard runs before ADMIN_PASSWORD exists
 - [Phase 23-01]: WizardStep interface (not as const) used for key: string | string[] to avoid TypeScript union narrowing issues
+- [Phase 23]: layout.tsx reads x-pathname (forwarded by middleware) to skip WIZARD_COMPLETE redirect on /setup/done — preserves success page visibility
 
 ### Pending Todos
 
@@ -110,6 +111,6 @@ None yet. Next: `/gsd:plan-phase 20`.
 
 ## Session Continuity
 
-Last session: 2026-04-11T00:51:26.800Z
-Stopped at: Completed 23-01-PLAN.md
+Last session: 2026-04-11T01:05:14.107Z
+Stopped at: Completed 23-02-PLAN.md
 Resume file: None

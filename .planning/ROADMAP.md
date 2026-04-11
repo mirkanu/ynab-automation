@@ -122,7 +122,7 @@ Plans:
   3. Each wizard step displays numbered plain-language instructions and a direct link to the provider's API key page (ynab.com/settings/developer, console.anthropic.com, resend.com/api-keys, pipedream.com) — verified by eyeballing the rendered `/setup/*` pages.
   4. After wizard completion, `wizard_complete` is `true` in the DB; manually visiting `/setup` redirects to `/dashboard` (authenticated) or `/login` (unauthenticated); the wizard cannot be accidentally re-run.
   5. `src/app/onboarding/`, `src/app/(dashboard)/settings/DangerZone.tsx`, and `src/app/api/account/delete/` do not exist on disk; test mode toggling is handled by the single Settings endpoint (no separate DangerZone handler).
-**Plans:** 1/4 plans executed
+**Plans:** 2/4 plans executed
 
 Plans:
 - [ ] 23-01-PLAN.md — Wizard plumbing: deriveWizardStep helper, POST /api/setup/step, CLEAN-03 dead-code removal
@@ -165,5 +165,5 @@ Plans:
 | 20. Schema Rollback Migration | v6.0 | 4/4 | Complete | 2026-04-10 |
 | 21. iron-session Admin Auth Restoration | 5/5 | Complete    | 2026-04-10 | — |
 | 22. YNAB PAT & Settings API Keys | 3/4 | In Progress|  | — |
-| 23. First-Install Wizard & Route State Machine | 1/4 | In Progress|  | — |
+| 23. First-Install Wizard & Route State Machine | 2/4 | In Progress|  | — |
 | 24. Test Suite Cleanup & Self-Host Docs | v6.0 | 0/4 | Not started | — |

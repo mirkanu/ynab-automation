@@ -39,9 +39,9 @@ Requirements for this milestone. Each maps to a roadmap phase.
 
 ### First-Install Wizard
 
-- [ ] **WIZ-01**: On first install (empty settings or `wizard_complete = false`), visiting any route redirects the admin to `/setup`
-- [ ] **WIZ-02**: Setup wizard is a multi-step flow: admin password → YNAB PAT → YNAB budget/account selection → Anthropic Claude API key → Resend API key → Pipedream webhook URL → done
-- [ ] **WIZ-03**: Each wizard step shows plain-language instructions targeting non-programmers — numbered steps, screenshots where useful, and a direct link to the provider's API key page
+- [x] **WIZ-01**: On first install (empty settings or `wizard_complete = false`), visiting any route redirects the admin to `/setup`
+- [x] **WIZ-02**: Setup wizard is a multi-step flow: admin password → YNAB PAT → YNAB budget/account selection → Anthropic Claude API key → Resend API key → Pipedream webhook URL → done
+- [x] **WIZ-03**: Each wizard step shows plain-language instructions targeting non-programmers — numbered steps, screenshots where useful, and a direct link to the provider's API key page
 - [x] **WIZ-04**: Wizard saves each value to the DB as it is entered; closing the tab and returning resumes from the last completed step
 - [ ] **WIZ-05**: After completion, wizard sets `wizard_complete = true` and never runs again; subsequent visits route to `/login` (if unauthenticated) or `/dashboard` (if authenticated)
 
@@ -120,9 +120,9 @@ Explicitly excluded. Documented to prevent scope creep.
 | CONFIG-03 | Phase 22 | Complete |
 | CONFIG-04 | Phase 22 | Complete |
 | CONFIG-05 | Phase 22 | Complete |
-| WIZ-01 | Phase 23 | Pending |
-| WIZ-02 | Phase 23 | Pending |
-| WIZ-03 | Phase 23 | Pending |
+| WIZ-01 | Phase 23 | Complete |
+| WIZ-02 | Phase 23 | Complete |
+| WIZ-03 | Phase 23 | Complete |
 | WIZ-04 | Phase 23 | Complete |
 | WIZ-05 | Phase 23 | Pending |
 | DASH-06 | Phase 22 | Complete |
