@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import { getSetting } from '@/lib/settings'
 import { getAdminSession } from '@/lib/admin-session'
 
@@ -41,8 +42,13 @@ export default async function SetupLayout({
   children: React.ReactNode
 }) {
   const wizardComplete = await getSetting('WIZARD_COMPLETE')
+  const headersList = await headers()
+  const pathname = headersList.get('x-pathname') ?? headersList.get('x-invoke-path') ?? ''
 
-  if (wizardComplete === 'true') {
+  // Allow /setup/done to render even after wizard completion — it's the success page
+  const isDonePage = pathname.endsWith('/done') || pathname === '/setup/done'
+
+  if (wizardComplete === 'true' && !isDonePage) {
     const session = await getAdminSession()
     if (session.isLoggedIn) {
       redirect('/dashboard')

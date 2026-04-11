@@ -11,6 +11,10 @@ import type { NextRequest } from 'next/server'
  * perform the real check.
  */
 export function middleware(request: NextRequest) {
+  // Forward pathname so server components (e.g. setup layout) can read it
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-pathname', request.nextUrl.pathname)
+
   const sessionCookie = request.cookies.get('admin_session')
 
   if (!sessionCookie) {
@@ -19,10 +23,14 @@ export function middleware(request: NextRequest) {
       'callbackUrl',
       request.nextUrl.pathname + request.nextUrl.search
     )
-    return NextResponse.redirect(loginUrl)
+    return NextResponse.redirect(loginUrl, {
+      headers: requestHeaders,
+    })
   }
 
-  return NextResponse.next()
+  return NextResponse.next({
+    request: { headers: requestHeaders },
+  })
 }
 
 export const config = {
