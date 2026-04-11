@@ -36,10 +36,10 @@ if (!BASE_URL) {
 const PASSWORD = process.env.SCREENSHOT_PASSWORD ?? 'ScreenshotDemo123'
 const OUT_DIR = path.join(process.cwd(), 'docs', 'images')
 
-const FEATURE_PAGES = [
-  { slug: 'feature-dashboard',    path: '/dashboard' },
-  { slug: 'feature-settings',     path: '/settings'  },
-  { slug: 'feature-activity-log', path: '/logs'      },
+const FEATURE_PAGES: Array<{ slug: string; path: string; fullPage: boolean }> = [
+  { slug: 'feature-dashboard',    path: '/dashboard', fullPage: false },
+  { slug: 'feature-settings',     path: '/settings',  fullPage: true  },
+  { slug: 'feature-activity-log', path: '/logs',      fullPage: false },
 ]
 
 async function main() {
@@ -67,9 +67,9 @@ async function main() {
   console.log()
 
   // --- Capture each feature page ---
-  for (const { slug, path: pagePath } of FEATURE_PAGES) {
+  for (const { slug, path: pagePath, fullPage } of FEATURE_PAGES) {
     const url = `${BASE_URL}${pagePath}`
-    console.log(`Capturing ${url} ...`)
+    console.log(`Capturing ${url} ${fullPage ? '(fullPage)' : '(viewport)'} ...`)
 
     await page.goto(url, { waitUntil: 'networkidle' })
 
@@ -84,7 +84,7 @@ async function main() {
     }
 
     const outPath = path.join(OUT_DIR, `${slug}.png`)
-    await page.screenshot({ path: outPath, fullPage: false })
+    await page.screenshot({ path: outPath, fullPage })
 
     const stats = fs.statSync(outPath)
     const sizeKB = Math.round(stats.size / 1024)
