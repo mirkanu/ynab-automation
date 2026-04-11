@@ -43,13 +43,13 @@ Requirements for this milestone. Each maps to a roadmap phase.
 - [x] **WIZ-02**: Setup wizard is a multi-step flow: admin password → YNAB PAT → YNAB budget/account selection → Anthropic Claude API key → Resend API key → Pipedream webhook URL → done
 - [x] **WIZ-03**: Each wizard step shows plain-language instructions targeting non-programmers — numbered steps, screenshots where useful, and a direct link to the provider's API key page
 - [x] **WIZ-04**: Wizard saves each value to the DB as it is entered; closing the tab and returning resumes from the last completed step
-- [ ] **WIZ-05**: After completion, wizard sets `wizard_complete = true` and never runs again; subsequent visits route to `/login` (if unauthenticated) or `/dashboard` (if authenticated)
+- [x] **WIZ-05**: After completion, wizard sets `wizard_complete = true` and never runs again; subsequent visits route to `/login` (if unauthenticated) or `/dashboard` (if authenticated)
 
 ### Dashboard & UX
 
 - [x] **DASH-06**: Dashboard stats, activity log, parse transparency, and replay tool all continue to work after the single-tenant rollback
 - [x] **DASH-07**: Public homepage (`/`), onboarding page (`/onboarding`), GDPR account deletion UI, and magic-link signin page are removed
-- [ ] **DASH-08**: `/` routes based on state: first install → `/setup`, unauthenticated → `/login`, authenticated → `/dashboard`
+- [x] **DASH-08**: `/` routes based on state: first install → `/setup`, unauthenticated → `/login`, authenticated → `/dashboard`
 
 ### Dead Code Removal
 
@@ -124,10 +124,10 @@ Explicitly excluded. Documented to prevent scope creep.
 | WIZ-02 | Phase 23 | Complete |
 | WIZ-03 | Phase 23 | Complete |
 | WIZ-04 | Phase 23 | Complete |
-| WIZ-05 | Phase 23 | Pending |
+| WIZ-05 | Phase 23 | Complete |
 | DASH-06 | Phase 22 | Complete |
 | DASH-07 | Phase 21 | Complete |
-| DASH-08 | Phase 23 | Pending |
+| DASH-08 | Phase 23 | Complete |
 | CLEAN-01 | Phase 22 | Complete |
 | CLEAN-02 | Phase 21 | Complete |
 | CLEAN-03 | Phase 23 | Complete |
