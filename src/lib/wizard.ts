@@ -16,7 +16,7 @@ export const WIZARD_STEPS: WizardStep[] = [
   { step: 3, key: ['YNAB_BUDGET_ID', 'YNAB_ACCOUNT_ID'],   label: 'YNAB Budget & Account' },
   { step: 4, key: 'ANTHROPIC_API_KEY',                      label: 'Anthropic Claude API Key' },
   { step: 5, key: 'RESEND_API_KEY',                         label: 'Resend API Key' },
-  { step: 6, key: 'PIPEDREAM_WEBHOOK_URL',                  label: 'Pipedream Webhook URL' },
+  { step: 6, key: 'INBOUND_EMAIL',                          label: 'Inbound Email Address' },
 ]
 
 /**

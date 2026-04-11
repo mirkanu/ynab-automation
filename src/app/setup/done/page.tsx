@@ -58,7 +58,7 @@ const S = {
 }
 
 export default async function SetupDone() {
-  const pipedreamEmail = await getSetting('PIPEDREAM_WEBHOOK_URL')
+  const pipedreamEmail = await getSetting('INBOUND_EMAIL')
 
   const emailDisplay = pipedreamEmail?.trim()
     ? pipedreamEmail.trim()

@@ -7,6 +7,7 @@ interface Field {
   key: string
   type: 'password' | 'text'
   hint: string
+  placeholder?: string
 }
 
 const FIELDS: Field[] = [
@@ -23,10 +24,11 @@ const FIELDS: Field[] = [
     hint: 'Get your key at resend.com/api-keys',
   },
   {
-    label: 'Pipedream Webhook URL',
-    key: 'PIPEDREAM_WEBHOOK_URL',
+    label: 'Pipedream Inbound Email',
+    key: 'INBOUND_EMAIL',
     type: 'text',
-    hint: 'The webhook URL from your Pipedream workflow',
+    placeholder: 'user_xxx@upload.pipedream.net',
+    hint: 'The email address Pipedream gives you for your Email Source trigger (e.g. user_xxx@upload.pipedream.net). Forward order emails here.',
   },
 ]
 
@@ -204,7 +206,7 @@ export default function ApiKeysSection() {
                 value={values[field.key] ?? ''}
                 onChange={(e) => handleChange(field.key, e.target.value)}
                 style={S.input}
-                placeholder={field.type === 'password' ? '••••••••••••' : 'https://...'}
+                placeholder={field.type === 'password' ? '••••••••••••' : (field.placeholder ?? '')}
                 disabled={saving}
                 autoComplete="off"
               />

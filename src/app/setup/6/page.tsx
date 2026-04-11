@@ -150,7 +150,7 @@ export default function SetupStep6() {
       const res = await fetch('/api/setup/step', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ step: 6, settings: { PIPEDREAM_WEBHOOK_URL: webhookUrl.trim() } }),
+        body: JSON.stringify({ step: 6, settings: { INBOUND_EMAIL: webhookUrl.trim() } }),
       })
       const data = await res.json() as { success?: boolean; nextStep?: number; error?: string }
       if (!res.ok || data.error) {
@@ -168,17 +168,17 @@ export default function SetupStep6() {
   return (
     <div style={S.card}>
       <p style={S.stepLabel}>Step 6 of 6</p>
-      <h1 style={S.heading}>Pipedream Webhook URL</h1>
+      <h1 style={S.heading}>Pipedream Inbound Email Address</h1>
       <p style={S.why}>
-        Pipedream receives your forwarded order emails and passes them to this app for processing. It&apos;s the email inbox in the middle.
+        Pipedream receives your forwarded order emails and passes them to this app for processing. It acts as the email inbox in the middle.
       </p>
 
       <ol style={S.howList}>
         <li>Go to pipedream.com and sign up (free)</li>
-        <li>Click &ldquo;New Workflow&rdquo; → choose &ldquo;Email&rdquo; as the trigger</li>
-        <li>Pipedream gives you an email address (e.g. <code>abc@pipedream.net</code>) — copy it</li>
+        <li>Click &ldquo;New Workflow&rdquo; → choose &ldquo;Email&rdquo; as the trigger source</li>
+        <li>Pipedream gives you an inbound email address (e.g. <code>user_xxx@upload.pipedream.net</code>) — copy it</li>
         <li>Add an HTTP POST action in the workflow, pointing to <code>{'{your-app-url}'}/api/webhook</code></li>
-        <li>Activate the workflow, then paste the Pipedream email address below</li>
+        <li>Activate the workflow, then paste the inbound email address below</li>
       </ol>
 
       <a
@@ -191,11 +191,12 @@ export default function SetupStep6() {
       </a>
 
       <div style={S.fieldRow}>
-        <label style={S.label} htmlFor="pipedream-url">Pipedream Email Address</label>
+        <label style={S.label} htmlFor="inbound-email">Your Pipedream Forwarding Email Address</label>
         <input
-          id="pipedream-url"
+          id="inbound-email"
           type="text"
-          placeholder="Paste the Pipedream email address"
+          inputMode="email"
+          placeholder="user_xxx@upload.pipedream.net"
           value={webhookUrl}
           onChange={(e) => { setWebhookUrl(e.target.value); setError('') }}
           style={S.input}
@@ -203,7 +204,7 @@ export default function SetupStep6() {
           autoComplete="off"
         />
         <div style={S.note}>
-          This is an email address (like abc@pipedream.net), not a URL — paste whatever Pipedream shows you.
+          This is the email address Pipedream gives you when you create an Email Source trigger — it looks like <code>user_xxx@upload.pipedream.net</code>. Forward your order emails here.
         </div>
       </div>
 
