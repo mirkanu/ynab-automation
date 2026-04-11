@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v6.0
 milestone_name: Single-Tenant Rollback
 status: verifying
-stopped_at: Completed 25-02-PLAN.md
-last_updated: "2026-04-11T20:41:00.173Z"
+stopped_at: Completed 25-03-PLAN.md
+last_updated: "2026-04-11T21:05:23.488Z"
 last_activity: 2026-04-11 — Phase 22 VERIFICATION.md written, all 5 success criteria passed
 progress:
   total_phases: 6
   completed_phases: 4
   total_plans: 25
-  completed_plans: 22
+  completed_plans: 23
   percent: 60
 ---
 
@@ -109,6 +109,8 @@ Decisions logged in PROJECT.md Key Decisions table.
 - [Phase 25-self-host-polish]: LICENSE file created from scratch (did not exist) — MIT text with NOTICE preamble
 - [Phase 25-self-host-polish]: No-warranty and AI-generated disclosures placed as blockquotes above the Deploy button in README.md
 - [Phase 25-self-host-polish]: license-checker --production restricts scan to runtime deps; self-hosted Apache-2.0 attribution satisfied by node_modules LICENSE files
+- [Phase 25-self-host-polish]: Dedicated ynab-screenshots Railway project created for dummy-data screenshot capture — ynab-test-production not touched
+- [Phase 25-self-host-polish]: Wizard screenshots collected into single <details> block at end of Step 9 — all 7 images accessible, text instructions remain visible outside collapsible
 
 ### Pending Todos
 
@@ -122,6 +124,6 @@ None yet. Next: `/gsd:plan-phase 20`.
 
 ## Session Continuity
 
-Last session: 2026-04-11T20:41:00.168Z
-Stopped at: Completed 25-02-PLAN.md
+Last session: 2026-04-11T21:05:23.484Z
+Stopped at: Completed 25-03-PLAN.md
 Resume file: None
