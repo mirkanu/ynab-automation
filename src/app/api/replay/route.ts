@@ -4,10 +4,9 @@ import { parseOrderEmail } from '@/lib/claude'
 import { createYnabTransaction, getAccountName } from '@/lib/ynab'
 import { loadConfig, getSenderByEmail, getAccountForCurrency } from '@/lib/config'
 import { writeActivityLog } from '@/lib/activity-log'
-import { loadDbSettings } from '@/lib/settings'
+import { getSetting } from '@/lib/settings'
 
 export async function POST(req: NextRequest) {
-  await loadDbSettings()
   const { messageId, forceLive } = (await req.json()) as { messageId: string; forceLive?: boolean }
   if (!messageId) {
     return NextResponse.json({ error: 'messageId is required' }, { status: 400 })
@@ -54,7 +53,7 @@ export async function POST(req: NextRequest) {
   }
 
   // 4. Resolve YNAB budget
-  const budgetId = process.env.YNAB_BUDGET_ID
+  const budgetId = await getSetting('YNAB_BUDGET_ID')
   if (!budgetId) {
     return NextResponse.json(
       { error: 'YNAB_BUDGET_ID not configured' },
@@ -63,7 +62,8 @@ export async function POST(req: NextRequest) {
   }
 
   const accountId = getAccountForCurrency(config, senderInfo.accountId, parsed.currency)
-  const testMode = process.env.TEST_MODE === 'true' && !forceLive
+  const testModeValue = await getSetting('TEST_MODE')
+  const testMode = testModeValue === 'true' && !forceLive
 
   const memo = `${senderInfo.name}: ${parsed.description} - Automatically added from email`
   const accountName = await getAccountName(budgetId, accountId)

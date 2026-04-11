@@ -1,24 +1,23 @@
 import { prisma } from '@/lib/db'
 
 /**
- * Load all settings from the database and apply them to process.env.
- * DB values override env vars, so changes take effect without a restart.
- * Falls back to existing env vars when the DB is unavailable (e.g., during build).
+ * Read a single setting from the database.
+ * Returns undefined if the key does not exist or DB is unavailable.
+ * Does NOT fall back to process.env — DB is the single source of truth.
  */
-export async function loadDbSettings(): Promise<void> {
+export async function getSetting(key: string): Promise<string | undefined> {
   try {
-    const settings = await prisma.setting.findMany()
-    for (const s of settings) {
-      process.env[s.key] = s.value
-    }
+    const row = await prisma.setting.findUnique({ where: { key } })
+    return row?.value ?? undefined
   } catch {
-    // DB not available (e.g., during build) — use env vars as-is
+    return undefined
   }
 }
 
 /**
  * Save settings to the database (upsert by key).
  * Returns the number of settings saved.
+ * Does NOT write to process.env.
  */
 export async function saveSettings(settings: Record<string, string>): Promise<number> {
   const entries = Object.entries(settings).filter(([, v]) => v !== undefined)
@@ -31,20 +30,5 @@ export async function saveSettings(settings: Record<string, string>): Promise<nu
       })
     )
   )
-  for (const [key, value] of entries) {
-    process.env[key] = value
-  }
   return entries.length
-}
-
-/**
- * Read a single setting from the DB, falling back to process.env.
- */
-export async function getSetting(key: string): Promise<string | undefined> {
-  try {
-    const row = await prisma.setting.findUnique({ where: { key } })
-    return row?.value ?? process.env[key]
-  } catch {
-    return process.env[key]
-  }
 }

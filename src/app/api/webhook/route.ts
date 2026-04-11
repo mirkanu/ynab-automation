@@ -10,7 +10,7 @@ import { createYnabTransaction, getCategories, findCategory, getAccountName } fr
 import { sendErrorNotification } from '@/lib/notify';
 import { loadConfig, getSenderByEmail, getAccountForCurrency, notificationSuffix } from '@/lib/config';
 import { writeActivityLog } from '@/lib/activity-log';
-import { loadDbSettings } from '@/lib/settings';
+import { getSetting } from '@/lib/settings';
 
 export async function GET() {
   return NextResponse.json({ status: 'ok' });
@@ -18,7 +18,6 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    await loadDbSettings();
     const config = loadConfig();
     const body = await req.json();
     const subject = body?.trigger?.event?.headers?.subject ?? null;
@@ -115,7 +114,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Step 6b: Resolve category hint to YNAB category ID (if hint was present)
-    const budgetId = process.env.YNAB_BUDGET_ID ?? '';
+    const budgetId = (await getSetting('YNAB_BUDGET_ID')) ?? '';
     let categoryId: string | undefined;
     let categoryName: string | undefined;
     if (categoryHint) {
@@ -133,8 +132,9 @@ export async function POST(req: NextRequest) {
 
     // Step 7: Create YNAB transaction (or skip in test mode)
     const accountId = getAccountForCurrency(config, senderInfo.accountId, parsed.currency);
-    // Read test mode from the TEST_MODE env var (set via settings UI).
-    const testMode = process.env.TEST_MODE === 'true';
+    // Read test mode from the DB setting (set via settings UI).
+    const testModeValue = await getSetting('TEST_MODE');
+    const testMode = testModeValue === 'true';
 
     const memo = `${senderInfo.name}: ${parsed.description} - Automatically added from email`;
     const accountName = await getAccountName(budgetId, accountId);

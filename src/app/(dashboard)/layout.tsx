@@ -1,7 +1,7 @@
 import { type ReactNode } from 'react'
 import { redirect } from 'next/navigation'
 import { getAdminSession } from '@/lib/admin-session'
-import { loadDbSettings, getSetting } from '@/lib/settings'
+import { getSetting } from '@/lib/settings'
 import TestModeBanner from './components/TestModeBanner'
 
 export const dynamic = 'force-dynamic'
@@ -17,7 +17,6 @@ export default async function DashboardLayout({ children }: { children: ReactNod
     redirect('/login')
   }
 
-  await loadDbSettings()
   const testModeValue = await getSetting('TEST_MODE')
   const testMode = testModeValue === 'true'
 

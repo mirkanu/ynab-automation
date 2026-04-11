@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getAdminSession } from '@/lib/admin-session'
 import { getActivityLogs } from '@/lib/activity-log-queries'
-import { loadDbSettings } from '@/lib/settings'
+import { getSetting } from '@/lib/settings'
 import LogFilters from '../components/LogFilters'
 import LogRow from '../components/LogRow'
 import Pagination from '../components/Pagination'
@@ -18,8 +18,8 @@ export default async function LogsPage({ searchParams }: Props) {
     redirect('/login')
   }
 
-  await loadDbSettings()
-  const testMode = process.env.TEST_MODE === 'true'
+  const testModeValue = await getSetting('TEST_MODE')
+  const testMode = testModeValue === 'true'
   const params = await searchParams
   const status = typeof params.status === 'string' ? params.status : undefined
   const from = typeof params.from === 'string' ? params.from : undefined
