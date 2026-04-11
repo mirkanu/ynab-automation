@@ -8,7 +8,8 @@
     "start": "next start",
     "db:migrate": "prisma migrate deploy",
     "test": "vitest run",
-    "docs:screenshots": "npx tsx scripts/capture-wizard-screenshots.ts"
+    "docs:screenshots": "npx tsx scripts/capture-wizard-screenshots.ts",
+    "docs:feature-screenshots": "npx tsx scripts/capture-feature-screenshots.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.20.0",
