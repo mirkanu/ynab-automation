@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v6.0
 milestone_name: Single-Tenant Rollback
-status: completed
-stopped_at: Completed 22-03-PLAN.md
-last_updated: "2026-04-11T00:00:00.000Z"
-last_activity: 2026-04-11 — Phase 22 verified live and closed
+status: verifying
+stopped_at: Completed 23-01-PLAN.md
+last_updated: "2026-04-11T00:51:26.805Z"
+last_activity: 2026-04-11 — Phase 22 VERIFICATION.md written, all 5 success criteria passed
 progress:
   total_phases: 5
   completed_phases: 3
-  total_plans: 13
-  completed_plans: 13
+  total_plans: 17
+  completed_plans: 14
   percent: 60
 ---
 
@@ -94,6 +94,9 @@ Decisions logged in PROJECT.md Key Decisions table.
 - [Phase 22-ynab-pat-settings-api-keys]: Accounts route filters both deleted and closed YNAB accounts — closed accounts are archived and no longer usable
 - [Phase 22-ynab-pat-settings-api-keys]: ApiKeysSection duplicates YNAB PAT field intentionally — CONFIG-01 requires all keys visible in one place; sections sync via DB on page refresh
 - [Phase 22-ynab-pat-settings-api-keys]: settings/page.tsx reads budgetId server-side from getSetting — avoids client-side waterfall for initial connected state passed to SenderRules/CurrencyRules
+- [Phase 23-01]: deriveWizardStep() is read-only — writing WIZARD_COMPLETE is the responsibility of the step 6 save action
+- [Phase 23-01]: Step API route POST /api/setup/step is public (no auth guard) — wizard runs before ADMIN_PASSWORD exists
+- [Phase 23-01]: WizardStep interface (not as const) used for key: string | string[] to avoid TypeScript union narrowing issues
 
 ### Pending Todos
 
@@ -107,6 +110,6 @@ None yet. Next: `/gsd:plan-phase 20`.
 
 ## Session Continuity
 
-Last session: 2026-04-11
-Stopped at: Phase 22 complete — VERIFICATION.md written, all 5 success criteria passed live on Railway. User approved all 21 human-verify steps (1-17 pre-crash, 18-21 post-resume bulk approval). Ready for Phase 23.
+Last session: 2026-04-11T00:51:26.800Z
+Stopped at: Completed 23-01-PLAN.md
 Resume file: None

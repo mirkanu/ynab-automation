@@ -42,7 +42,7 @@ Requirements for this milestone. Each maps to a roadmap phase.
 - [ ] **WIZ-01**: On first install (empty settings or `wizard_complete = false`), visiting any route redirects the admin to `/setup`
 - [ ] **WIZ-02**: Setup wizard is a multi-step flow: admin password → YNAB PAT → YNAB budget/account selection → Anthropic Claude API key → Resend API key → Pipedream webhook URL → done
 - [ ] **WIZ-03**: Each wizard step shows plain-language instructions targeting non-programmers — numbered steps, screenshots where useful, and a direct link to the provider's API key page
-- [ ] **WIZ-04**: Wizard saves each value to the DB as it is entered; closing the tab and returning resumes from the last completed step
+- [x] **WIZ-04**: Wizard saves each value to the DB as it is entered; closing the tab and returning resumes from the last completed step
 - [ ] **WIZ-05**: After completion, wizard sets `wizard_complete = true` and never runs again; subsequent visits route to `/login` (if unauthenticated) or `/dashboard` (if authenticated)
 
 ### Dashboard & UX
@@ -55,7 +55,7 @@ Requirements for this milestone. Each maps to a roadmap phase.
 
 - [x] **CLEAN-01**: Delete `/api/email/inbound` route, `src/lib/email-routing.ts`, `src/lib/mailbox-hash.ts`, and all Phase 18 per-user forwarding address code
 - [x] **CLEAN-02**: Remove `getPrismaForUser` middleware and RLS-setting `$extends` from `src/lib/db.ts`
-- [ ] **CLEAN-03**: Delete `src/app/onboarding/`, `src/app/(dashboard)/settings/DangerZone.tsx`, `src/app/api/account/delete/`, and unify test-mode toggling into the main settings endpoint
+- [x] **CLEAN-03**: Delete `src/app/onboarding/`, `src/app/(dashboard)/settings/DangerZone.tsx`, `src/app/api/account/delete/`, and unify test-mode toggling into the main settings endpoint
 - [ ] **CLEAN-04**: Fix or delete the 10 failing tests that accumulated during v5.0 (webhook route tests, multi-tenant isolation tests, YNAB OAuth tests, migration tests)
 
 ### Docs & Distribution
@@ -123,14 +123,14 @@ Explicitly excluded. Documented to prevent scope creep.
 | WIZ-01 | Phase 23 | Pending |
 | WIZ-02 | Phase 23 | Pending |
 | WIZ-03 | Phase 23 | Pending |
-| WIZ-04 | Phase 23 | Pending |
+| WIZ-04 | Phase 23 | Complete |
 | WIZ-05 | Phase 23 | Pending |
 | DASH-06 | Phase 22 | Complete |
 | DASH-07 | Phase 21 | Complete |
 | DASH-08 | Phase 23 | Pending |
 | CLEAN-01 | Phase 22 | Complete |
 | CLEAN-02 | Phase 21 | Complete |
-| CLEAN-03 | Phase 23 | Pending |
+| CLEAN-03 | Phase 23 | Complete |
 | CLEAN-04 | Phase 24 | Pending |
 | DOCS-01 | Phase 24 | Pending |
 | DOCS-02 | Phase 24 | Pending |
