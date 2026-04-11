@@ -16,6 +16,35 @@ budget within seconds, with no manual entry.
 > AI-assisted software delivery. You should evaluate whether that matches your risk
 > tolerance before running it against real money.
 
+## Features
+
+### Dashboard
+
+![Dashboard screenshot](docs/images/feature-dashboard.png)
+
+At-a-glance view of your automation stats — emails processed this week, success
+rate, and the most recent transactions created. See exactly what happened and
+when, without opening YNAB.
+
+### Settings
+
+![Settings screenshot](docs/images/feature-settings.png)
+
+Configure your YNAB connection, API keys, sender routing rules, and currency
+routing — all from a single page. No code edits, no Railway env-var juggling.
+Flip test mode on to dry-run the pipeline without creating real YNAB
+transactions.
+
+### Activity Log
+
+![Activity log screenshot](docs/images/feature-activity-log.png)
+
+Every forwarded email gets a row: green for a created YNAB transaction, red for
+parse or API errors, blue for test mode. Expand any row to see Claude's full
+parse reasoning. Replay any email with one click.
+
+---
+
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.com/deploy?template=https%3A%2F%2Fgithub.com%2Fmirkanu%2Fynab-automation)
 
 ---
@@ -123,15 +152,11 @@ each value in the database as you go, so you can close the browser and return la
 
 ### Step 3 — Admin Password (Wizard Step 1)
 
-![Wizard step 1 — set admin password](docs/images/wizard-step-1.png)
-
 Choose a password for the admin interface. This is the password you will use to log
 in to the dashboard each time. Pick something you will remember; you can change it
 later from the Settings page.
 
 ### Step 4 — YNAB Personal Access Token (Wizard Step 2)
-
-![Wizard step 2 — YNAB personal access token](docs/images/wizard-step-2.png)
 
 A personal access token is a long string that gives the app read/write access to your
 YNAB budget. You generate one in your YNAB account settings.
@@ -145,8 +170,6 @@ YNAB budget. You generate one in your YNAB account settings.
 
 ### Step 5 — Budget and Account (Wizard Step 3)
 
-![Wizard step 3 — choose budget and account](docs/images/wizard-step-3.png)
-
 After you enter a valid YNAB token, the wizard loads your budgets and accounts from
 the YNAB API. Select the budget you want transactions to appear in, then select the
 specific account (e.g. "Visa Checking").
@@ -155,8 +178,6 @@ If the dropdowns show an error, your personal access token from step 4 may be
 incorrect. Go back and re-enter it.
 
 ### Step 6 — Anthropic API Key (Wizard Step 4)
-
-![Wizard step 4 — Anthropic API key](docs/images/wizard-step-4.png)
 
 The Anthropic API key allows the app to call Claude to parse your email text. API
 keys are account credentials — treat them like a password.
@@ -171,8 +192,6 @@ access. See [Costs](#costs) for expected usage.
 
 ### Step 7 — Resend API Key (Wizard Step 5)
 
-![Wizard step 5 — Resend API key](docs/images/wizard-step-5.png)
-
 Resend sends you an email when the app encounters an error — for example, if Claude
 cannot parse an email or YNAB rejects a transaction. Without this key the app still
 works, but errors are silent.
@@ -182,8 +201,6 @@ works, but errors are silent.
 3. Paste it into the wizard and click Next.
 
 ### Step 8 — Pipedream Inbound Email (Wizard Step 6)
-
-![Wizard step 6 — Pipedream inbound email address](docs/images/wizard-step-6.png)
 
 Pipedream is the service that receives your forwarded emails and passes them to the
 app. In this step you create a Pipedream workflow and paste the inbound email address
@@ -215,12 +232,29 @@ forwarding rules in Step 10.
 
 ### Step 9 — Finish Setup
 
-![Wizard done — setup complete](docs/images/wizard-done.png)
-
 Clicking Finish Setup saves all your settings and marks the wizard as complete. The
 app redirects you to the dashboard. From here you can view the Activity Log, adjust
 settings at any time, and replay past emails if something went wrong the first time
 through.
+
+<details>
+<summary>See the install wizard screenshots</summary>
+
+![Wizard step 1 — set admin password](docs/images/wizard-step-1.png)
+
+![Wizard step 2 — YNAB personal access token](docs/images/wizard-step-2.png)
+
+![Wizard step 3 — choose budget and account](docs/images/wizard-step-3.png)
+
+![Wizard step 4 — Anthropic API key](docs/images/wizard-step-4.png)
+
+![Wizard step 5 — Resend API key](docs/images/wizard-step-5.png)
+
+![Wizard step 6 — Pipedream inbound email address](docs/images/wizard-step-6.png)
+
+![Wizard done — setup complete](docs/images/wizard-done.png)
+
+</details>
 
 ### Step 10 — Set Up Email Forwarding
 
