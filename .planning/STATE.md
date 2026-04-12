@@ -124,6 +124,6 @@ None yet. Next: `/gsd:plan-phase 20`.
 
 ## Session Continuity
 
-Last session: 2026-04-11T21:05:23.484Z
-Stopped at: Completed 25-03-PLAN.md
-Resume file: None
+Last session: 2026-04-12T11:37:01.911Z
+Stopped at: Phase 25-04 human-verify checkpoint awaiting Part C (incognito deploy dry-run); Phase 24-04 subsumed
+Resume file: .planning/phases/25-self-host-polish/.continue-here.md
