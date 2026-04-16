@@ -12,7 +12,7 @@ a YNAB transaction automatically within seconds.
 
 ---
 
-[What It Costs](#what-it-costs) · [Set Up](#set-up) · [What You Get](#what-you-get) · [How It Works](#how-it-works) · [Troubleshooting](#troubleshooting)
+[What It Costs](#what-it-costs) · [Set Up (Railway)](#set-up-railway--one-click) · [Set Up (your own server)](#set-up-your-own-server) · [What You Get](#what-you-get) · [How It Works](#how-it-works) · [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -38,9 +38,7 @@ started, but it's not required.
 
 ---
 
-## Set Up
-
-The whole process takes about 10 minutes. You don't need to write any code.
+## Set Up (Railway — one click)
 
 ### 1. Deploy to Railway
 
@@ -98,6 +96,19 @@ Repeat for each retailer. Common senders:
 Forward any real order confirmation email to the Pipedream address. Within a minute,
 check the Activity Log in your dashboard. You should see a green row — and a
 matching transaction in YNAB.
+
+---
+
+## Set Up (your own server)
+
+Clone the repo, set `DATABASE_URL` to a PostgreSQL connection string, and run:
+
+```
+npm install && npx prisma migrate deploy && npm run build && npm start
+```
+
+Open the app in a browser — the setup wizard handles the rest. Everything else
+(email forwarding, testing) is the same as steps 4–5 above.
 
 ---
 
