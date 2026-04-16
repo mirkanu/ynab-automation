@@ -8,7 +8,7 @@
 - ✅ **v4.0** — Admin Backend UI (2026-03-28) → [archive](.planning/milestones/v4.0-ROADMAP.md)
 - ✅ **v5.0** — Multi-Tenant SaaS (2026-04-10) → [archive](.planning/milestones/v5.0-ROADMAP.md)
 - ✅ **v6.0** — Single-Tenant Rollback (2026-04-16)
-- 🔄 **v6.1** — README & Onboarding Polish (in progress)
+- ✅ **v6.1** — README & Onboarding Polish (2026-04-16)
 
 ## Phases
 
@@ -54,9 +54,9 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
 - [x] **Phase 24: Test Suite Cleanup & Self-Host Docs** — completed 2026-04-16
 - [x] **Phase 25: Self-Host Polish** — completed 2026-04-16
 
-### 🔄 v6.1 README & Onboarding Polish (Phase 26)
+### ✅ v6.1 README & Onboarding Polish (Phase 26) — SHIPPED 2026-04-16
 
-- [x] **Phase 26: README & Onboarding Polish** — in progress (completed 2026-04-16)
+- [x] **Phase 26: README & Onboarding Polish** — completed 2026-04-16
 
 ## Phase Details
 

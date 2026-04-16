@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v6.0
-milestone_name: Single-Tenant Rollback
-status: planning
-stopped_at: Completed 26-01-PLAN.md
-last_updated: "2026-04-16T12:02:26.227Z"
-last_activity: 2026-04-16 — Roadmap created for v6.1
+milestone: v6.1
+milestone_name: README & Onboarding Polish
+status: complete
+stopped_at: v6.1 milestone complete
+last_updated: "2026-04-16"
+last_activity: 2026-04-16 — v6.1 complete (README rewrite, zero-config deploy)
 progress:
-  total_phases: 7
-  completed_phases: 7
-  total_plans: 26
-  completed_plans: 26
-  percent: 0
+  total_phases: 1
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
+  percent: 100
 ---
 
 # Amazon to YNAB Automation — Project State
