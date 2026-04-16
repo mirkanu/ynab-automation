@@ -9,11 +9,11 @@ Requirements for v6.1 milestone.
 
 ### README Content
 
-- [ ] **README-01**: README opening explains the specific problem: YNAB auto-categorizes by payee, but multi-category payees (e.g. Amazon) require manually cross-referencing email receipts — this tool eliminates that manual lookup
-- [ ] **README-02**: Deploy button opens in a new browser tab (target="_blank")
-- [ ] **README-03**: Install section covers only: click deploy → wait for green check → find your URL → open it → set password (wizard handles the rest)
-- [ ] **README-04**: Remove verbose per-step wizard instructions (Steps 2-9) — wizard UI is self-explanatory
-- [ ] **README-05**: Simplify domain discovery instruction — domain is auto-generated, user just needs to know where Railway shows it
+- [x] **README-01**: README opening explains the specific problem: YNAB auto-categorizes by payee, but multi-category payees (e.g. Amazon) require manually cross-referencing email receipts — this tool eliminates that manual lookup
+- [x] **README-02**: Deploy button opens in a new browser tab (target="_blank")
+- [x] **README-03**: Install section covers only: click deploy → wait for green check → find your URL → open it → set password (wizard handles the rest)
+- [x] **README-04**: Remove verbose per-step wizard instructions (Steps 2-9) — wizard UI is self-explanatory
+- [x] **README-05**: Simplify domain discovery instruction — domain is auto-generated, user just needs to know where Railway shows it
 
 ## v2 Requirements
 
@@ -34,11 +34,11 @@ Deferred to future release.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| README-01 | Phase 26 | Pending |
-| README-02 | Phase 26 | Pending |
-| README-03 | Phase 26 | Pending |
-| README-04 | Phase 26 | Pending |
-| README-05 | Phase 26 | Pending |
+| README-01 | Phase 26 | Complete |
+| README-02 | Phase 26 | Complete |
+| README-03 | Phase 26 | Complete |
+| README-04 | Phase 26 | Complete |
+| README-05 | Phase 26 | Complete |
 
 **Coverage:**
 - v1 requirements: 5 total

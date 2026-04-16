@@ -56,7 +56,7 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
 
 ### 🔄 v6.1 README & Onboarding Polish (Phase 26)
 
-- [ ] **Phase 26: README & Onboarding Polish** — in progress
+- [x] **Phase 26: README & Onboarding Polish** — in progress (completed 2026-04-16)
 
 ## Phase Details
 
@@ -183,7 +183,7 @@ Plans:
   1. A reader who has never heard of this project understands the specific problem it solves (YNAB auto-categorizes by payee, but multi-category payees like Amazon require manual email receipt cross-referencing) within the first paragraph of the README — without reading any other section.
   2. Clicking the Deploy button opens Railway in a new browser tab, and the Install section contains exactly three steps (click deploy, wait for green check and find the auto-generated URL in Railway's UI, open URL and set password) with no wizard instructions beyond "the wizard walks you through the rest."
   3. The README contains no Steps 2-9 wizard walkthrough text — the wizard UI is the only guide for post-deploy configuration.
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 
 Plans:
 - [ ] 26-01-PLAN.md — Rewrite README opening, fix deploy button, simplify install to three steps
@@ -208,4 +208,4 @@ Plans:
 | 23. First-Install Wizard & Route State Machine | v6.0 | 4/4 | Complete | 2026-04-11 |
 | 24. Test Suite Cleanup & Self-Host Docs | v6.0 | 3/4 | Complete | 2026-04-16 |
 | 25. Self-Host Polish | v6.0 | 3/4 | Complete | 2026-04-16 |
-| 26. README & Onboarding Polish | v6.1 | 0/1 | Not started | — |
+| 26. README & Onboarding Polish | 1/1 | Complete   | 2026-04-16 | — |

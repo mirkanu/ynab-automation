@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v6.1
-milestone_name: README & Onboarding Polish
-status: roadmapped
-stopped_at: Phase 26 roadmapped, ready for planning
-last_updated: "2026-04-16"
-last_activity: 2026-04-16 — v6.1 roadmap created (Phase 26)
+milestone: v6.0
+milestone_name: Single-Tenant Rollback
+status: planning
+stopped_at: Completed 26-01-PLAN.md
+last_updated: "2026-04-16T11:52:44.763Z"
+last_activity: 2026-04-16 — Roadmap created for v6.1
 progress:
-  total_phases: 1
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_phases: 7
+  completed_phases: 7
+  total_plans: 26
+  completed_plans: 26
   percent: 0
 ---
 
@@ -127,6 +127,8 @@ Decisions logged in PROJECT.md Key Decisions table.
 **v6.1 roadmap decisions (2026-04-16):**
 - Single phase (26) for all 5 README-only requirements — coarse granularity, natural delivery boundary, no code changes involved
 - All requirements (README-01 through README-05) target the same file (README.md); bundling avoids partial-edit churn
+- [Phase 26]: Problem statement leads with YNAB payee-categorization pain point (Amazon multi-category example) rather than generic one-liner
+- [Phase 26]: Deploy button converted to HTML anchor with target='_blank'; Install reduced to 3 steps; Prerequisites table removed; Steps 10/11 renamed to After Setup
 
 ### Pending Todos
 
@@ -144,6 +146,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-16
-Stopped at: v6.1 roadmap created — Phase 26 defined, ready for plan-phase
+Last session: 2026-04-16T11:52:44.759Z
+Stopped at: Completed 26-01-PLAN.md
 Resume file: None
