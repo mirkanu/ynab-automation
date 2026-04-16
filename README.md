@@ -45,7 +45,7 @@ parse reasoning. Replay any email with one click.
 
 ---
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.com/template/9Qs37P)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.com/template/bIms_s)
 
 > **True one-click.** The button opens a Railway template that provisions
 > PostgreSQL, wires `DATABASE_URL`, and deploys the app. No environment variables
