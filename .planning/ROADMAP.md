@@ -208,4 +208,4 @@ Plans:
 | 23. First-Install Wizard & Route State Machine | v6.0 | 4/4 | Complete | 2026-04-11 |
 | 24. Test Suite Cleanup & Self-Host Docs | v6.0 | 3/4 | Complete | 2026-04-16 |
 | 25. Self-Host Polish | v6.0 | 3/4 | Complete | 2026-04-16 |
-| 26. README & Onboarding Polish | 1/1 | Complete   | 2026-04-16 | — |
+| 26. README & Onboarding Polish | 1/1 | Complete    | 2026-04-16 | — |

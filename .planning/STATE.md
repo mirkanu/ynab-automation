@@ -4,7 +4,7 @@ milestone: v6.0
 milestone_name: Single-Tenant Rollback
 status: planning
 stopped_at: Completed 26-01-PLAN.md
-last_updated: "2026-04-16T11:52:44.763Z"
+last_updated: "2026-04-16T12:02:26.227Z"
 last_activity: 2026-04-16 — Roadmap created for v6.1
 progress:
   total_phases: 7
