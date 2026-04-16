@@ -47,13 +47,12 @@ parse reasoning. Replay any email with one click.
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.com/template/9Qs37P)
 
-> **Near one-click.** The button opens a real Railway template that provisions
-> PostgreSQL, wires `DATABASE_URL`, and deploys the app. Railway will prompt you
-> for **one** value at deploy time — `IRON_SESSION_SECRET` — which protects your
-> login cookies. Paste any random 32-character string (for example, run
-> `openssl rand -base64 32` in a terminal, or use any password generator). Every
-> other value — API keys, YNAB token, Pipedream address, admin password — is
-> collected by the setup wizard after the app is running.
+> **True one-click.** The button opens a Railway template that provisions
+> PostgreSQL, wires `DATABASE_URL`, and deploys the app. No environment variables
+> to fill in — click **Deploy Now** and it works. The session secret is
+> auto-generated and stored in the database on first boot. Every other value —
+> API keys, YNAB token, Pipedream address, admin password — is collected by the
+> setup wizard after the app is running.
 
 ---
 
@@ -111,11 +110,11 @@ page at the step where you need it.
 | [Pipedream](https://pipedream.com/) | Receives forwarded emails and passes them to the app | Step 8 (workflow) |
 | [Resend](https://resend.com/) | Sends you an email when something goes wrong | Step 7 (API key) |
 
-With two exceptions, you do not need to set any environment variables manually —
-the wizard collects each value and stores it in the database. The two exceptions
-are set once during Step 1 (deploy) and never touched again: `DATABASE_URL` (set
-automatically when you add the PostgreSQL plugin) and `IRON_SESSION_SECRET` (a
-random string you generate once on the Variables page).
+You do not need to set any environment variables manually — the wizard collects
+each value and stores it in the database. `DATABASE_URL` is set automatically
+when Railway provisions the PostgreSQL plugin. The session secret is
+auto-generated on first boot and stored in the database. No manual secret
+generation is required.
 
 See [Costs](#costs) for what each service charges.
 
@@ -133,11 +132,9 @@ and validates your inputs before moving on.
    have a Railway account yet, sign up (the GitHub login option is fastest).
 2. You land on the template preview screen titled **"YNAB Automation"**. It shows
    two services — the app and a PostgreSQL database — and a **Deploy Now** button.
-3. Click **Deploy Now**. Railway prompts you for **one** environment variable:
-   `IRON_SESSION_SECRET`. Paste any random 32-character string. If you do not have
-   one handy, open a terminal and run `openssl rand -base64 32`, or use any online
-   password generator set to 32 characters. Click **Deploy**.
-4. Railway starts building. Wait for the service to show a green check (this
+3. Click **Deploy Now**. No environment variables are required — click straight
+   through. Railway starts building immediately.
+4. Wait for the service to show a green check (this
    takes 2–4 minutes the first time).
 5. Click the app service to open its page. Under **Settings → Networking**, click
    **"Generate Domain"** to create a public URL. Copy the URL — something like
@@ -396,10 +393,17 @@ are missing, re-run the wizard from the beginning.
 
 ### The dashboard redirects to the login page even after logging in
 
-Your session may have expired, or the `IRON_SESSION_SECRET` environment variable
-changed between deploys. Log in again. If the loop persists, check that
-`IRON_SESSION_SECRET` is set in your Railway service's environment variables and has
-not changed since the initial deploy.
+Your session may have expired. Log in again. If the redirect loop persists,
+your session secret may have been regenerated (for example, if the database was
+reset). Logging in again will set a fresh session cookie.
+
+### I forgot my admin password and cannot log in
+
+Set the `RESET_PASSWORD` environment variable to `true` in your Railway service's
+Variables tab, then redeploy (or trigger a restart). On the next request the app
+will clear your admin password and reset the setup wizard so you can choose a new
+password. Remove `RESET_PASSWORD` (or set it to `false`) immediately after you
+have set your new password, then redeploy again.
 
 ### Email arrives in Pipedream but no transaction appears and no Activity Log entry
 
@@ -443,9 +447,10 @@ anyone.
 
 Railway is the recommended host because the deploy button handles PostgreSQL
 provisioning automatically, but any platform that runs a Node.js app with a PostgreSQL
-database will work. The only required environment variables for a cold-start deploy are
-`DATABASE_URL` and `IRON_SESSION_SECRET`; all other configuration is entered through the
-wizard and stored in the database.
+database will work. The only required environment variable for a cold-start deploy is
+`DATABASE_URL` (set automatically by Railway when a PostgreSQL plugin is linked);
+all other configuration — including the session secret — is auto-generated or entered
+through the wizard and stored in the database.
 
 ---
 

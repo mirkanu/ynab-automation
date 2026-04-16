@@ -3,6 +3,16 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
+const CHARSET = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%'
+
+function generatePassword(): string {
+  const bytes = new Uint8Array(16)
+  window.crypto.getRandomValues(bytes)
+  return Array.from(bytes)
+    .map((b) => CHARSET[b % CHARSET.length])
+    .join('')
+}
+
 const S = {
   card: {
     backgroundColor: '#fff',
@@ -39,6 +49,21 @@ const S = {
     color: '#374151',
     marginBottom: '0.375rem',
   },
+  labelRow: {
+    display: 'flex' as const,
+    alignItems: 'baseline' as const,
+    justifyContent: 'space-between' as const,
+    marginBottom: '0.375rem',
+  },
+  generateBtn: {
+    color: '#2563eb',
+    cursor: 'pointer',
+    fontSize: '0.8125rem',
+    background: 'none',
+    border: 'none',
+    padding: 0,
+    fontWeight: 500 as const,
+  },
   input: {
     width: '100%',
     boxSizing: 'border-box' as const,
@@ -49,6 +74,41 @@ const S = {
     outline: 'none',
     color: '#111827',
     backgroundColor: '#fff',
+  },
+  inputWrapper: {
+    position: 'relative' as const,
+  },
+  inputWithCopy: {
+    width: '100%',
+    boxSizing: 'border-box' as const,
+    padding: '0.5rem 2.5rem 0.5rem 0.75rem',
+    fontSize: '0.875rem',
+    border: '1px solid #d1d5db',
+    borderRadius: '6px',
+    outline: 'none',
+    color: '#111827',
+    backgroundColor: '#fff',
+    fontFamily: 'monospace',
+  },
+  copyBtn: {
+    position: 'absolute' as const,
+    right: '0.5rem',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    padding: '0.2rem',
+    color: '#6b7280',
+    fontSize: '0.75rem',
+    display: 'flex' as const,
+    alignItems: 'center' as const,
+  },
+  copyLabel: {
+    fontSize: '0.7rem',
+    color: '#16a34a',
+    fontWeight: 600 as const,
+    whiteSpace: 'nowrap' as const,
   },
   fieldRow: {
     marginBottom: '1rem',
@@ -99,9 +159,30 @@ export default function SetupStep1() {
   const [confirm, setConfirm] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [generated, setGenerated] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   const mismatch = confirm.length > 0 && password !== confirm
   const disabled = saving || !password.trim() || password !== confirm
+
+  function handleGenerate() {
+    const pwd = generatePassword()
+    setPassword(pwd)
+    setConfirm(pwd)
+    setGenerated(true)
+    setError('')
+    setCopied(false)
+  }
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(password)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // clipboard not available — ignore
+    }
+  }
 
   async function handleNext() {
     if (password !== confirm) {
@@ -139,17 +220,46 @@ export default function SetupStep1() {
       </p>
 
       <div style={S.fieldRow}>
-        <label style={S.label} htmlFor="password">Choose a password</label>
-        <input
-          id="password"
-          type="password"
-          placeholder="Enter a password"
-          value={password}
-          onChange={(e) => { setPassword(e.target.value); setError('') }}
-          style={S.input}
-          disabled={saving}
-          autoComplete="new-password"
-        />
+        <div style={S.labelRow}>
+          <label style={S.label} htmlFor="password">Choose a password</label>
+          <button
+            type="button"
+            style={S.generateBtn}
+            onClick={handleGenerate}
+            disabled={saving}
+          >
+            Generate password
+          </button>
+        </div>
+        <div style={S.inputWrapper}>
+          <input
+            id="password"
+            type={generated ? 'text' : 'password'}
+            placeholder="Enter a password"
+            value={password}
+            onChange={(e) => { setPassword(e.target.value); setGenerated(false); setError('') }}
+            style={generated ? S.inputWithCopy : S.input}
+            disabled={saving}
+            autoComplete="new-password"
+          />
+          {generated && (
+            <button
+              type="button"
+              style={S.copyBtn}
+              onClick={() => void handleCopy()}
+              title="Copy to clipboard"
+            >
+              {copied ? (
+                <span style={S.copyLabel}>Copied!</span>
+              ) : (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                </svg>
+              )}
+            </button>
+          )}
+        </div>
       </div>
 
       <div style={S.fieldRow}>
