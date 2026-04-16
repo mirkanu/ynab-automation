@@ -2,8 +2,6 @@ import { redirect } from 'next/navigation'
 import { getAdminSession } from '@/lib/admin-session'
 import { getSetting } from '@/lib/settings'
 import SettingsForm from './SettingsForm'
-import SenderRulesSection from './SenderRulesSection'
-import CurrencyRulesSection from './CurrencyRulesSection'
 import { AdminPasswordSection } from './AdminPasswordSection'
 import ApiKeysSection from './ApiKeysSection'
 import YnabConnectionSection from './YnabConnectionSection'
@@ -18,9 +16,6 @@ export default async function SettingsPage() {
 
   const testModeValue = await getSetting('TEST_MODE')
   const testMode = testModeValue === 'true'
-
-  const budgetId = await getSetting('YNAB_BUDGET_ID')
-  const connected = !!budgetId
 
   return (
     <div>
@@ -40,13 +35,7 @@ export default async function SettingsPage() {
       {/* 3. YNAB Connection (PAT + budget/account dropdowns) */}
       <YnabConnectionSection />
 
-      {/* 4. Sender Routing Rules */}
-      <SenderRulesSection connected={connected} initialBudgetId={budgetId ?? null} />
-
-      {/* 5. Currency Routing */}
-      <CurrencyRulesSection connected={connected} initialBudgetId={budgetId ?? null} />
-
-      {/* 6. Admin Password */}
+      {/* 4. Admin Password */}
       <AdminPasswordSection />
     </div>
   )

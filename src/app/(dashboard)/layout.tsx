@@ -59,6 +59,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
       }}>
         <a href="/dashboard" style={{ color: '#374151', textDecoration: 'none' }}>Dashboard</a>
         <a href="/logs" style={{ color: '#374151', textDecoration: 'none' }}>Activity Log</a>
+        <a href="/rules" style={{ color: '#374151', textDecoration: 'none' }}>Rules</a>
         <a href="/settings" style={{ color: '#374151', textDecoration: 'none' }}>Settings</a>
         <a href="/tools" style={{ color: '#374151', textDecoration: 'none' }}>Tools</a>
       </nav>
