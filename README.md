@@ -51,7 +51,7 @@ parse reasoning. Replay any email with one click.
 
 ---
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.com/template/bIms_s)
+<a href="https://railway.com/template/bIms_s" target="_blank"><img src="https://railway.app/button.svg" alt="Deploy on Railway"></a>
 
 > **True one-click.** The button opens a Railway template that provisions
 > PostgreSQL, wires `DATABASE_URL`, and deploys the app. No environment variables
@@ -102,166 +102,25 @@ flowchart LR
 
 ---
 
-## Prerequisites
-
-You need accounts with the following services before starting. You can create the
-accounts as you go through the wizard — the wizard links to each service's relevant
-page at the step where you need it.
-
-| Service | What it does in this app | When you need it |
-|---------|--------------------------|-----------------|
-| [Railway](https://railway.app/) | Hosts the app and the PostgreSQL database | Step 1 (deploy) |
-| [YNAB](https://www.ynab.com/) | The budget where transactions are created | Step 4 (token) |
-| [Anthropic](https://www.anthropic.com/) | Claude API — parses the email into structured transaction data | Step 6 (API key) |
-| [Pipedream](https://pipedream.com/) | Receives forwarded emails and passes them to the app | Step 8 (workflow) |
-| [Resend](https://resend.com/) | Sends you an email when something goes wrong | Step 7 (API key) |
-
-You do not need to set any environment variables manually — the wizard collects
-each value and stores it in the database. `DATABASE_URL` is set automatically
-when Railway provisions the PostgreSQL plugin. The session secret is
-auto-generated on first boot and stored in the database. No manual secret
-generation is required.
-
-See [Costs](#costs) for what each service charges.
-
----
-
 ## Install
-
-Follow these steps in order. Each step links to the place where you get the value
-or perform the action described. The wizard in the app guides you through each step
-and validates your inputs before moving on.
 
 ### Step 1 — Deploy to Railway
 
-1. Click the **Deploy on Railway** button at the top of this page. If you do not
-   have a Railway account yet, sign up (the GitHub login option is fastest).
-2. You land on the template preview screen titled **"YNAB Automation"**. It shows
-   two services — the app and a PostgreSQL database — and a **Deploy Now** button.
-3. Click **Deploy Now**. No environment variables are required — click straight
-   through. Railway starts building immediately.
-4. Wait for the service to show a green check (this
-   takes 2–4 minutes the first time).
-5. Click the app service to open its page. Under **Settings → Networking**, click
-   **"Generate Domain"** to create a public URL. Copy the URL — something like
-   `https://your-app.up.railway.app` — and open it in a browser.
+Click the **Deploy on Railway** button above. If you don't have a Railway account, sign up first (GitHub login is fastest). You'll land on the YNAB Automation template preview showing the app and a PostgreSQL database. Click **Deploy Now** — no environment variables to fill in.
 
-**If you get stuck at any step**, the [Troubleshooting](#troubleshooting) section
-covers the most common first-deploy issues.
+Wait for the service to show a green check (2–4 minutes the first time).
 
-### Step 2 — Open the Setup Wizard
+### Step 2 — Find your app URL
 
-Visiting the app URL for the first time shows the setup wizard. The wizard stores
-each value in the database as you go, so you can close the browser and return later
-— it will resume where you left off.
+Once the deploy is green, click the app service name in your Railway project. The public URL is shown at the top of the service page (it looks like `https://something.up.railway.app`). You can also find it under **Settings → Networking**. Copy the URL.
 
-### Step 3 — Admin Password (Wizard Step 1)
+### Step 3 — Open the app and set up
 
-Choose a password for the admin interface. This is the password you will use to log
-in to the dashboard each time. Pick something you will remember; you can change it
-later from the Settings page.
+Open the URL in a browser. The app starts on a "set your password" screen — this is the setup wizard. The wizard walks you through connecting your YNAB budget, Anthropic API key, Resend API key, and Pipedream inbound address one step at a time, with direct links to each service at the step where you need it.
 
-### Step 4 — YNAB Personal Access Token (Wizard Step 2)
+**If you get stuck**, the [Troubleshooting](#troubleshooting) section covers the most common first-deploy issues.
 
-A personal access token is a long string that gives the app read/write access to your
-YNAB budget. You generate one in your YNAB account settings.
-
-1. Open [YNAB Developer Settings](https://app.ynab.com/settings/developer) in a
-   new tab.
-2. Click **New Token**, give it a name (e.g. "Railway automation"), and click
-   **Generate**.
-3. Copy the token — YNAB will only show it once.
-4. Paste it into the wizard and click Next.
-
-### Step 5 — Budget and Account (Wizard Step 3)
-
-After you enter a valid YNAB token, the wizard loads your budgets and accounts from
-the YNAB API. Select the budget you want transactions to appear in, then select the
-specific account (e.g. "Visa Checking").
-
-If the dropdowns show an error, your personal access token from step 4 may be
-incorrect. Go back and re-enter it.
-
-### Step 6 — Anthropic API Key (Wizard Step 4)
-
-The Anthropic API key allows the app to call Claude to parse your email text. API
-keys are account credentials — treat them like a password.
-
-1. Open the [Anthropic Console API Keys page](https://console.anthropic.com/settings/keys)
-   in a new tab.
-2. Click **Create Key**, give it a name, and copy the key.
-3. Paste it into the wizard and click Next.
-
-Note: you will need to add a credit card to your Anthropic account to activate API
-access. See [Costs](#costs) for expected usage.
-
-### Step 7 — Resend API Key (Wizard Step 5)
-
-Resend sends you an email when the app encounters an error — for example, if Claude
-cannot parse an email or YNAB rejects a transaction. Without this key the app still
-works, but errors are silent.
-
-1. Open [Resend API Keys](https://resend.com/api-keys) in a new tab.
-2. Click **Create API Key**, name it, and copy it.
-3. Paste it into the wizard and click Next.
-
-### Step 8 — Pipedream Inbound Email (Wizard Step 6)
-
-Pipedream is the service that receives your forwarded emails and passes them to the
-app. In this step you create a Pipedream workflow and paste the inbound email address
-it gives you.
-
-1. Open [Pipedream](https://pipedream.com) and sign in or create a free account.
-2. Click **New Project** (or go directly to **Workflows**) and create a new workflow.
-3. When asked for a trigger, choose **Email**. Pipedream generates a unique inbound
-   email address for this workflow — something like
-   `incoming@mhtr.m.pipedream.net`. This is the address you will forward emails to.
-4. Add a step to the workflow. Choose **HTTP / Webhook** from the step library (it may
-   be listed as "Send HTTP Request").
-   - Set the method to **POST**.
-   - Set the URL to your Railway app's webhook URL:
-     ```
-     https://your-app-name.up.railway.app/api/webhook
-     ```
-     Replace `your-app-name` with the actual subdomain shown in your Railway dashboard.
-   - Under the request body, choose "Use entire trigger event body" or "Pass raw body
-     as-is" — the exact wording varies by Pipedream version, but the goal is to send
-     the full email payload from the trigger to your app.
-5. Click **Deploy** to activate the Pipedream workflow.
-6. Copy the inbound email address shown on the Email trigger step.
-7. Paste that email address into the wizard field and click **Finish Setup**.
-
-The Pipedream inbound address is also stored in Settings after the wizard completes,
-in case you need to refer back to it. It is the address you will add to your email
-forwarding rules in Step 10.
-
-### Step 9 — Finish Setup
-
-Clicking Finish Setup saves all your settings and marks the wizard as complete. The
-app redirects you to the dashboard. From here you can view the Activity Log, adjust
-settings at any time, and replay past emails if something went wrong the first time
-through.
-
-<details>
-<summary>See the install wizard screenshots</summary>
-
-![Wizard step 1 — set admin password](docs/images/wizard-step-1.png)
-
-![Wizard step 2 — YNAB personal access token](docs/images/wizard-step-2.png)
-
-![Wizard step 3 — choose budget and account](docs/images/wizard-step-3.png)
-
-![Wizard step 4 — Anthropic API key](docs/images/wizard-step-4.png)
-
-![Wizard step 5 — Resend API key](docs/images/wizard-step-5.png)
-
-![Wizard step 6 — Pipedream inbound email address](docs/images/wizard-step-6.png)
-
-![Wizard done — setup complete](docs/images/wizard-done.png)
-
-</details>
-
-### Step 10 — Set Up Email Forwarding
+### After Setup — Set Up Email Forwarding
 
 Now tell your email client to automatically forward order confirmation emails to the
 Pipedream inbound address you entered in Step 8.
@@ -304,7 +163,7 @@ Each forwarded email is processed independently. Forwarding the same email twice
 is safe — the app deduplicates by message ID, so the transaction will only be
 created once.
 
-### Step 11 — Send a Test Email
+### After Setup — Send a Test Email
 
 Forward any real order confirmation email to the Pipedream address manually. Within
 60 seconds, open the Activity Log in your dashboard. You should see one new entry:
