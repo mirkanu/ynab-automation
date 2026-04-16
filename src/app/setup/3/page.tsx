@@ -218,7 +218,7 @@ export default function SetupStep3() {
       <p style={S.stepLabel}>Step 3 of 6</p>
       <h1 style={S.heading}>YNAB Budget &amp; Account</h1>
       <p style={S.why}>
-        Tell the app which YNAB budget and account to create Amazon transactions in.
+        Tell the app which YNAB budget and account to create transactions in.
       </p>
 
       <div style={S.fieldRow}>

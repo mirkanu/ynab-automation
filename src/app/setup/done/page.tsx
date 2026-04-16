@@ -71,7 +71,7 @@ export default async function SetupDone() {
       </span>
       <h1 style={S.heading}>You&apos;re all set!</h1>
       <p style={S.body}>
-        Forward an Amazon order confirmation email to{' '}
+        Forward an order confirmation email to{' '}
         <span style={S.email}>{emailDisplay}</span>{' '}
         and it will appear in your YNAB account within about 60 seconds.
       </p>
