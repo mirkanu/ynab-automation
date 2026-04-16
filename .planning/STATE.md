@@ -111,6 +111,11 @@ Decisions logged in PROJECT.md Key Decisions table.
 - [Phase 25-self-host-polish]: license-checker --production restricts scan to runtime deps; self-hosted Apache-2.0 attribution satisfied by node_modules LICENSE files
 - [Phase 25-self-host-polish]: Dedicated ynab-screenshots Railway project created for dummy-data screenshot capture — ynab-test-production not touched
 - [Phase 25-self-host-polish]: Wizard screenshots collected into single <details> block at end of Step 9 — all 7 images accessible, text instructions remain visible outside collapsible
+- [Quick-7]: IRON_SESSION_SECRET auto-generated at runtime and cached in DB Setting table — env var is optional override only
+- [Quick-7]: Railway template uses official postgres:16 with volume at /var/lib/postgresql (parent, not /data) so default PGDATA works without env var
+- [Quick-7]: DATABASE_URL on ynab-app uses Railway reference vars (${{Postgres.POSTGRES_PASSWORD}}, etc.) — auto-wired on deploy
+- [Quick-7]: RESET_PASSWORD=true env var clears ADMIN_PASSWORD + WIZARD_COMPLETE via /api/setup/reset, re-triggers wizard step 1
+- [Quick-7]: Railway template code bIms_s — verified zero required fields; true one-click deploy
 
 ### Pending Todos
 
@@ -126,10 +131,10 @@ None yet. Next: `/gsd:plan-phase 20`.
 
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
-| 7 | Zero-config Railway deploy | 2026-04-16 | 98458fc | [7-zero-config-railway-deploy](./quick/7-zero-config-railway-deploy/) |
+| 7 | Zero-config Railway deploy | 2026-04-16 | bc2aa41 | [7-zero-config-railway-deploy](./quick/7-zero-config-railway-deploy/) |
 
 ## Session Continuity
 
-Last session: 2026-04-16T09:18:16.032Z
-Stopped at: Completed quick-7 zero-config-railway-deploy
-Resume file: None
+Last session: 2026-04-16
+Stopped at: Quick-7 complete — zero-config template deployed and verified (bIms_s)
+Resume file: .planning/phases/25-self-host-polish/.continue-here.md
