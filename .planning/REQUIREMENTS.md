@@ -14,7 +14,7 @@ Requirements for v6.2 milestone.
 ### Settings Restructure
 
 - [x] **NAV-01**: Settings page split into two nav items: "Rules" (sender routing, currency routing) and "Settings" (API keys, YNAB connection, admin password)
-- [ ] **NAV-02**: Test Mode toggle moved from Settings to Tools page
+- [x] **NAV-02**: Test Mode toggle moved from Settings to Tools page
 
 ### Forwarding Address Visibility
 
@@ -42,7 +42,7 @@ Deferred to future release.
 |-------------|-------|--------|
 | LABEL-01 | Phase 27 | Complete |
 | NAV-01 | Phase 27 | Complete |
-| NAV-02 | Phase 27 | Pending |
+| NAV-02 | Phase 27 | Complete |
 | FWD-01 | Phase 28 | Pending |
 | FWD-02 | Phase 28 | Pending |
 
