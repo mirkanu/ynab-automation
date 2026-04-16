@@ -1,26 +1,50 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Test that sessionOptions has the correct shape
-describe('sessionOptions', () => {
+// Test that getSessionOptions() returns the correct shape
+describe('getSessionOptions', () => {
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
   it('uses admin_session as cookieName', async () => {
-    const { sessionOptions } = await import('./admin-session');
-    expect(sessionOptions.cookieName).toBe('admin_session');
+    vi.mock('@/lib/settings', () => ({
+      getSetting: vi.fn().mockResolvedValue('test-secret-value-32-bytes-long!!'),
+      saveSettings: vi.fn().mockResolvedValue(1),
+    }));
+    const { getSessionOptions } = await import('./admin-session');
+    const opts = await getSessionOptions();
+    expect(opts.cookieName).toBe('admin_session');
   });
 
   it('sets httpOnly on the cookie', async () => {
-    const { sessionOptions } = await import('./admin-session');
-    expect(sessionOptions.cookieOptions?.httpOnly).toBe(true);
+    vi.mock('@/lib/settings', () => ({
+      getSetting: vi.fn().mockResolvedValue('test-secret-value-32-bytes-long!!'),
+      saveSettings: vi.fn().mockResolvedValue(1),
+    }));
+    const { getSessionOptions } = await import('./admin-session');
+    const opts = await getSessionOptions();
+    expect(opts.cookieOptions?.httpOnly).toBe(true);
   });
 
   it('sets sameSite to lax', async () => {
-    const { sessionOptions } = await import('./admin-session');
-    expect(sessionOptions.cookieOptions?.sameSite).toBe('lax');
+    vi.mock('@/lib/settings', () => ({
+      getSetting: vi.fn().mockResolvedValue('test-secret-value-32-bytes-long!!'),
+      saveSettings: vi.fn().mockResolvedValue(1),
+    }));
+    const { getSessionOptions } = await import('./admin-session');
+    const opts = await getSessionOptions();
+    expect(opts.cookieOptions?.sameSite).toBe('lax');
   });
 
   it('sets secure based on NODE_ENV, not hardcoded true', async () => {
-    const { sessionOptions } = await import('./admin-session');
+    vi.mock('@/lib/settings', () => ({
+      getSetting: vi.fn().mockResolvedValue('test-secret-value-32-bytes-long!!'),
+      saveSettings: vi.fn().mockResolvedValue(1),
+    }));
+    const { getSessionOptions } = await import('./admin-session');
+    const opts = await getSessionOptions();
     const expected = process.env.NODE_ENV === 'production';
-    expect(sessionOptions.cookieOptions?.secure).toBe(expected);
+    expect(opts.cookieOptions?.secure).toBe(expected);
   });
 });
 

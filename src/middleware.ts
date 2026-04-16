@@ -11,6 +11,16 @@ import type { NextRequest } from 'next/server'
  * perform the real check.
  */
 export function middleware(request: NextRequest) {
+  // RESET_PASSWORD guard — redirect to reset route which clears DB credentials.
+  // Checked at the very top, before any session logic.
+  if (
+    process.env.RESET_PASSWORD === 'true' &&
+    !request.nextUrl.pathname.startsWith('/api/')
+  ) {
+    const resetUrl = new URL('/api/setup/reset', request.url)
+    return NextResponse.redirect(resetUrl)
+  }
+
   // Forward pathname so server components (e.g. setup layout) can read it
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set('x-pathname', request.nextUrl.pathname)
