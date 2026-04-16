@@ -9,7 +9,7 @@ Requirements for v6.2 milestone.
 
 ### UI Labels
 
-- [ ] **LABEL-01**: Wizard step 3 and setup/done page use generic wording ("transactions") instead of "Amazon transactions"
+- [x] **LABEL-01**: Wizard step 3 and setup/done page use generic wording ("transactions") instead of "Amazon transactions"
 
 ### Settings Restructure
 
@@ -40,7 +40,7 @@ Deferred to future release.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LABEL-01 | Phase 27 | Pending |
+| LABEL-01 | Phase 27 | Complete |
 | NAV-01 | Phase 27 | Pending |
 | NAV-02 | Phase 27 | Pending |
 | FWD-01 | Phase 28 | Pending |

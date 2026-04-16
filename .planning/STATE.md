@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v6.2
-milestone_name: Settings & UX Polish
-status: roadmapped
-stopped_at: Roadmap created for v6.2 — ready for phase planning
-last_updated: "2026-04-16"
-last_activity: 2026-04-16 — v6.2 roadmap created (Phases 27-28)
+milestone: v6.0
+milestone_name: Single-Tenant Rollback
+status: planning
+stopped_at: Completed 27-01-PLAN.md
+last_updated: "2026-04-16T15:42:51.665Z"
+last_activity: 2026-04-16 — Roadmap created for v6.2
 progress:
-  total_phases: 2
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_phases: 9
+  completed_phases: 7
+  total_plans: 29
+  completed_plans: 27
   percent: 0
 ---
 
@@ -145,6 +145,7 @@ Decisions logged in PROJECT.md Key Decisions table.
 - FWD-01 and FWD-02 isolated in Phase 28 — both are about forwarding address surfacing; dashboard card and wizard done page can be built and tested together
 - Phase 28 depends on Phase 27 because nav restructure must be stable before modifying dashboard layout
 - No git push until user manually tests at production — local testing is the gate for each phase
+- [Phase 27-settings-restructure-and-label-cleanup]: Two JSX string literals replaced in wizard step 3 and setup/done; no logic, imports, or structure changed
 
 ### Pending Todos
 
@@ -162,6 +163,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-16
-Stopped at: v6.2 roadmap created — Phases 27 and 28 defined
+Last session: 2026-04-16T15:42:51.657Z
+Stopped at: Completed 27-01-PLAN.md
 Resume file: None
