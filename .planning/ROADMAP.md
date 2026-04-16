@@ -246,5 +246,5 @@ Note: Changes stay local until user manually tests at production. No git push un
 | 24. Test Suite Cleanup & Self-Host Docs | v6.0 | 3/4 | Complete | 2026-04-16 |
 | 25. Self-Host Polish | v6.0 | 3/4 | Complete | 2026-04-16 |
 | 26. README & Onboarding Polish | v6.1 | 1/1 | Complete | 2026-04-16 |
-| 27. Settings Restructure & Label Cleanup | 3/3 | Complete   | 2026-04-16 | — |
+| 27. Settings Restructure & Label Cleanup | 3/3 | Complete    | 2026-04-16 | — |
 | 28. Forwarding Address Prominence | v6.2 | 0/TBD | Not started | — |
