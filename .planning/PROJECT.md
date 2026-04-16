@@ -14,21 +14,17 @@ v5.0 Multi-Tenant SaaS is live at https://ynab-test-production.up.railway.app. U
 
 **However**: the multi-tenant machinery is overkill for the actual user base (one household). The next milestone walks it back.
 
-## Current Milestone: v6.0 Single-Tenant Rollback
+## Current Milestone: v6.1 README & Onboarding Polish
 
-**Goal:** Ship a free open-source self-hosted version of the YNAB automation on GitHub with a one-click Railway deploy button. Strip multi-tenant machinery, restore simpler single-user config (YNAB Personal Access Token, iron-session admin password, DB-backed settings), and add a first-install wizard that walks non-programmers through getting each API key.
+**Goal:** Make the README sell the problem clearly and get users from "clicked Deploy" to "set your password" with minimal instructions. Remove verbose per-step wizard docs (the wizard is self-explanatory). Clarify the domain discovery step since Railway auto-generates it.
 
-**Target user:** YNAB users who aren't programmers, self-hosting on Railway.
+**Target user:** YNAB users who aren't programmers, evaluating whether to self-host.
 
 **Target features:**
-- iron-session single admin password (restore v4.0 pattern)
-- YNAB Personal Access Token (restore pre-v5.0 pattern, drop OAuth)
-- First-install wizard with step-by-step instructions per API key (YNAB PAT, Claude, Resend, Pipedream, admin password)
-- Settings page editable for all API keys (YNAB PAT, Claude key, Resend key, Pipedream webhook, admin password)
-- Preserve activity log, sender rules, currency rules, test mode, replay tool
-- Data-preserving migration (drop Auth.js tables, drop userId columns, drop RLS)
-- Delete dead Phase 18 code (/api/email/inbound, forwarding address lib)
-- README + Railway deploy button + wizard walkthrough
+- README rewrite: clear problem statement (YNAB auto-categorizes by payee, but multi-category payees like Amazon need manual email receipt lookup)
+- Deploy button opens in new tab (target="_blank")
+- Install instructions truncated: only cover deploy → find URL → set password (wizard handles the rest)
+- Simplify domain discovery step (domain is auto-generated, user just needs to find it in Railway UI)
 
 ## Requirements
 
@@ -63,13 +59,10 @@ v5.0 Multi-Tenant SaaS is live at https://ynab-test-production.up.railway.app. U
 
 <!-- Current scope. Building toward these. -->
 
-- [ ] Schema rollback migration (preserve data)
-- [ ] iron-session admin auth
-- [ ] YNAB Personal Access Token configuration
-- [ ] Settings page editable for all API keys
-- [ ] First-install wizard for non-programmers
-- [ ] Dead code removal (Phase 18 email path, Auth.js)
-- [ ] README + Railway deploy button
+- [ ] README problem statement rewrite (YNAB payee categorization gap)
+- [ ] Deploy button opens in new tab
+- [ ] Install instructions simplified to deploy → find URL → set password
+- [ ] Domain discovery step simplified
 
 ### Out of Scope
 
@@ -157,4 +150,4 @@ Phases: 16 (User Accounts + RLS), 17 (YNAB OAuth + encrypted tokens), 18 (per-us
 
 ---
 
-*Last updated: 2026-04-10 after v6.0 milestone started*
+*Last updated: 2026-04-16 after v6.1 milestone started*

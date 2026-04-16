@@ -1,38 +1,38 @@
 ---
 gsd_state_version: 1.0
-milestone: v6.0
-milestone_name: Single-Tenant Rollback
-status: complete
-stopped_at: Completed quick-7 zero-config-railway-deploy
-last_updated: "2026-04-16T09:18:16.049Z"
-last_activity: 2026-04-16 — Quick task 7: zero-config Railway deploy (auto-gen IRON_SESSION_SECRET, password generator, RESET_PASSWORD recovery)
+milestone: v6.1
+milestone_name: README & Onboarding Polish
+status: defining
+stopped_at: Defining requirements for v6.1
+last_updated: "2026-04-16"
+last_activity: 2026-04-16 — v6.0 milestone closed, v6.1 started
 progress:
-  total_phases: 6
-  completed_phases: 4
-  total_plans: 25
-  completed_plans: 23
-  percent: 60
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Amazon to YNAB Automation — Project State
 
-**Updated:** 2026-04-10
+**Updated:** 2026-04-16
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-10)
+See: .planning/PROJECT.md (updated 2026-04-16)
 
 **Core value:** Forwarded order confirmation email → YNAB transaction, fully automated, with zero per-transaction effort.
-**Current focus:** v6.0 Single-Tenant Rollback — Phase 22 complete; Phase 23 next
+**Current focus:** v6.1 README & Onboarding Polish — simplify README, better problem statement, streamlined install instructions
 
 ## Current Position
 
-Phase: 23 (First-Install Wizard & Route State Machine) — not yet planned
+Phase: Not started (defining requirements)
 Plan: —
-Status: Phase 22 verified live; ready for `/gsd:plan-phase 23` (or `/gsd:discuss-phase 23` first)
-Last activity: 2026-04-11 — Phase 22 VERIFICATION.md written, all 5 success criteria passed
+Status: Defining requirements
+Last activity: 2026-04-16 — Milestone v6.1 started
 
-Progress: [██████░░░░] 60% (3/5 phases complete: 20, 21, 22)
+Progress: [░░░░░░░░░░] 0%
 
 ## Roadmap Summary (v6.0)
 
