@@ -211,4 +211,4 @@ Issues and pull requests welcome.
 
 ---
 
-*Built with [Claude Code](https://claude.ai/claude-code) using [GSD](https://github.com/punkpeye/get-shit-done).*
+*Built with [Claude Code](https://claude.ai/claude-code) using [GSD](https://github.com/gsd-build/get-shit-done).*
