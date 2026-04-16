@@ -8,6 +8,7 @@
 - ✅ **v4.0** — Admin Backend UI (2026-03-28) → [archive](.planning/milestones/v4.0-ROADMAP.md)
 - ✅ **v5.0** — Multi-Tenant SaaS (2026-04-10) → [archive](.planning/milestones/v5.0-ROADMAP.md)
 - ✅ **v6.0** — Single-Tenant Rollback (2026-04-16)
+- 🔄 **v6.1** — README & Onboarding Polish (in progress)
 
 ## Phases
 
@@ -52,6 +53,10 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
 - [x] **Phase 23: First-Install Wizard & Route State Machine** — completed 2026-04-11
 - [x] **Phase 24: Test Suite Cleanup & Self-Host Docs** — completed 2026-04-16
 - [x] **Phase 25: Self-Host Polish** — completed 2026-04-16
+
+### 🔄 v6.1 README & Onboarding Polish (Phase 26)
+
+- [ ] **Phase 26: README & Onboarding Polish** — in progress
 
 ## Phase Details
 
@@ -169,6 +174,17 @@ Plans:
 - [ ] 25-03-PLAN.md — Feature screenshots via disposable local instance + README Features section rewrite + demote wizard screenshots to collapsible
 - [ ] 25-04-PLAN.md — Human-verify checkpoint: publish Railway template via UI walkthrough, update button URL, incognito one-click dry-run
 
+### Phase 26: README & Onboarding Polish
+**Milestone:** v6.1
+**Goal:** A non-programmer evaluating self-hosting reads a README that immediately explains the problem being solved, clicks Deploy and lands in a new tab, then follows three concise install steps — deploy, find URL, set password — with the wizard handling everything after that.
+**Depends on:** Phase 25 (README and Railway template exist; this phase refines them)
+**Requirements:** README-01, README-02, README-03, README-04, README-05
+**Success Criteria** (what must be TRUE):
+  1. A reader who has never heard of this project understands the specific problem it solves (YNAB auto-categorizes by payee, but multi-category payees like Amazon require manual email receipt cross-referencing) within the first paragraph of the README — without reading any other section.
+  2. Clicking the Deploy button opens Railway in a new browser tab, and the Install section contains exactly three steps (click deploy, wait for green check and find the auto-generated URL in Railway's UI, open URL and set password) with no wizard instructions beyond "the wizard walks you through the rest."
+  3. The README contains no Steps 2-9 wizard walkthrough text — the wizard UI is the only guide for post-deploy configuration.
+**Plans:** TBD
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -184,7 +200,9 @@ Plans:
 | 18. Per-User Inbound Email | v5.0 | 5/5 | Complete | 2026-03-30 |
 | 19. Dashboard, Onboarding & Account Management | v5.0 | 5/5 | Complete | 2026-03-30 |
 | 20. Schema Rollback Migration | v6.0 | 4/4 | Complete | 2026-04-10 |
-| 21. iron-session Admin Auth Restoration | 5/5 | Complete    | 2026-04-10 | — |
-| 22. YNAB PAT & Settings API Keys | 3/4 | In Progress|  | — |
-| 23. First-Install Wizard & Route State Machine | 3/4 | Complete    | 2026-04-11 | — |
-| 24. Test Suite Cleanup & Self-Host Docs | 3/4 | In Progress|  | — |
+| 21. iron-session Admin Auth Restoration | v6.0 | 5/5 | Complete | 2026-04-10 |
+| 22. YNAB PAT & Settings API Keys | v6.0 | 3/4 | Complete | 2026-04-11 |
+| 23. First-Install Wizard & Route State Machine | v6.0 | 4/4 | Complete | 2026-04-11 |
+| 24. Test Suite Cleanup & Self-Host Docs | v6.0 | 3/4 | Complete | 2026-04-16 |
+| 25. Self-Host Polish | v6.0 | 3/4 | Complete | 2026-04-16 |
+| 26. README & Onboarding Polish | v6.1 | 0/? | Not started | — |

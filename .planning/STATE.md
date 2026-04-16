@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v6.1
 milestone_name: README & Onboarding Polish
-status: defining
-stopped_at: Defining requirements for v6.1
+status: roadmapped
+stopped_at: Phase 26 roadmapped, ready for planning
 last_updated: "2026-04-16"
-last_activity: 2026-04-16 — v6.0 milestone closed, v6.1 started
+last_activity: 2026-04-16 — v6.1 roadmap created (Phase 26)
 progress:
-  total_phases: 0
+  total_phases: 1
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -27,14 +27,22 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 26 — README & Onboarding Polish
 Plan: —
-Status: Defining requirements
-Last activity: 2026-04-16 — Milestone v6.1 started
+Status: Not started (roadmapped, ready for planning)
+Last activity: 2026-04-16 — Roadmap created for v6.1
 
 Progress: [░░░░░░░░░░] 0%
 
-## Roadmap Summary (v6.0)
+## Roadmap Summary (v6.1)
+
+| Phase | Name | Requirements | Depends On |
+|-------|------|--------------|------------|
+| 26 | README & Onboarding Polish | README-01/02/03/04/05 | Phase 25 |
+
+**Coverage:** 5/5 v1 requirements mapped (100%).
+
+## Roadmap Summary (v6.0, archived)
 
 | Phase | Name | Requirements | Depends On |
 |-------|------|--------------|------------|
@@ -43,8 +51,7 @@ Progress: [░░░░░░░░░░] 0%
 | 22 | YNAB PAT & Settings API Keys | YNAB-06/07/08/09, CONFIG-01/02/03/04/05, DASH-06, CLEAN-01 | 21 |
 | 23 | First-Install Wizard & Route State Machine | WIZ-01/02/03/04/05, DASH-08, CLEAN-03 | 22 |
 | 24 | Test Suite Cleanup & Self-Host Docs | CLEAN-04, DOCS-01/02/03 | 23 |
-
-**Coverage:** 32/32 v1 requirements mapped (100%).
+| 25 | Self-Host Polish | LEGAL-01/02/03, POLISH-01/02 | 24 |
 
 ## Accumulated Context
 
@@ -117,15 +124,17 @@ Decisions logged in PROJECT.md Key Decisions table.
 - [Quick-7]: RESET_PASSWORD=true env var clears ADMIN_PASSWORD + WIZARD_COMPLETE via /api/setup/reset, re-triggers wizard step 1
 - [Quick-7]: Railway template code bIms_s — verified zero required fields; true one-click deploy
 
+**v6.1 roadmap decisions (2026-04-16):**
+- Single phase (26) for all 5 README-only requirements — coarse granularity, natural delivery boundary, no code changes involved
+- All requirements (README-01 through README-05) target the same file (README.md); bundling avoids partial-edit churn
+
 ### Pending Todos
 
-None yet. Next: `/gsd:plan-phase 20`.
+None. Next: `/gsd:plan-phase 26`.
 
 ### Blockers/Concerns
 
-- Production deployment has live data — Phase 20 migration must preserve it (pg_dump backup before running)
-- 10 failing tests from v5.0 era — bundled into Phase 24 cleanup
-- Test mode silent-wiring bug (v5.0 lesson) — Phase 22 success criterion 4 explicitly verifies test mode reaches the active `/api/webhook` handler
+None.
 
 ### Quick Tasks Completed
 
@@ -136,5 +145,5 @@ None yet. Next: `/gsd:plan-phase 20`.
 ## Session Continuity
 
 Last session: 2026-04-16
-Stopped at: v6.0 milestone COMPLETE — all phases verified, template deployed, user approved
+Stopped at: v6.1 roadmap created — Phase 26 defined, ready for plan-phase
 Resume file: None
