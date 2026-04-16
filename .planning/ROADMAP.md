@@ -7,7 +7,7 @@
 - ✅ **v3.0** — Generic & publishable + setup wizard (2026-03-26) → [archive](.planning/milestones/v3.0-ROADMAP.md)
 - ✅ **v4.0** — Admin Backend UI (2026-03-28) → [archive](.planning/milestones/v4.0-ROADMAP.md)
 - ✅ **v5.0** — Multi-Tenant SaaS (2026-04-10) → [archive](.planning/milestones/v5.0-ROADMAP.md)
-- 🚧 **v6.0** — Single-Tenant Rollback (in progress)
+- ✅ **v6.0** — Single-Tenant Rollback (2026-04-16)
 
 ## Phases
 
@@ -44,14 +44,14 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
 
 </details>
 
-### 🚧 v6.0 Single-Tenant Rollback (Phases 20-25)
+### ✅ v6.0 Single-Tenant Rollback (Phases 20-25) — SHIPPED 2026-04-16
 
-- [x] **Phase 20: Schema Rollback Migration** — Drop multi-tenant schema (Auth.js, userId, RLS, Phase 18 tables) while preserving activity log, settings, and routing rules (completed 2026-04-10)
-- [x] **Phase 21: iron-session Admin Auth Restoration** — Replace Auth.js with single-admin iron-session auth and delete all Auth.js code paths (completed 2026-04-10)
-- [ ] **Phase 22: YNAB PAT & Settings API Keys** — Swap YNAB OAuth for a DB-stored Personal Access Token and surface all API keys as editable settings
-- [x] **Phase 23: First-Install Wizard & Route State Machine** — Add a non-programmer multi-step setup wizard and unify root routing based on install/auth state (completed 2026-04-11)
-- [ ] **Phase 24: Test Suite Cleanup & Self-Host Docs** — Fix or delete stale v5.0 tests and ship README + Railway deploy button for non-programmers
-- [ ] **Phase 25: Self-Host Polish — Legal, Screenshots, Published Railway Template** — Plain-language no-warranty + AI-generated disclosure in README, per-dependency license audit confirming no GPL contamination, admin-feature screenshots (dashboard/settings/logs) seeded from a disposable local instance, and a real published Railway template for true one-click deploy
+- [x] **Phase 20: Schema Rollback Migration** — completed 2026-04-10
+- [x] **Phase 21: iron-session Admin Auth Restoration** — completed 2026-04-10
+- [x] **Phase 22: YNAB PAT & Settings API Keys** — completed 2026-04-11
+- [x] **Phase 23: First-Install Wizard & Route State Machine** — completed 2026-04-11
+- [x] **Phase 24: Test Suite Cleanup & Self-Host Docs** — completed 2026-04-16
+- [x] **Phase 25: Self-Host Polish** — completed 2026-04-16
 
 ## Phase Details
 

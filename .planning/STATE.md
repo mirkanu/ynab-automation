@@ -2,7 +2,7 @@
 gsd_state_version: 1.0
 milestone: v6.0
 milestone_name: Single-Tenant Rollback
-status: verifying
+status: complete
 stopped_at: Completed quick-7 zero-config-railway-deploy
 last_updated: "2026-04-16T09:18:16.049Z"
 last_activity: 2026-04-16 — Quick task 7: zero-config Railway deploy (auto-gen IRON_SESSION_SECRET, password generator, RESET_PASSWORD recovery)
@@ -136,5 +136,5 @@ None yet. Next: `/gsd:plan-phase 20`.
 ## Session Continuity
 
 Last session: 2026-04-16
-Stopped at: Quick-7 complete — zero-config template deployed and verified (bIms_s)
-Resume file: .planning/phases/25-self-host-polish/.continue-here.md
+Stopped at: v6.0 milestone COMPLETE — all phases verified, template deployed, user approved
+Resume file: None
