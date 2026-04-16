@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v6.1
-milestone_name: README & Onboarding Polish
-status: complete
-stopped_at: v6.1 milestone complete
+milestone: v6.2
+milestone_name: Settings & UX Polish
+status: defining
+stopped_at: Defining requirements for v6.2
 last_updated: "2026-04-16"
-last_activity: 2026-04-16 — v6.1 complete (README rewrite, zero-config deploy)
+last_activity: 2026-04-16 — v6.2 milestone started
 progress:
-  total_phases: 1
-  completed_phases: 1
-  total_plans: 1
-  completed_plans: 1
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Amazon to YNAB Automation — Project State
