@@ -22,6 +22,21 @@ automatically, within seconds.
 > AI-assisted software delivery. You should evaluate whether that matches your risk
 > tolerance before running it against real money.
 
+<a href="https://railway.com/template/bIms_s" target="_blank"><img src="https://railway.app/button.svg" alt="Deploy on Railway"></a>
+
+> **True one-click.** The button opens a Railway template that provisions
+> PostgreSQL, wires `DATABASE_URL`, and deploys the app. No environment variables
+> to fill in — click **Deploy Now** and it works. The session secret is
+> auto-generated and stored in the database on first boot. Every other value —
+> API keys, YNAB token, Pipedream address, admin password — is collected by the
+> setup wizard after the app is running.
+
+---
+
+**Contents:** [Features](#features) · [What This Is](#what-this-is) · [How It Works](#how-it-works) · [Install](#install) · [Costs](#costs) · [Troubleshooting](#troubleshooting) · [Self-Hosting Note](#self-hosting-note)
+
+---
+
 ## Features
 
 ### Dashboard
@@ -48,17 +63,6 @@ transactions.
 Every forwarded email gets a row: green for a created YNAB transaction, red for
 parse or API errors, blue for test mode. Expand any row to see Claude's full
 parse reasoning. Replay any email with one click.
-
----
-
-<a href="https://railway.com/template/bIms_s" target="_blank"><img src="https://railway.app/button.svg" alt="Deploy on Railway"></a>
-
-> **True one-click.** The button opens a Railway template that provisions
-> PostgreSQL, wires `DATABASE_URL`, and deploys the app. No environment variables
-> to fill in — click **Deploy Now** and it works. The session secret is
-> auto-generated and stored in the database on first boot. Every other value —
-> API keys, YNAB token, Pipedream address, admin password — is collected by the
-> setup wizard after the app is running.
 
 ---
 
