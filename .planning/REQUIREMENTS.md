@@ -40,17 +40,17 @@ Deferred to future release.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LABEL-01 | TBD | Pending |
-| NAV-01 | TBD | Pending |
-| NAV-02 | TBD | Pending |
-| FWD-01 | TBD | Pending |
-| FWD-02 | TBD | Pending |
+| LABEL-01 | Phase 27 | Pending |
+| NAV-01 | Phase 27 | Pending |
+| NAV-02 | Phase 27 | Pending |
+| FWD-01 | Phase 28 | Pending |
+| FWD-02 | Phase 28 | Pending |
 
 **Coverage:**
 - v1 requirements: 5 total
-- Mapped to phases: 0
-- Unmapped: 5
+- Mapped to phases: 5
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-16*
-*Last updated: 2026-04-16 after initial definition*
+*Last updated: 2026-04-16 after v6.2 roadmap creation (Phases 27-28)*

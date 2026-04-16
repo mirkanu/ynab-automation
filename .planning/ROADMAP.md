@@ -9,6 +9,7 @@
 - ✅ **v5.0** — Multi-Tenant SaaS (2026-04-10) → [archive](.planning/milestones/v5.0-ROADMAP.md)
 - ✅ **v6.0** — Single-Tenant Rollback (2026-04-16)
 - ✅ **v6.1** — README & Onboarding Polish (2026-04-16)
+- 🔄 **v6.2** — Settings & UX Polish (in progress)
 
 ## Phases
 
@@ -57,6 +58,11 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
 ### ✅ v6.1 README & Onboarding Polish (Phase 26) — SHIPPED 2026-04-16
 
 - [x] **Phase 26: README & Onboarding Polish** — completed 2026-04-16
+
+### 🔄 v6.2 Settings & UX Polish (Phases 27-28) — In Progress
+
+- [ ] **Phase 27: Settings Restructure & Label Cleanup** — not started
+- [ ] **Phase 28: Forwarding Address Prominence** — not started
 
 ## Phase Details
 
@@ -188,6 +194,32 @@ Plans:
 Plans:
 - [ ] 26-01-PLAN.md — Rewrite README opening, fix deploy button, simplify install to three steps
 
+### Phase 27: Settings Restructure & Label Cleanup
+**Milestone:** v6.2
+**Goal:** The admin UI navigation reflects what the pages actually contain — "Rules" holds routing config, "Settings" holds credentials, "Tools" holds operational toggles — and no page uses Amazon-specific language.
+**Depends on:** Phase 26 (v6.1 shipped; building on stable codebase)
+**Requirements:** LABEL-01, NAV-01, NAV-02
+**Success Criteria** (what must be TRUE):
+  1. Wizard step 3 and the setup/done page display generic wording ("transactions") with no mention of "Amazon" — verified by visiting `/setup/3` and `/setup/done` on the live app after changes are manually tested locally.
+  2. The sidebar/navigation shows three distinct items — "Rules", "Settings", and "Tools" — where "Rules" contains only sender routing and currency routing, "Settings" contains only API keys, YNAB connection, and admin password, and "Tools" contains the test mode toggle and replay tools.
+  3. Navigating to the "Tools" page shows the Test Mode toggle prominently; the toggle is absent from the "Settings" page.
+**Plans:** TBD
+
+Note: Changes stay local until user manually tests at production. No git push until user signs off.
+
+### Phase 28: Forwarding Address Prominence
+**Milestone:** v6.2
+**Goal:** The forwarding email address — the one piece of information the user needs every time they set up a new email rule — is impossible to miss on the dashboard and is the clear highlight of the wizard completion page.
+**Depends on:** Phase 27 (nav restructure complete; dashboard layout stable before adding prominent element)
+**Requirements:** FWD-01, FWD-02
+**Success Criteria** (what must be TRUE):
+  1. Opening the dashboard after login, the forwarding address is the first substantive element visible without scrolling — displayed in a visually distinct block (e.g. highlighted card or banner) above the stats section.
+  2. On the wizard done page (`/setup/done`), the forwarding address appears in a copy-to-clipboard component with a clear instruction explaining what to do with it (e.g. "Forward order confirmation emails to this address").
+  3. Clicking the copy button on either the dashboard or the wizard done page copies the address to the clipboard — verified manually on the live app after user testing.
+**Plans:** TBD
+
+Note: Changes stay local until user manually tests at production. No git push until user signs off.
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -208,4 +240,6 @@ Plans:
 | 23. First-Install Wizard & Route State Machine | v6.0 | 4/4 | Complete | 2026-04-11 |
 | 24. Test Suite Cleanup & Self-Host Docs | v6.0 | 3/4 | Complete | 2026-04-16 |
 | 25. Self-Host Polish | v6.0 | 3/4 | Complete | 2026-04-16 |
-| 26. README & Onboarding Polish | 1/1 | Complete    | 2026-04-16 | — |
+| 26. README & Onboarding Polish | v6.1 | 1/1 | Complete | 2026-04-16 |
+| 27. Settings Restructure & Label Cleanup | v6.2 | 0/TBD | Not started | — |
+| 28. Forwarding Address Prominence | v6.2 | 0/TBD | Not started | — |

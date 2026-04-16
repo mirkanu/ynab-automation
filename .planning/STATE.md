@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v6.2
 milestone_name: Settings & UX Polish
-status: defining
-stopped_at: Defining requirements for v6.2
+status: roadmapped
+stopped_at: Roadmap created for v6.2 — ready for phase planning
 last_updated: "2026-04-16"
-last_activity: 2026-04-16 — v6.2 milestone started
+last_activity: 2026-04-16 — v6.2 roadmap created (Phases 27-28)
 progress:
-  total_phases: 0
+  total_phases: 2
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -23,24 +23,33 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-16)
 
 **Core value:** Forwarded order confirmation email → YNAB transaction, fully automated, with zero per-transaction effort.
-**Current focus:** v6.1 README & Onboarding Polish — simplify README, better problem statement, streamlined install instructions
+**Current focus:** v6.2 Settings & UX Polish — restructure settings nav, remove Amazon-specific labels, make forwarding address prominent
 
 ## Current Position
 
-Phase: 26 — README & Onboarding Polish
+Phase: 27 — Settings Restructure & Label Cleanup
 Plan: —
 Status: Not started (roadmapped, ready for planning)
-Last activity: 2026-04-16 — Roadmap created for v6.1
+Last activity: 2026-04-16 — Roadmap created for v6.2
 
 Progress: [░░░░░░░░░░] 0%
 
-## Roadmap Summary (v6.1)
+## Roadmap Summary (v6.2)
+
+| Phase | Name | Requirements | Depends On |
+|-------|------|--------------|------------|
+| 27 | Settings Restructure & Label Cleanup | LABEL-01, NAV-01, NAV-02 | Phase 26 |
+| 28 | Forwarding Address Prominence | FWD-01, FWD-02 | Phase 27 |
+
+**Coverage:** 5/5 v1 requirements mapped (100%).
+
+**Workflow note:** All changes in this milestone stay local until user manually tests at production. No git push until user signs off.
+
+## Roadmap Summary (v6.1, archived)
 
 | Phase | Name | Requirements | Depends On |
 |-------|------|--------------|------------|
 | 26 | README & Onboarding Polish | README-01/02/03/04/05 | Phase 25 |
-
-**Coverage:** 5/5 v1 requirements mapped (100%).
 
 ## Roadmap Summary (v6.0, archived)
 
@@ -130,9 +139,16 @@ Decisions logged in PROJECT.md Key Decisions table.
 - [Phase 26]: Problem statement leads with YNAB payee-categorization pain point (Amazon multi-category example) rather than generic one-liner
 - [Phase 26]: Deploy button converted to HTML anchor with target='_blank'; Install reduced to 3 steps; Prerequisites table removed; Steps 10/11 renamed to After Setup
 
+**v6.2 roadmap decisions (2026-04-16):**
+- Two phases for 5 requirements — coarse granularity; natural split between nav/settings area (27) and dashboard/wizard area (28)
+- LABEL-01 bundled with NAV-01/NAV-02 in Phase 27 — all three touch wizard step 3 or settings-area pages; one code review, one test sweep
+- FWD-01 and FWD-02 isolated in Phase 28 — both are about forwarding address surfacing; dashboard card and wizard done page can be built and tested together
+- Phase 28 depends on Phase 27 because nav restructure must be stable before modifying dashboard layout
+- No git push until user manually tests at production — local testing is the gate for each phase
+
 ### Pending Todos
 
-None. Next: `/gsd:plan-phase 26`.
+None. Next: `/gsd:plan-phase 27`.
 
 ### Blockers/Concerns
 
@@ -146,6 +162,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-16T11:52:44.759Z
-Stopped at: Completed 26-01-PLAN.md
+Last session: 2026-04-16
+Stopped at: v6.2 roadmap created — Phases 27 and 28 defined
 Resume file: None
