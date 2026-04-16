@@ -123,7 +123,7 @@ Open the URL in a browser. The app starts on a "set your password" screen — th
 ### After Setup — Set Up Email Forwarding
 
 Now tell your email client to automatically forward order confirmation emails to the
-Pipedream inbound address you entered in Step 8.
+Pipedream inbound address from the setup wizard.
 
 **In Gmail:**
 
@@ -233,10 +233,10 @@ If you expect an error email but never receive one:
   requires domain verification before it will deliver email.
 - Check your spam folder.
 
-### The budget dropdown at Step 3 shows "could not load budgets"
+### The budget dropdown shows "could not load budgets"
 
-The YNAB personal access token entered in Step 2 is invalid or does not have access
-to any budgets. Go back to Step 2 and re-enter the token. Generate a new one from
+The YNAB personal access token is invalid or does not have access to any budgets.
+Go to Settings, re-enter the token, and save. Generate a new one from
 [YNAB Developer Settings](https://app.ynab.com/settings/developer) if needed.
 
 ### The app returns a 404 or 500 on every page
