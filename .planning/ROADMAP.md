@@ -203,7 +203,7 @@ Plans:
   1. Wizard step 3 and the setup/done page display generic wording ("transactions") with no mention of "Amazon" — verified by visiting `/setup/3` and `/setup/done` on the live app after changes are manually tested locally.
   2. The sidebar/navigation shows three distinct items — "Rules", "Settings", and "Tools" — where "Rules" contains only sender routing and currency routing, "Settings" contains only API keys, YNAB connection, and admin password, and "Tools" contains the test mode toggle and replay tools.
   3. Navigating to the "Tools" page shows the Test Mode toggle prominently; the toggle is absent from the "Settings" page.
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 
 Plans:
 - [ ] 27-01-PLAN.md — Replace Amazon-specific strings in wizard step 3 and setup/done
@@ -246,5 +246,5 @@ Note: Changes stay local until user manually tests at production. No git push un
 | 24. Test Suite Cleanup & Self-Host Docs | v6.0 | 3/4 | Complete | 2026-04-16 |
 | 25. Self-Host Polish | v6.0 | 3/4 | Complete | 2026-04-16 |
 | 26. README & Onboarding Polish | v6.1 | 1/1 | Complete | 2026-04-16 |
-| 27. Settings Restructure & Label Cleanup | 1/3 | In Progress|  | — |
+| 27. Settings Restructure & Label Cleanup | 2/3 | In Progress|  | — |
 | 28. Forwarding Address Prominence | v6.2 | 0/TBD | Not started | — |

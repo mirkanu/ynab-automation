@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v6.0
 milestone_name: Single-Tenant Rollback
 status: planning
-stopped_at: Completed 27-01-PLAN.md
-last_updated: "2026-04-16T15:42:51.665Z"
+stopped_at: Completed 27-02-PLAN.md
+last_updated: "2026-04-16T15:44:57.052Z"
 last_activity: 2026-04-16 — Roadmap created for v6.2
 progress:
   total_phases: 9
   completed_phases: 7
   total_plans: 29
-  completed_plans: 27
+  completed_plans: 28
   percent: 0
 ---
 
@@ -146,6 +146,8 @@ Decisions logged in PROJECT.md Key Decisions table.
 - Phase 28 depends on Phase 27 because nav restructure must be stable before modifying dashboard layout
 - No git push until user manually tests at production — local testing is the gate for each phase
 - [Phase 27-settings-restructure-and-label-cleanup]: Two JSX string literals replaced in wizard step 3 and setup/done; no logic, imports, or structure changed
+- [Phase 27-02]: Rules page imports SenderRulesSection and CurrencyRulesSection from ../settings/ — components stay co-located with their server actions, only rendering location changes
+- [Phase 27-02]: settings/page.tsx removes budgetId/connected reads entirely — not even passed through, since no consumers remain on that page after the split
 
 ### Pending Todos
 
@@ -163,6 +165,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-16T15:42:51.657Z
-Stopped at: Completed 27-01-PLAN.md
+Last session: 2026-04-16T15:44:57.043Z
+Stopped at: Completed 27-02-PLAN.md
 Resume file: None
