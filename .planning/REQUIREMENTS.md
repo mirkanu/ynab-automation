@@ -1,19 +1,25 @@
-# Requirements: YNAB Automation — v6.1 README & Onboarding Polish
+# Requirements: YNAB Automation — v6.2 Settings & UX Polish
 
 **Defined:** 2026-04-16
 **Core Value:** Forwarded order confirmation email → YNAB transaction, fully automated, with zero per-transaction effort.
 
 ## v1 Requirements
 
-Requirements for v6.1 milestone.
+Requirements for v6.2 milestone.
 
-### README Content
+### UI Labels
 
-- [x] **README-01**: README opening explains the specific problem: YNAB auto-categorizes by payee, but multi-category payees (e.g. Amazon) require manually cross-referencing email receipts — this tool eliminates that manual lookup
-- [x] **README-02**: Deploy button opens in a new browser tab (target="_blank")
-- [x] **README-03**: Install section covers only: click deploy → wait for green check → find your URL → open it → set password (wizard handles the rest)
-- [x] **README-04**: Remove verbose per-step wizard instructions (Steps 2-9) — wizard UI is self-explanatory
-- [x] **README-05**: Simplify domain discovery instruction — domain is auto-generated, user just needs to know where Railway shows it
+- [ ] **LABEL-01**: Wizard step 3 and setup/done page use generic wording ("transactions") instead of "Amazon transactions"
+
+### Settings Restructure
+
+- [ ] **NAV-01**: Settings page split into two nav items: "Rules" (sender routing, currency routing) and "Settings" (API keys, YNAB connection, admin password)
+- [ ] **NAV-02**: Test Mode toggle moved from Settings to Tools page
+
+### Forwarding Address Visibility
+
+- [ ] **FWD-01**: Dashboard shows the inbound email/forwarding address prominently — first thing the user sees, not buried in a card below stats
+- [ ] **FWD-02**: Wizard done page clearly highlights the forwarding address with copy-to-clipboard and explains what to do with it
 
 ## v2 Requirements
 
@@ -27,23 +33,23 @@ Deferred to future release.
 
 | Feature | Reason |
 |---------|--------|
-| Full wizard documentation in README | Wizard UI is self-explanatory; duplicating it in README adds maintenance burden |
-| Railway API integration for URL surfacing | Railway doesn't expose a post-deploy redirect or notification API |
+| Full Settings redesign / component library | Polish only — keep existing inline styles |
+| New dashboard widgets | Focus is on forwarding address prominence, not new features |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| README-01 | Phase 26 | Complete |
-| README-02 | Phase 26 | Complete |
-| README-03 | Phase 26 | Complete |
-| README-04 | Phase 26 | Complete |
-| README-05 | Phase 26 | Complete |
+| LABEL-01 | TBD | Pending |
+| NAV-01 | TBD | Pending |
+| NAV-02 | TBD | Pending |
+| FWD-01 | TBD | Pending |
+| FWD-02 | TBD | Pending |
 
 **Coverage:**
 - v1 requirements: 5 total
-- Mapped to phases: 5
-- Unmapped: 0 ✓
+- Mapped to phases: 0
+- Unmapped: 5
 
 ---
 *Requirements defined: 2026-04-16*
