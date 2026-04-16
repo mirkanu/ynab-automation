@@ -10,63 +10,9 @@ This app eliminates that lookup. Forward your order confirmation emails to a
 dedicated address — the app reads the receipt, extracts the details, and creates
 a YNAB transaction automatically within seconds.
 
-<a href="https://railway.com/template/bIms_s" target="_blank"><img src="https://railway.app/button.svg" alt="Deploy on Railway"></a>
-
-One click, no configuration. The button deploys the app and a database to your
-own Railway account. A setup wizard walks you through connecting everything.
-The whole process takes about 10 minutes.
-
 ---
 
-[What You Get](#what-you-get) · [How It Works](#how-it-works) · [What It Costs](#what-it-costs) · [Set Up](#set-up) · [Troubleshooting](#troubleshooting)
-
----
-
-## What You Get
-
-### Dashboard
-
-![Dashboard screenshot](docs/images/feature-dashboard.png)
-
-See what's happening at a glance — emails processed, success rate, and recent
-transactions. No need to open YNAB to check if things are working.
-
-### Settings
-
-![Settings screenshot](docs/images/feature-settings.png)
-
-Change any setting from the browser — YNAB connection, API keys, sender routing
-rules, currency routing. Flip test mode on to try things without creating real
-transactions.
-
-### Activity Log
-
-![Activity log screenshot](docs/images/feature-activity-log.png)
-
-Every forwarded email gets a row. Green means a transaction was created, red means
-something went wrong. Click any row to see exactly what happened. Replay any email
-with one click.
-
----
-
-## How It Works
-
-```mermaid
-flowchart LR
-    A[Your inbox] -->|Forward email| B[Pipedream]
-    B --> C[Your app on Railway]
-    C -->|Read email| D[Claude]
-    D -->|Amount · retailer · date| C
-    C -->|Create transaction| E[YNAB]
-```
-
-1. You set up an auto-forward rule in Gmail (or Outlook, Apple Mail) to send order
-   confirmation emails to a Pipedream address.
-2. The app uses Claude to read the email and extract the amount, retailer, and date.
-3. A transaction appears in your YNAB budget within seconds.
-
-The app runs on your own Railway account. Your data stays in your own database —
-nothing is shared with anyone beyond the API calls themselves.
+[What It Costs](#what-it-costs) · [Set Up](#set-up) · [What You Get](#what-you-get) · [How It Works](#how-it-works) · [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -93,9 +39,11 @@ The whole process takes about 10 minutes. You don't need to write any code.
 
 ### 1. Deploy to Railway
 
-Click the **Deploy on Railway** button at the top of this page. If you don't have
-a Railway account, sign up first (GitHub login is fastest). On the template page,
-click **Deploy Now** — there's nothing to fill in.
+<a href="https://railway.com/template/bIms_s" target="_blank"><img src="https://railway.app/button.svg" alt="Deploy on Railway"></a>
+
+Click the button above — it opens Railway in a new tab. If you don't have a Railway
+account, sign up first (GitHub login is fastest). On the template page, click
+**Deploy Now** — there's nothing to fill in.
 
 Wait for the green check (2–4 minutes).
 
@@ -145,6 +93,54 @@ Repeat for each retailer. Common senders:
 Forward any real order confirmation email to the Pipedream address. Within a minute,
 check the Activity Log in your dashboard. You should see a green row — and a
 matching transaction in YNAB.
+
+---
+
+## What You Get
+
+### Dashboard
+
+![Dashboard screenshot](docs/images/feature-dashboard.png)
+
+See what's happening at a glance — emails processed, success rate, and recent
+transactions. No need to open YNAB to check if things are working.
+
+### Settings
+
+![Settings screenshot](docs/images/feature-settings.png)
+
+Change any setting from the browser — YNAB connection, API keys, sender routing
+rules, currency routing. Flip test mode on to try things without creating real
+transactions.
+
+### Activity Log
+
+![Activity log screenshot](docs/images/feature-activity-log.png)
+
+Every forwarded email gets a row. Green means a transaction was created, red means
+something went wrong. Click any row to see exactly what happened. Replay any email
+with one click.
+
+---
+
+## How It Works
+
+```mermaid
+flowchart LR
+    A[Your inbox] -->|Forward email| B[Pipedream]
+    B --> C[Your app on Railway]
+    C -->|Read email| D[Claude]
+    D -->|Amount · retailer · date| C
+    C -->|Create transaction| E[YNAB]
+```
+
+1. You set up an auto-forward rule in Gmail (or Outlook, Apple Mail) to send order
+   confirmation emails to a Pipedream address.
+2. The app uses Claude to read the email and extract the amount, retailer, and date.
+3. A transaction appears in your YNAB budget within seconds.
+
+The app runs on your own Railway account. Your data stays in your own database —
+nothing is shared with anyone beyond the API calls themselves.
 
 ---
 
