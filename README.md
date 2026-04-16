@@ -1,8 +1,14 @@
 # YNAB Automation
 
-Automatically creates YNAB transactions from forwarded order confirmation emails.
-Forward an order confirmation to a dedicated address — a transaction appears in your
-budget within seconds, with no manual entry.
+YNAB automatically categorizes transactions by payee — which works great until you
+shop at a place like Amazon, where one order might be groceries, another electronics,
+and another home supplies. YNAB sees the same payee every time and can't tell them
+apart. You end up manually opening each order confirmation email to figure out what
+you actually bought before you can categorize the transaction.
+
+This app eliminates that lookup. Forward your order confirmation emails to a
+dedicated address — the app extracts the details and creates a YNAB transaction
+automatically, within seconds.
 
 > **No warranty.** This is a personal side project, provided as-is, with no warranty
 > and no support. If the app misposts a transaction to your YNAB budget, corrupts a
