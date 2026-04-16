@@ -31,6 +31,11 @@ About **$5–6 per month** at typical household volume (a few emails per week).
 Railway requires the Hobby plan ($5/month) — the free trial works for 30 days but
 the app needs to run continuously after that. Everything else fits within free tiers.
 
+**Already running your own server?** This is a standard Next.js app with a PostgreSQL
+database — it runs anywhere. If you already have a server, the only extra cost is
+Anthropic (a few cents per month). The Railway button is the easiest way to get
+started, but it's not required.
+
 ---
 
 ## Set Up
