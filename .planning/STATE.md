@@ -5,7 +5,7 @@ milestone_name: Single-Tenant Rollback
 status: planning
 stopped_at: Completed 27-03-PLAN.md
 last_updated: "2026-04-16T15:57:04.352Z"
-last_activity: 2026-04-16 — Roadmap created for v6.2
+last_activity: 2026-04-21 — Completed quick task 260421-cvo: parser custom-note extraction
 progress:
   total_phases: 9
   completed_phases: 8
@@ -163,6 +163,7 @@ None.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 7 | Zero-config Railway deploy | 2026-04-16 | bc2aa41 | [7-zero-config-railway-deploy](./quick/7-zero-config-railway-deploy/) |
+| 260421-cvo | Parser extracts custom note from top of forwarded email body into memo | 2026-04-21 | eab63ed | [260421-parser-custom-note](./quick/260421-parser-custom-note/) |
 
 ## Session Continuity
 
