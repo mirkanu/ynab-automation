@@ -129,6 +129,26 @@ describe('createYnabTransaction', () => {
     expect(body.transaction.memo).toBe('Alice: AirPods case - Automatically added from email');
   });
 
+  it('uses customNote as memo suffix when provided', async () => {
+    fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-007b'));
+
+    await createYnabTransaction({ ...BASE_PARAMS, customNote: 'gift for Sam' });
+
+    const [, options] = fetchMock.mock.calls[0];
+    const body = JSON.parse(options.body as string) as { transaction: { memo: string } };
+    expect(body.transaction.memo).toBe('Alice: AirPods case - gift for Sam');
+  });
+
+  it('falls back to default suffix when customNote is whitespace', async () => {
+    fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-007c'));
+
+    await createYnabTransaction({ ...BASE_PARAMS, customNote: '   ' });
+
+    const [, options] = fetchMock.mock.calls[0];
+    const body = JSON.parse(options.body as string) as { transaction: { memo: string } };
+    expect(body.transaction.memo).toBe('Alice: AirPods case - Automatically added from email');
+  });
+
   it('omits category_id from the request body to prevent YNAB auto-assign', async () => {
     fetchMock.mockResolvedValueOnce(makeOkResponse('txn-uuid-008'));
 

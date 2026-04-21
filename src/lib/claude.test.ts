@@ -193,6 +193,39 @@ describe('parseOrderEmail', () => {
     expect(result!.date).toBe('2024-03-15');
   });
 
+  it('returns customNote when Claude extracts a top-of-body comment', async () => {
+    mockCreate.mockResolvedValueOnce({
+      content: [{ type: 'text', text: '{"amount": 12.99, "description": "book", "retailer": "Amazon", "currency": "GBP", "date": "2024-03-15", "customNote": "gift for Sam"}' }],
+    });
+
+    const result = await parseOrderEmail(sampleHtml, 'Alice');
+
+    expect(result).not.toBeNull();
+    expect(result!.customNote).toBe('gift for Sam');
+  });
+
+  it('customNote is undefined when Claude returns an empty string', async () => {
+    mockCreate.mockResolvedValueOnce({
+      content: [{ type: 'text', text: '{"amount": 12.99, "description": "book", "retailer": "Amazon", "currency": "GBP", "date": "2024-03-15", "customNote": ""}' }],
+    });
+
+    const result = await parseOrderEmail(sampleHtml, 'Alice');
+
+    expect(result).not.toBeNull();
+    expect(result!.customNote).toBeUndefined();
+  });
+
+  it('customNote is undefined when field is omitted from Claude response (backward-compat)', async () => {
+    mockCreate.mockResolvedValueOnce({
+      content: [{ type: 'text', text: '{"amount": 12.99, "description": "book", "retailer": "Amazon", "currency": "GBP", "date": "2024-03-15"}' }],
+    });
+
+    const result = await parseOrderEmail(sampleHtml, 'Alice');
+
+    expect(result).not.toBeNull();
+    expect(result!.customNote).toBeUndefined();
+  });
+
   it('returns null when date field is missing from Claude response', async () => {
     mockCreate.mockResolvedValueOnce({
       content: [{ type: 'text', text: '{"amount": 12.99, "description": "some item", "retailer": "Amazon", "currency": "GBP"}' }],

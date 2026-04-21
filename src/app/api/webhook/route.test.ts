@@ -45,6 +45,8 @@ vi.mock('@/lib/ynab', () => ({
   getCategories: vi.fn().mockResolvedValue([]),
   findCategory: vi.fn().mockReturnValue(null),
   getAccountName: vi.fn().mockResolvedValue('UK Current'),
+  formatMemo: (senderName: string, description: string, customNote?: string) =>
+    `${senderName}: ${description} - ${customNote?.trim() || 'Automatically added from email'}`,
 }));
 
 vi.mock('@/lib/notify', () => ({

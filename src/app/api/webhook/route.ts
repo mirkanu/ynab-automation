@@ -6,7 +6,7 @@ import {
   extractCategoryHint,
 } from '@/lib/email';
 import { parseOrderEmail } from '@/lib/claude';
-import { createYnabTransaction, getCategories, findCategory, getAccountName } from '@/lib/ynab';
+import { createYnabTransaction, getCategories, findCategory, getAccountName, formatMemo } from '@/lib/ynab';
 import { sendErrorNotification } from '@/lib/notify';
 import { loadConfig, getSenderByEmail, getAccountForCurrency, notificationSuffix } from '@/lib/config';
 import { writeActivityLog } from '@/lib/activity-log';
@@ -136,7 +136,7 @@ export async function POST(req: NextRequest) {
     const testModeValue = await getSetting('TEST_MODE');
     const testMode = testModeValue === 'true';
 
-    const memo = `${senderInfo.name}: ${parsed.description} - Automatically added from email`;
+    const memo = formatMemo(senderInfo.name, parsed.description, parsed.customNote);
     const accountName = await getAccountName(budgetId, accountId);
 
     if (testMode) {
@@ -179,6 +179,7 @@ export async function POST(req: NextRequest) {
         payeeName: parsed.retailer,
         date: parsed.date,
         categoryId,
+        customNote: parsed.customNote,
       });
       console.log('YNAB transaction created:', transactionId, 'for', senderInfo.name);
       await writeActivityLog({

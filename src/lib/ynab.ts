@@ -18,6 +18,24 @@ export interface YnabTransactionParams {
   payeeName: string;     // e.g. "Amazon", "Costco", "Apple" — dynamic, not hardcoded
   date: string;          // YYYY-MM-DD order date from the email
   categoryId?: string;   // YNAB category UUID — omit or undefined for uncategorized
+  customNote?: string;   // Optional free-text note typed at top of forwarded email — replaces default memo suffix
+}
+
+/**
+ * Formats the YNAB memo string from sender, description, and optional custom note.
+ *
+ * With customNote: "{sender}: {description} - {customNote}"
+ * Without:        "{sender}: {description} - Automatically added from email"
+ */
+export function formatMemo(
+  senderName: string,
+  description: string,
+  customNote?: string,
+): string {
+  const suffix = customNote && customNote.trim()
+    ? customNote.trim()
+    : 'Automatically added from email';
+  return `${senderName}: ${description} - ${suffix}`;
 }
 
 /**
@@ -114,14 +132,14 @@ export async function getAccountName(budgetId: string, accountId: string): Promi
 export async function createYnabTransaction(
   params: YnabTransactionParams,
 ): Promise<string> {
-  const { budgetId, accountId, amount, description, senderName, payeeName, date, categoryId } = params;
+  const { budgetId, accountId, amount, description, senderName, payeeName, date, categoryId, customNote } = params;
 
   const token = await getValidYnabToken();
 
   // Convert to milliunits, negate for outflow
   const milliunits = Math.round(amount * 1000) * -1;
 
-  const memo = `${senderName}: ${description} - Automatically added from email`;
+  const memo = formatMemo(senderName, description, customNote);
 
   const url = `https://api.youneedabudget.com/v1/budgets/${budgetId}/transactions`;
 

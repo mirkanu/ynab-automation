@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { parseOrderEmail } from '@/lib/claude'
-import { createYnabTransaction, getAccountName } from '@/lib/ynab'
+import { createYnabTransaction, getAccountName, formatMemo } from '@/lib/ynab'
 import { loadConfig, getSenderByEmail, getAccountForCurrency } from '@/lib/config'
 import { writeActivityLog } from '@/lib/activity-log'
 import { getSetting } from '@/lib/settings'
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
   const testModeValue = await getSetting('TEST_MODE')
   const testMode = testModeValue === 'true' && !forceLive
 
-  const memo = `${senderInfo.name}: ${parsed.description} - Automatically added from email`
+  const memo = formatMemo(senderInfo.name, parsed.description, parsed.customNote)
   const accountName = await getAccountName(budgetId, accountId)
 
   // 5. If test mode (and not force-live), skip YNAB and log as test
@@ -104,6 +104,7 @@ export async function POST(req: NextRequest) {
       senderName: senderInfo.name,
       payeeName: parsed.retailer,
       date: parsed.date,
+      customNote: parsed.customNote,
     })
 
     // 7. Write activity log for replay

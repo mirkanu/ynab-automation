@@ -8,6 +8,7 @@ export interface ParsedOrder {
   retailer: string;     // e.g. "Amazon", "Costco", "Apple"
   currency: string;     // "EUR" if amount is exclusively in Euro with no GBP conversion, otherwise "GBP"
   date: string;         // Order date in YYYY-MM-DD format, or today's date if not found in email
+  customNote?: string;  // Optional free-text note the forwarder typed at the very top of the email body
 }
 
 /**
@@ -34,12 +35,13 @@ export async function parseOrderEmail(
         {
           role: 'user',
           content:
-            `Extract the total order amount, a brief item description, the retailer/merchant name, the currency, and the order date from this order confirmation email HTML. ` +
+            `Extract the total order amount, a brief item description, the retailer/merchant name, the currency, the order date, and any custom note from this order confirmation email HTML. ` +
             `For multi-item orders, summarize as '2 items: Item1, Item2' (max 2 item names). ` +
             `For currency: set to "EUR" ONLY if the total amount is exclusively in Euros (€) with no conversion to GBP or another currency shown. ` +
             `If the email shows a Euro amount AND a GBP/sterling equivalent, or if the amount is in any non-Euro currency, set currency to "GBP". ` +
             `For date: extract the order date from the email and format as YYYY-MM-DD. If no date is found, use today's date: ${new Date().toISOString().split('T')[0]}. ` +
-            `Return JSON: {"amount": 12.99, "description": "brief description", "retailer": "Amazon", "currency": "GBP", "date": "2024-03-15"}. ` +
+            `For customNote: the user sometimes types a short free-text comment at the very top of the email body BEFORE the forwarded order confirmation content (above any "---------- Forwarded message ----------" separator, quoted reply block, or "From:" header). If such a note exists, return its verbatim text (trimmed, single-line). If there is no such note — i.e. the body starts directly with the forwarded content — return an empty string "". Do NOT invent a note from the order content itself. ` +
+            `Return JSON: {"amount": 12.99, "description": "brief description", "retailer": "Amazon", "currency": "GBP", "date": "2024-03-15", "customNote": ""}. ` +
             `HTML:\n\n${html}`,
         },
       ],
@@ -71,7 +73,9 @@ export async function parseOrderEmail(
       return null;
     }
 
-    const order = parsed as { amount: number; description: string; retailer: string; currency: string; date: string };
+    const order = parsed as { amount: number; description: string; retailer: string; currency: string; date: string; customNote?: unknown };
+
+    const rawNote = typeof order.customNote === 'string' ? order.customNote.trim() : '';
 
     return {
       amount: order.amount,
@@ -79,6 +83,7 @@ export async function parseOrderEmail(
       retailer: order.retailer,
       currency: order.currency,
       date: order.date,
+      ...(rawNote ? { customNote: rawNote } : {}),
     };
   } catch (err) {
     // Any failure (API error, JSON parse error, network error) → return null

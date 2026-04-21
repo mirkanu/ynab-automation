@@ -11,6 +11,7 @@ interface ParsedResult {
   retailer: string;
   currency: string;
   date: string;
+  customNote?: string;
 }
 
 type Status = 'idle' | 'loading' | 'success' | 'error';
@@ -230,7 +231,7 @@ export default function TestParseForm({ defaultSenderName }: TestParseFormProps)
             <span style={S.resultValue}>{result.date}</span>
           </div>
           <div style={S.memoPreview}>
-            YNAB memo: {senderName || 'Test'}: {result.description} - Automatically added from email
+            YNAB memo: {senderName || 'Test'}: {result.description} - {result.customNote?.trim() || 'Automatically added from email'}
           </div>
         </div>
       )}
