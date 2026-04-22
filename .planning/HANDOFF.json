@@ -1,0 +1,32 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-04-22T18:27:33.481Z",
+  "phase": null,
+  "phase_name": "ad-hoc YNAB reconciliation",
+  "phase_dir": null,
+  "plan": null,
+  "task": null,
+  "total_tasks": 9,
+  "status": "complete",
+  "completed_tasks": [
+    {"id": 1, "name": "Identify Wise GBP account and balance gap (~£500)", "status": "done"},
+    {"id": 2, "name": "Delete 10 confirmed duplicate transactions", "status": "done"},
+    {"id": 3, "name": "Fix March 20 EUR→GBP conversion (+£549.44 correction)", "status": "done"},
+    {"id": 4, "name": "Restore incorrectly-deleted Academy Lunch -£10 (2026-03-23)", "status": "done"},
+    {"id": 5, "name": "Restore incorrectly-deleted Amazon Sticker book -£4 (2026-03-05)", "status": "done"},
+    {"id": 6, "name": "Cross-reference full Wise CSV export against YNAB", "status": "done"},
+    {"id": 7, "name": "Add missing April 22 Iris Pay -£10 (school lunch)", "status": "done"},
+    {"id": 8, "name": "Add 4x missing Wise card fees (-£0.09 total)", "status": "done"},
+    {"id": 9, "name": "Fix March 12 CHF transaction (break €Manu Cash transfer link, correct -£16.52 → -£19.13)", "status": "done"}
+  ],
+  "remaining_tasks": [],
+  "blockers": [],
+  "human_actions_pending": [],
+  "decisions": [
+    {"decision": "Used Railway CLI to get YNAB_PERSONAL_ACCESS_TOKEN", "rationale": "railway variables --service 'YNAB test' works when GraphQL API token is expired"},
+    {"decision": "14-day date window for Wise↔YNAB cross-reference", "rationale": "Amazon charges lag order date by days; Plaid sync has gaps"}
+  ],
+  "uncommitted_files": [],
+  "next_action": "Nothing to resume. For GSD work: /gsd:plan-phase 27",
+  "context_notes": "Pure YNAB API reconciliation. No code changes. Primary gap was FX double-conversion bug on March 20 EUR→GBP transfer."
+}

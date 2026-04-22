@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v6.0
 milestone_name: Single-Tenant Rollback
 status: planning
-stopped_at: Completed 27-03-PLAN.md
-last_updated: "2026-04-16T15:57:04.352Z"
-last_activity: 2026-04-21 — Completed quick task 260421-cvo: parser custom-note extraction
+stopped_at: context exhaustion at 90% (2026-04-22)
+last_updated: "2026-04-22T14:03:32.882Z"
+last_activity: 2026-04-16 — Roadmap created for v6.2
 progress:
-  total_phases: 9
-  completed_phases: 8
-  total_plans: 29
-  completed_plans: 29
-  percent: 0
+  total_phases: 28
+  completed_phases: 26
+  total_plans: 72
+  completed_plans: 72
+  percent: 100
 ---
 
 # Amazon to YNAB Automation — Project State
@@ -69,6 +69,7 @@ Progress: [░░░░░░░░░░] 0%
 Decisions logged in PROJECT.md Key Decisions table.
 
 **v6.0 kickoff decisions (2026-04-10):**
+
 - Target audience: non-programmers self-hosting via Railway one-click deploy
 - Auth: restore iron-session single admin password (v4.0 pattern)
 - YNAB: restore Personal Access Token, drop OAuth + encrypted token storage
@@ -78,6 +79,7 @@ Decisions logged in PROJECT.md Key Decisions table.
 - Multi-tenancy: parked for possible future commercialisation, not in this milestone
 
 **v6.0 roadmap decisions (2026-04-10):**
+
 - Phase 20 isolates data-preservation risk so it lands and gets verified before any code changes land
 - Phase 21 bundles Auth.js code removal with iron-session restore (no intermediate broken state)
 - Phase 22 couples YNAB OAuth removal with PAT restore and Phase 18 dead-code removal (all YNAB/email plumbing touches in one phase)
@@ -134,12 +136,14 @@ Decisions logged in PROJECT.md Key Decisions table.
 - [Quick-7]: Railway template code bIms_s — verified zero required fields; true one-click deploy
 
 **v6.1 roadmap decisions (2026-04-16):**
+
 - Single phase (26) for all 5 README-only requirements — coarse granularity, natural delivery boundary, no code changes involved
 - All requirements (README-01 through README-05) target the same file (README.md); bundling avoids partial-edit churn
 - [Phase 26]: Problem statement leads with YNAB payee-categorization pain point (Amazon multi-category example) rather than generic one-liner
 - [Phase 26]: Deploy button converted to HTML anchor with target='_blank'; Install reduced to 3 steps; Prerequisites table removed; Steps 10/11 renamed to After Setup
 
 **v6.2 roadmap decisions (2026-04-16):**
+
 - Two phases for 5 requirements — coarse granularity; natural split between nav/settings area (27) and dashboard/wizard area (28)
 - LABEL-01 bundled with NAV-01/NAV-02 in Phase 27 — all three touch wizard step 3 or settings-area pages; one code review, one test sweep
 - FWD-01 and FWD-02 isolated in Phase 28 — both are about forwarding address surfacing; dashboard card and wizard done page can be built and tested together
@@ -167,6 +171,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-16T15:50:44.679Z
-Stopped at: Completed 27-03-PLAN.md
+Last session: 2026-04-22T14:03:32.868Z
+Stopped at: context exhaustion at 90% (2026-04-22)
 Resume file: None
