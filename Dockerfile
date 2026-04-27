@@ -21,8 +21,9 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Install curl for healthcheck
-RUN apk add --no-cache curl
+# Install curl for healthcheck + openssl for Prisma engine binaries
+# binaryTarget linux-musl-arm64-openssl-3.0.x requires libssl.so.3 (openssl 3.x)
+RUN apk add --no-cache curl openssl
 
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
