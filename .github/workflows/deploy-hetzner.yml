@@ -1,0 +1,36 @@
+name: Deploy to Hetzner VPS
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+env:
+  SERVICE_NAME: ynab-api
+  SERVICE_PATH: /home/services/ynab
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH to Hetzner VPS
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HETZNER_VPS_IP }}
+          username: root
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          port: 22
+          script: |
+            set -eux
+
+            cd ${{ env.SERVICE_PATH }}
+            git fetch origin master
+            git checkout origin/master
+
+            cd /home/services/hetzner-vps
+            docker compose --env-file /home/services/.env.production \
+              up --build -d ${{ env.SERVICE_NAME }}
+
+            sleep 15
+            curl -sf http://localhost:3001/api/webhook || exit 1
+            echo "ynab deployment successful"
