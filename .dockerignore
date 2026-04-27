@@ -1,0 +1,12 @@
+.git
+.gitignore
+.env*
+!.env.example
+node_modules
+.next
+.planning
+*.md
+!README.md
+docs
+scripts
+.github
