@@ -21,8 +21,9 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Install curl for healthcheck
-RUN apk add --no-cache curl
+# Install curl for healthcheck + openssl1.1-compat for Prisma engine binaries
+# Prisma 5.x uses libssl.so.1.1 which is not included in Alpine 3.20+
+RUN apk add --no-cache curl openssl1.1-compat
 
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
