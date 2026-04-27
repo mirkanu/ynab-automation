@@ -32,12 +32,11 @@ COPY --from=builder /app/prisma ./prisma
 # Copy Prisma client (generated) — already embedded in standalone output but explicit copy is safe
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-# Copy prisma CLI so we can run migrate deploy without fetching from npm
+# Copy prisma CLI package so we can run migrate deploy without fetching from npm
 COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
 
 EXPOSE 3000
 
 # Run Prisma migrations then start the Next.js standalone server
-# Use local prisma binary (not npx which fetches latest from npm)
-CMD ["sh", "-c", "./node_modules/.bin/prisma migrate deploy && node server.js"]
+# Use full path to prisma entry point (avoids symlink/wasm resolution issues)
+CMD ["sh", "-c", "node node_modules/prisma/build/index.js migrate deploy && node server.js"]
