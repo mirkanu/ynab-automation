@@ -63,7 +63,21 @@ export async function POST(req: NextRequest) {
     }
 
     // Step 5: Resolve sender to display name and YNAB account ID
-    const senderInfo = getSenderByEmail(config, senderKey);
+    // DB rules (configured via /rules UI) take precedence over env-var config
+    const [senderRulesRaw, currencyRulesRaw] = await Promise.all([
+      getSetting('SENDER_RULES'),
+      getSetting('CURRENCY_RULES'),
+    ]);
+    const dbSenderRules: Array<{ email: string; name: string; accountId: string }> =
+      senderRulesRaw ? (JSON.parse(senderRulesRaw) as Array<{ email: string; name: string; accountId: string }>) : [];
+    const dbCurrencyRules: Array<{ currency: string; accountId: string }> =
+      currencyRulesRaw ? (JSON.parse(currencyRulesRaw) as Array<{ currency: string; accountId: string }>) : [];
+
+    const dbSenderMatch = dbSenderRules.find(r => r.email.toLowerCase() === senderKey);
+    const envSenderInfo = getSenderByEmail(config, senderKey);
+    const senderInfo = dbSenderMatch
+      ? { ...dbSenderMatch, name: dbSenderMatch.name || envSenderInfo?.name || '' }
+      : envSenderInfo;
     if (!senderInfo) {
       console.warn('Unrecognised sender — no YNAB transaction created:', sender);
       await sendErrorNotification({
@@ -131,7 +145,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Step 7: Create YNAB transaction (or skip in test mode)
-    const accountId = getAccountForCurrency(config, senderInfo.accountId, parsed.currency);
+    const dbCurrencyMatch = dbCurrencyRules.find(r => r.currency.toUpperCase() === parsed.currency.toUpperCase());
+    const accountId = dbCurrencyMatch?.accountId ?? getAccountForCurrency(config, senderInfo.accountId, parsed.currency);
     // Read test mode from the DB setting (set via settings UI).
     const testModeValue = await getSetting('TEST_MODE');
     const testMode = testModeValue === 'true';
