@@ -107,12 +107,15 @@ export async function POST(req: NextRequest) {
     const parsed = await parseOrderEmail(html, senderInfo.name);
     if (!parsed) {
       console.error('Claude parsing failed for messageId:', messageId);
+      const appUrl = process.env.YNAB_APP_URL ?? '';
       await sendErrorNotification({
         to: config.adminEmail,
         subject: `YNAB automation: failed to parse order email${notificationSuffix(senderInfo)}`,
         body:
           `An order confirmation email forwarded by ${sender ?? 'unknown'} could not be parsed automatically. No YNAB transaction was created.\n\n` +
+          `Error: Claude failed to extract order details from the email body.\n\n` +
           `Message ID: ${messageId}\n\n` +
+          `View in log: ${appUrl}/log\n\n` +
           `Please add this transaction to YNAB manually.`,
       });
       await writeActivityLog({
