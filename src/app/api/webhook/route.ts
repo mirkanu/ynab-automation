@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
           `An order confirmation email forwarded by ${sender ?? 'unknown'} could not be parsed automatically. No YNAB transaction was created.\n\n` +
           `Error: Claude failed to extract order details from the email body.\n\n` +
           `Message ID: ${messageId}\n\n` +
-          `View in log: ${appUrl}/log\n\n` +
+          `View in log: ${appUrl}/logs\n\n` +
           `Please add this transaction to YNAB manually.`,
       });
       await writeActivityLog({
