@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v6.0
-milestone_name: Single-Tenant Rollback
-status: planning
-stopped_at: context exhaustion at 90% (2026-04-22)
-last_updated: "2026-04-22T14:03:32.882Z"
-last_activity: 2026-04-16 — Roadmap created for v6.2
+milestone: v6.2
+milestone_name: Settings & UX Polish
+status: complete
+stopped_at: ~
+last_updated: "2026-05-27T00:00:00.000Z"
+last_activity: 2026-05-27 — Phase 28 complete (forwarding address prominence)
 progress:
   total_phases: 28
-  completed_phases: 26
-  total_plans: 72
-  completed_plans: 72
+  completed_phases: 28
+  total_plans: 73
+  completed_plans: 73
   percent: 100
 ---
 
@@ -27,12 +27,12 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 
 ## Current Position
 
-Phase: 27 — Settings Restructure & Label Cleanup
-Plan: —
-Status: Not started (roadmapped, ready for planning)
-Last activity: 2026-04-16 — Roadmap created for v6.2
+Phase: 28 — Forwarding Address Prominence
+Plan: 28-01 (complete)
+Status: Complete — all v6.2 phases done
+Last activity: 2026-05-27 — Phase 28 executed and verified
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██████████] 100%
 
 ## Roadmap Summary (v6.2)
 
@@ -156,7 +156,7 @@ Decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
 
-None. Next: `/gsd:plan-phase 27`.
+None. Next: `/gsd-execute-phase 28`.
 
 ### Blockers/Concerns
 

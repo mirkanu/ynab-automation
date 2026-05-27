@@ -62,7 +62,7 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
 ### 🔄 v6.2 Settings & UX Polish (Phases 27-28) — In Progress
 
 - [x] **Phase 27: Settings Restructure & Label Cleanup** — not started (completed 2026-04-16)
-- [ ] **Phase 28: Forwarding Address Prominence** — not started
+- [x] **Phase 28: Forwarding Address Prominence** — completed 2026-05-27
 
 ## Phase Details
 
@@ -221,7 +221,10 @@ Note: Changes stay local until user manually tests at production. No git push un
   1. Opening the dashboard after login, the forwarding address is the first substantive element visible without scrolling — displayed in a visually distinct block (e.g. highlighted card or banner) above the stats section.
   2. On the wizard done page (`/setup/done`), the forwarding address appears in a copy-to-clipboard component with a clear instruction explaining what to do with it (e.g. "Forward order confirmation emails to this address").
   3. Clicking the copy button on either the dashboard or the wizard done page copies the address to the clipboard — verified manually on the live app after user testing.
-**Plans:** TBD
+**Plans:** 1 plan
+
+Plans:
+- [x] 28-01-PLAN.md — Move forwarding card above stats (FWD-01) + copy-to-clipboard on done page (FWD-02)
 
 Note: Changes stay local until user manually tests at production. No git push until user signs off.
 
@@ -247,4 +250,4 @@ Note: Changes stay local until user manually tests at production. No git push un
 | 25. Self-Host Polish | v6.0 | 3/4 | Complete | 2026-04-16 |
 | 26. README & Onboarding Polish | v6.1 | 1/1 | Complete | 2026-04-16 |
 | 27. Settings Restructure & Label Cleanup | 3/3 | Complete    | 2026-04-16 | — |
-| 28. Forwarding Address Prominence | v6.2 | 0/TBD | Not started | — |
+| 28. Forwarding Address Prominence | v6.2 | 1/1 | Complete | 2026-05-27 |
