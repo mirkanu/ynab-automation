@@ -9,7 +9,7 @@
 - ✅ **v5.0** — Multi-Tenant SaaS (2026-04-10) → [archive](.planning/milestones/v5.0-ROADMAP.md)
 - ✅ **v6.0** — Single-Tenant Rollback (2026-04-16)
 - ✅ **v6.1** — README & Onboarding Polish (2026-04-16)
-- 🔄 **v6.2** — Settings & UX Polish (in progress)
+- ✅ **v6.2** — Settings & UX Polish (2026-05-27)
 
 ## Phases
 
@@ -59,7 +59,7 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
 
 - [x] **Phase 26: README & Onboarding Polish** — completed 2026-04-16
 
-### 🔄 v6.2 Settings & UX Polish (Phases 27-28) — In Progress
+### ✅ v6.2 Settings & UX Polish (Phases 27-28) — SHIPPED 2026-05-27
 
 - [x] **Phase 27: Settings Restructure & Label Cleanup** — not started (completed 2026-04-16)
 - [x] **Phase 28: Forwarding Address Prominence** — completed 2026-05-27
