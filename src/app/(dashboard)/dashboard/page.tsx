@@ -42,6 +42,41 @@ export default async function DashboardPage() {
         Dashboard
       </h1>
 
+      {/* Inbound email address — from INBOUND_EMAIL Setting in DB */}
+      {inboundEmail && (
+        <div style={{
+          ...card,
+          marginBottom: '1.5rem',
+          borderLeft: '3px solid #2563eb',
+          backgroundColor: '#eff6ff',
+        }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
+            Forwarding Address
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <code style={{
+              flex: 1,
+              fontSize: '0.8125rem',
+              fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
+              color: '#111827',
+              backgroundColor: '#f9fafb',
+              padding: '0.5rem 0.75rem',
+              borderRadius: '6px',
+              border: '1px solid #e5e7eb',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}>
+              {inboundEmail}
+            </code>
+            <CopyButton text={inboundEmail} />
+          </div>
+          <div style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.5rem' }}>
+            Forward order confirmation emails to this address for automatic processing
+          </div>
+        </div>
+      )}
+
       {/* DASH-01: This week stats — clickable to open logs with filters */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
         <a href={`/logs?from=${fromDate}&to=${toDate}`} style={clickableCard}>
@@ -92,35 +127,6 @@ export default async function DashboardPage() {
         )}
       </div>
 
-      {/* Inbound email address — from INBOUND_EMAIL Setting in DB */}
-      {inboundEmail && (
-        <div style={{ ...card, marginBottom: '1.5rem' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
-            Forwarding Address
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <code style={{
-              flex: 1,
-              fontSize: '0.8125rem',
-              fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
-              color: '#111827',
-              backgroundColor: '#f9fafb',
-              padding: '0.5rem 0.75rem',
-              borderRadius: '6px',
-              border: '1px solid #e5e7eb',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}>
-              {inboundEmail}
-            </code>
-            <CopyButton text={inboundEmail} />
-          </div>
-          <div style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.5rem' }}>
-            Forward order confirmation emails to this address for automatic processing
-          </div>
-        </div>
-      )}
     </div>
   )
 }
