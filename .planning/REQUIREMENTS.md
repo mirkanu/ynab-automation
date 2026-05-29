@@ -18,8 +18,8 @@ Requirements for v6.2 milestone.
 
 ### Forwarding Address Visibility
 
-- [ ] **FWD-01**: Dashboard shows the inbound email/forwarding address prominently — first thing the user sees, not buried in a card below stats
-- [ ] **FWD-02**: Wizard done page clearly highlights the forwarding address with copy-to-clipboard and explains what to do with it
+- [x] **FWD-01**: Dashboard shows the inbound email/forwarding address prominently — first thing the user sees, not buried in a card below stats
+- [x] **FWD-02**: Wizard done page clearly highlights the forwarding address with copy-to-clipboard and explains what to do with it
 
 ## v2 Requirements
 
@@ -43,8 +43,8 @@ Deferred to future release.
 | LABEL-01 | Phase 27 | Complete |
 | NAV-01 | Phase 27 | Complete |
 | NAV-02 | Phase 27 | Complete |
-| FWD-01 | Phase 28 | Pending |
-| FWD-02 | Phase 28 | Pending |
+| FWD-01 | Phase 28 | Complete |
+| FWD-02 | Phase 28 | Complete |
 
 **Coverage:**
 - v1 requirements: 5 total
