@@ -88,7 +88,6 @@ Plans:
 
 Ideas captured for future milestones — not yet planned or scheduled.
 
-- **EUR→GBP Transfer Reconciliation Automation** — When a transfer from the €Wise Euro account lands in a GBP account (UK Current or GBP Wise), bank sync creates a raw-EUR outgoing txn that corrupts the budget. Automation should: detect these pairs by matching payee patterns ("Converted X EUR to Y GBP", "Sent money to ... fee: X EUR") + timing, delete the €Wise Euro outgoing txn, and convert the GBP incoming txn to "Transfer : €Wise Euro". UI: analysis step shows detected pairs before committing. Trigger: button on dashboard. (Prototyped manually via API 2026-05-29.)
 - **Multi-Currency Display Plugin** — Replicate https://ynab.rmillan.com/plugins/multi-currency natively in this app. Source: github.com/mhoad/ynab-multi-currency (Ruby/Rails, no OSS license — build from scratch). Converts foreign account balances to budget currency using live exchange rates.
 
 ## Phase Details
