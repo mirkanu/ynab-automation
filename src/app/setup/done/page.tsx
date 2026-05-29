@@ -1,6 +1,5 @@
 import { getSetting } from '@/lib/settings'
 import Link from 'next/link'
-import CopyButton from '@/app/(dashboard)/components/CopyButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -45,26 +44,6 @@ const S = {
     margin: '0 0 1.75rem',
     lineHeight: 1.6,
   },
-  copyRow: {
-    display: 'flex' as const,
-    alignItems: 'center' as const,
-    gap: '0.75rem',
-    margin: '0 0 0.25rem',
-  },
-  emailCode: {
-    flex: 1,
-    fontSize: '0.8125rem',
-    fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
-    color: '#111827',
-    backgroundColor: '#f3f4f6',
-    padding: '0.5rem 0.75rem',
-    borderRadius: '6px',
-    border: '1px solid #e5e7eb',
-    overflow: 'hidden' as const,
-    textOverflow: 'ellipsis' as const,
-    whiteSpace: 'nowrap' as const,
-    textAlign: 'left' as const,
-  },
   loginLink: {
     display: 'inline-flex' as const,
     alignItems: 'center' as const,
@@ -91,21 +70,13 @@ export default async function SetupDone() {
         ✓
       </span>
       <h1 style={S.heading}>You&apos;re all set!</h1>
-      <p style={S.body}>Forward order confirmation emails to this address:</p>
-      {pipedreamEmail?.trim() && (
-        <div style={S.copyRow}>
-          <code style={S.emailCode}>{emailDisplay}</code>
-          <CopyButton text={emailDisplay} />
-        </div>
-      )}
-      {!pipedreamEmail?.trim() && (
-        <p style={S.body}>
-          <span style={S.email}>{emailDisplay}</span>
-        </p>
-      )}
+      <p style={S.body}>
+        Forward an order confirmation email to{' '}
+        <span style={S.email}>{emailDisplay}</span>{' '}
+        and it will appear in your YNAB account within about 60 seconds.
+      </p>
       <p style={S.note}>
         Set up an auto-forward rule in your email client to send order emails automatically.
-        They will appear in YNAB within about 60 seconds.
       </p>
       <Link href="/login" style={S.loginLink}>
         Log in to Dashboard →

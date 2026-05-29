@@ -9,8 +9,7 @@
 - ✅ **v5.0** — Multi-Tenant SaaS (2026-04-10) → [archive](.planning/milestones/v5.0-ROADMAP.md)
 - ✅ **v6.0** — Single-Tenant Rollback (2026-04-16)
 - ✅ **v6.1** — README & Onboarding Polish (2026-04-16)
-- ✅ **v6.2** — Settings & UX Polish (2026-05-27)
-- 🔄 **v6.3** — EUR→GBP Transfer Reconciliation (in progress)
+- 🔄 **v6.2** — Settings & UX Polish (in progress)
 
 ## Phases
 
@@ -60,35 +59,10 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
 
 - [x] **Phase 26: README & Onboarding Polish** — completed 2026-04-16
 
-### ✅ v6.2 Settings & UX Polish (Phases 27-28) — SHIPPED 2026-05-27
+### 🔄 v6.2 Settings & UX Polish (Phases 27-28) — In Progress
 
 - [x] **Phase 27: Settings Restructure & Label Cleanup** — not started (completed 2026-04-16)
-- [x] **Phase 28: Forwarding Address Prominence** — completed 2026-05-27
-
-### Phase 29: EUR→GBP Transfer Reconciliation
-**Milestone:** v6.3
-**Goal:** When the user transfers money from €Wise Euro to a GBP account (UK Current or GBP Wise), the app automatically detects the mismatched transaction pair created by bank sync, deletes the raw-EUR outgoing entry from €Wise Euro, and converts the GBP incoming entry to a proper "Transfer : €Wise Euro" — with the auto-created counterpart marked cleared and approved. A Tools-page button triggers an analysis step (shows detected pairs before committing) then a run step (applies fixes).
-**Depends on:** Phase 28 (dashboard/tools UI stable)
-**Requirements:** XFER-01, XFER-02, XFER-03, XFER-04
-**Success Criteria** (what must be TRUE):
-  1. Visiting the Tools page shows a "Fix EUR→GBP Transfers" card with an Analyse button.
-  2. Clicking Analyse calls `/api/tools/fix-eur-transfers?dry=true` and displays detected transfer pairs (EUR out + GBP in) with amounts and match confidence — no changes made yet.
-  3. Clicking Run calls `/api/tools/fix-eur-transfers` (no dry flag), which deletes the €Wise Euro raw outgoing txns and updates the GBP incoming txns to "Transfer : €Wise Euro", with the auto-created €Wise Euro counterparts set to `cleared: cleared, approved: true`.
-  4. After Run completes, the result panel shows a summary of what changed (N transfers fixed).
-**Plans:**
-
-Plans:
-**Wave 1**
-- [x] 29-01-PLAN.md — API route + detection logic + apply logic
-
-**Wave 2** *(blocked on Wave 1 completion)*
-- [x] 29-02-PLAN.md — Tools page UI: Analyse → Run → Result flow
-
-## Backlog
-
-Ideas captured for future milestones — not yet planned or scheduled.
-
-- **Multi-Currency Display Plugin** — Replicate https://ynab.rmillan.com/plugins/multi-currency natively in this app. Source: github.com/mhoad/ynab-multi-currency (Ruby/Rails, no OSS license — build from scratch). Converts foreign account balances to budget currency using live exchange rates.
+- [ ] **Phase 28: Forwarding Address Prominence** — not started
 
 ## Phase Details
 
@@ -247,10 +221,7 @@ Note: Changes stay local until user manually tests at production. No git push un
   1. Opening the dashboard after login, the forwarding address is the first substantive element visible without scrolling — displayed in a visually distinct block (e.g. highlighted card or banner) above the stats section.
   2. On the wizard done page (`/setup/done`), the forwarding address appears in a copy-to-clipboard component with a clear instruction explaining what to do with it (e.g. "Forward order confirmation emails to this address").
   3. Clicking the copy button on either the dashboard or the wizard done page copies the address to the clipboard — verified manually on the live app after user testing.
-**Plans:** 1 plan
-
-Plans:
-- [x] 28-01-PLAN.md — Move forwarding card above stats (FWD-01) + copy-to-clipboard on done page (FWD-02)
+**Plans:** TBD
 
 Note: Changes stay local until user manually tests at production. No git push until user signs off.
 
@@ -276,4 +247,4 @@ Note: Changes stay local until user manually tests at production. No git push un
 | 25. Self-Host Polish | v6.0 | 3/4 | Complete | 2026-04-16 |
 | 26. README & Onboarding Polish | v6.1 | 1/1 | Complete | 2026-04-16 |
 | 27. Settings Restructure & Label Cleanup | 3/3 | Complete    | 2026-04-16 | — |
-| 28. Forwarding Address Prominence | v6.2 | 1/1 | Complete | 2026-05-27 |
+| 28. Forwarding Address Prominence | v6.2 | 0/TBD | Not started | — |

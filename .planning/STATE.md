@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v6.2
-milestone_name: Settings & UX Polish
-status: milestone_complete
-stopped_at: Phase 29 UI-SPEC approved
-last_updated: "2026-05-29T18:50:13.673Z"
-last_activity: 2026-05-29 -- Phase 29 execution started
+milestone: v6.0
+milestone_name: Single-Tenant Rollback
+status: planning
+stopped_at: context exhaustion at 90% (2026-04-22)
+last_updated: "2026-04-22T14:03:32.882Z"
+last_activity: 2026-04-16 — Roadmap created for v6.2
 progress:
-  total_phases: 10
-  completed_phases: 10
-  total_plans: 32
-  completed_plans: 30
+  total_phases: 28
+  completed_phases: 26
+  total_plans: 72
+  completed_plans: 72
   percent: 100
 ---
 
@@ -23,16 +23,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-16)
 
 **Core value:** Forwarded order confirmation email → YNAB transaction, fully automated, with zero per-transaction effort.
-**Current focus:** Phase 29 — eur-gbp-transfer-reconciliation
+**Current focus:** v6.2 Settings & UX Polish — restructure settings nav, remove Amazon-specific labels, make forwarding address prominent
 
 ## Current Position
 
-Phase: 29
-Plan: Not started
-Status: Milestone complete
-Last activity: 2026-05-29
+Phase: 27 — Settings Restructure & Label Cleanup
+Plan: —
+Status: Not started (roadmapped, ready for planning)
+Last activity: 2026-04-16 — Roadmap created for v6.2
 
-Progress: [██████████] 100%
+Progress: [░░░░░░░░░░] 0%
 
 ## Roadmap Summary (v6.2)
 
@@ -156,7 +156,7 @@ Decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
 
-None. v6.2 complete and user-verified. Push to GitHub when ready.
+None. Next: `/gsd:plan-phase 27`.
 
 ### Blockers/Concerns
 
@@ -171,6 +171,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-05-29T18:16:48.077Z
-Stopped at: Phase 29 UI-SPEC approved
-Resume file: .planning/phases/29-eur-gbp-transfer-reconciliation/29-UI-SPEC.md
+Last session: 2026-04-22T14:03:32.868Z
+Stopped at: context exhaustion at 90% (2026-04-22)
+Resume file: None

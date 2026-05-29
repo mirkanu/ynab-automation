@@ -21,17 +21,6 @@ Requirements for v6.2 milestone.
 - [ ] **FWD-01**: Dashboard shows the inbound email/forwarding address prominently — first thing the user sees, not buried in a card below stats
 - [ ] **FWD-02**: Wizard done page clearly highlights the forwarding address with copy-to-clipboard and explains what to do with it
 
-## v6.3 Requirements
-
-Requirements for EUR→GBP Transfer Reconciliation (Phase 29).
-
-### EUR→GBP Transfer Fix
-
-- **XFER-01**: API endpoint `GET /api/tools/fix-eur-transfers?dry=true` detects unreconciled EUR→GBP transfer pairs from the last 7 days — pairs where a raw outgoing txn exists in €Wise Euro (payee matches "Sent money to" or "Converted X EUR to Y GBP") alongside a cleared GBP credit in UK Current or GBP Wise within the same calendar day, and neither side is already a YNAB transfer.
-- **XFER-02**: API endpoint `POST /api/tools/fix-eur-transfers` applies the fix for detected pairs: deletes the raw €Wise Euro outgoing txn, updates the GBP incoming txn's payee to "Transfer : €Wise Euro", then immediately patches the auto-created €Wise Euro counterpart to `cleared: "cleared", approved: true`.
-- **XFER-03**: Tools page shows a "Fix EUR→GBP Transfers" card with Analyse button; clicking it renders the detected pairs table (EUR out amount, GBP in amount, date, account names, confidence) before any changes are made.
-- **XFER-04**: After Run, the UI shows a result summary: N pairs fixed, listing each pair's amounts. Errors (e.g. API failure mid-run) are shown inline without crashing the page.
-
 ## v2 Requirements
 
 Deferred to future release.
