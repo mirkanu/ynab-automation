@@ -1,38 +1,36 @@
 ---
 gsd_state_version: 1.0
-milestone: v6.0
-milestone_name: Single-Tenant Rollback
-status: planning
-stopped_at: context exhaustion at 90% (2026-04-22)
-last_updated: "2026-04-22T14:03:32.882Z"
-last_activity: 2026-04-16 — Roadmap created for v6.2
+milestone: v6.2
+milestone_name: Settings & UX Polish
+status: complete
+shipped_at: "2026-05-29"
+last_updated: "2026-05-29"
+last_activity: 2026-05-29 — v6.2 milestone archived
 progress:
   total_phases: 28
-  completed_phases: 26
-  total_plans: 72
-  completed_plans: 72
+  completed_phases: 28
+  total_plans: 76
+  completed_plans: 76
   percent: 100
 ---
 
 # Amazon to YNAB Automation — Project State
 
-**Updated:** 2026-04-16
+**Updated:** 2026-05-29
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-16)
+See: .planning/PROJECT.md (updated 2026-05-29)
 
 **Core value:** Forwarded order confirmation email → YNAB transaction, fully automated, with zero per-transaction effort.
-**Current focus:** v6.2 Settings & UX Polish — restructure settings nav, remove Amazon-specific labels, make forwarding address prominent
+**Current focus:** v6.2 shipped — planning next milestone
 
 ## Current Position
 
-Phase: 27 — Settings Restructure & Label Cleanup
-Plan: —
-Status: Not started (roadmapped, ready for planning)
-Last activity: 2026-04-16 — Roadmap created for v6.2
+Milestone v6.2 complete. All 28 phases shipped (76 plans).
+Last activity: 2026-05-29 — v6.2 milestone archived, git tag v6.2 created
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██████████] 100%
 
 ## Roadmap Summary (v6.2)
 

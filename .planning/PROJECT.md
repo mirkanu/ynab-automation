@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A YNAB automation that turns forwarded order confirmation emails into transactions. Currently shipped as a multi-tenant SaaS on Railway (v5.0), but in practice only used by a single household — next milestone rolls it back to single-tenant to shed unnecessary complexity.
+A self-hosted YNAB automation that turns forwarded order confirmation emails into transactions. Single-tenant, deployed via one-click Railway template. Clean admin UI with dashboard, rules, settings, and tools pages.
 
 ## Core Value
 
@@ -10,22 +10,9 @@ Forwarded order confirmation email → YNAB transaction, fully automated, with z
 
 ## Current State
 
-v5.0 Multi-Tenant SaaS is live at https://ynab-test-production.up.railway.app. Users can sign up via magic link, connect YNAB via OAuth (AES-256-GCM encrypted tokens, 5-min proactive refresh), receive a unique Postmark forwarding address, and see their own activity log + stats dashboard. PostgreSQL Row-Level Security enforces tenant isolation.
+**v6.2 shipped 2026-05-29.** Self-hosted single-tenant app running on Hetzner VPS (migrated from Railway 2026-04-25). Admin UI has 5-item nav: Dashboard, Activity Log, Rules, Settings, Tools. Forwarding address prominently displayed on dashboard and wizard done page. All Amazon-specific labels removed.
 
-**However**: the multi-tenant machinery is overkill for the actual user base (one household). The next milestone walks it back.
-
-## Current Milestone: v6.2 Settings & UX Polish
-
-**Goal:** Clean up the admin UI — restructure Settings into logical pages, make the forwarding address prominent, remove Amazon-specific labels, and move test mode to Tools.
-
-**Target user:** Existing users of the self-hosted app.
-
-**Target features:**
-- Remove "Amazon" from wizard step 3 and setup/done page — generic "transactions" wording
-- Restructure Settings into two pages: "Rules" (sender routing, currency routing) and "Settings" (API keys, YNAB connection, admin password)
-- Move Test Mode toggle from Settings into Tools page
-- Make inbound email/forwarding address more prominent on dashboard (it's the most important daily-use info)
-- Verify wizard clearly surfaces the forwarding address
+Stack: Next.js (App Router) + PostgreSQL + iron-session. Email ingestion via Pipedream → `/api/webhook`. YNAB Personal Access Token stored in DB settings.
 
 ## Requirements
 
@@ -55,16 +42,15 @@ v5.0 Multi-Tenant SaaS is live at https://ynab-test-production.up.railway.app. U
 - ✓ GDPR account deletion with cascade — v5.0
 - ✓ Per-sender routing rules UI (restored via quick tasks) — post-v5.0
 - ✓ Currency-based account routing UI (restored via quick tasks) — post-v5.0
+- ✓ Generic retailer labels throughout (no Amazon-specific wording) — v6.2
+- ✓ Rules/Settings/Tools nav split — v6.2
+- ✓ Forwarding address prominent on dashboard and wizard done page — v6.2
 
 ### Active
 
 <!-- Current scope. Building toward these. -->
 
-- [ ] Remove Amazon-specific labels from wizard and settings
-- [ ] Restructure Settings into Rules + Settings pages
-- [ ] Move Test Mode toggle to Tools page
-- [ ] Make forwarding address prominent on dashboard
-- [ ] Verify wizard surfaces forwarding address clearly
+- [ ] SMART-01: Auto-categorize transactions based on email content (e.g. "kitchen supplies" → Household category)
 
 ### Out of Scope
 
@@ -152,4 +138,4 @@ Phases: 16 (User Accounts + RLS), 17 (YNAB OAuth + encrypted tokens), 18 (per-us
 
 ---
 
-*Last updated: 2026-04-16 after v6.2 milestone started*
+*Last updated: 2026-05-29 after v6.2 milestone*

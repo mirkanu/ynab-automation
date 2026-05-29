@@ -1,5 +1,42 @@
 # Milestones
 
+## v6.2 — Settings & UX Polish
+
+**Shipped:** 2026-05-29
+**Phases:** 2 (27-28) | **Plans:** 4 | **Requirements:** 5/5
+
+**Delivered:** Restructured admin UI into logical Rules/Settings/Tools pages, removed Amazon-specific labels, and made the forwarding address unmissable on dashboard and wizard done page.
+
+**Key accomplishments:**
+1. Removed Amazon-specific labels from wizard step 3 and setup/done — fully generic retailer language
+2. Created /rules page hosting sender and currency routing sections; 5-item nav bar
+3. Settings page scoped to credentials only (API keys, YNAB connection, admin password)
+4. Test Mode toggle moved from Settings to Tools page
+5. Dashboard forwarding address card repositioned first with blue highlight
+6. Wizard done page: copy-to-clipboard block replacing buried inline span
+
+**Archives:** [ROADMAP](milestones/v6.2-ROADMAP.md) | [REQUIREMENTS](milestones/v6.2-REQUIREMENTS.md)
+
+---
+
+## v6.1 — README & Onboarding Polish
+
+**Shipped:** 2026-04-16
+**Phases:** 1 (Phase 26) | **Plans:** 1
+
+**Delivered:** README rewritten to lead with the problem statement; Deploy button opens Railway in new tab; Install section reduced to 3 steps; wizard handles all post-deploy config.
+
+---
+
+## v6.0 — Single-Tenant Rollback
+
+**Shipped:** 2026-04-16
+**Phases:** 6 (20-25)
+
+**Delivered:** Rolled back multi-tenant SaaS to single-tenant: removed Auth.js/RLS/OAuth, restored iron-session admin auth, YNAB PAT, first-install wizard, cleaned test suite, comprehensive README and Railway deploy template.
+
+---
+
 ## v5.0 Multi-Tenant SaaS (Shipped: 2026-04-10)
 
 **Phases completed:** 4 phases, 20 plans, 6 tasks

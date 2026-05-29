@@ -9,7 +9,7 @@
 - ✅ **v5.0** — Multi-Tenant SaaS (2026-04-10) → [archive](.planning/milestones/v5.0-ROADMAP.md)
 - ✅ **v6.0** — Single-Tenant Rollback (2026-04-16)
 - ✅ **v6.1** — README & Onboarding Polish (2026-04-16)
-- 🔄 **v6.2** — Settings & UX Polish (in progress)
+- ✅ **v6.2** — Settings & UX Polish (2026-05-29) → [archive](.planning/milestones/v6.2-ROADMAP.md)
 
 ## Phases
 
@@ -59,10 +59,13 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
 
 - [x] **Phase 26: README & Onboarding Polish** — completed 2026-04-16
 
-### 🔄 v6.2 Settings & UX Polish (Phases 27-28) — In Progress
+<details>
+<summary>✅ v6.2 Settings & UX Polish (Phases 27-28) — SHIPPED 2026-05-29</summary>
 
-- [x] **Phase 27: Settings Restructure & Label Cleanup** — not started (completed 2026-04-16)
-- [ ] **Phase 28: Forwarding Address Prominence** — not started
+- [x] **Phase 27: Settings Restructure & Label Cleanup** (3/3 plans) — completed 2026-04-16
+- [x] **Phase 28: Forwarding Address Prominence** (1/1 plan) — completed 2026-05-27
+
+</details>
 
 ## Phase Details
 
@@ -246,5 +249,5 @@ Note: Changes stay local until user manually tests at production. No git push un
 | 24. Test Suite Cleanup & Self-Host Docs | v6.0 | 3/4 | Complete | 2026-04-16 |
 | 25. Self-Host Polish | v6.0 | 3/4 | Complete | 2026-04-16 |
 | 26. README & Onboarding Polish | v6.1 | 1/1 | Complete | 2026-04-16 |
-| 27. Settings Restructure & Label Cleanup | 3/3 | Complete    | 2026-04-16 | — |
-| 28. Forwarding Address Prominence | v6.2 | 0/TBD | Not started | — |
+| 27. Settings Restructure & Label Cleanup | v6.2 | 3/3 | Complete | 2026-04-16 |
+| 28. Forwarding Address Prominence | v6.2 | 1/1 | Complete | 2026-05-27 |
