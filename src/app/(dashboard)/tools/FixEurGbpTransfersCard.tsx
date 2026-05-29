@@ -156,8 +156,8 @@ export default function FixEurGbpTransfersCard() {
     try {
       const res = await fetch('/api/tools/fix-eur-transfers', { method: 'POST' });
       const data = await res.json() as { fixed?: number; failed?: number; results?: FixResult[]; error?: string };
-      if (!res.ok && data.error && !data.results) {
-        setError(data.error);
+      if (!res.ok && !data.results) {
+        setError(data.error ?? `HTTP ${res.status}`);
         setStatus('error');
         return;
       }
