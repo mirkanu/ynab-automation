@@ -69,7 +69,12 @@ export async function detectTransferPairs(): Promise<TransferPair[]> {
   if (!budgetId) throw new Error('YNAB_BUDGET_ID not configured in settings');
   const currencyAccountsRaw = await getSetting('YNAB_CURRENCY_ACCOUNTS');
   if (!currencyAccountsRaw) throw new Error('YNAB_CURRENCY_ACCOUNTS not configured in settings');
-  const currencyAccounts = JSON.parse(currencyAccountsRaw) as Record<string, string>;
+  let currencyAccounts: Record<string, string>;
+  try {
+    currencyAccounts = JSON.parse(currencyAccountsRaw) as Record<string, string>;
+  } catch {
+    throw new Error('YNAB_CURRENCY_ACCOUNTS is not valid JSON');
+  }
   const eurAccountId = currencyAccounts['EUR'];
   if (!eurAccountId) throw new Error('EUR account not found in YNAB_CURRENCY_ACCOUNTS');
 
