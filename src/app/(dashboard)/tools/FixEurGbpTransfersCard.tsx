@@ -188,7 +188,7 @@ export default function FixEurGbpTransfersCard() {
           {status === 'analysing' ? 'Analysing...' : 'Analyse'}
         </button>
 
-        {status === 'pairs' && (
+        {(status === 'pairs' || status === 'running') && (
           <button
             style={{ ...S.btnPrimary, backgroundColor: '#1d4ed8', opacity: status === 'running' ? 0.6 : 1 }}
             onClick={handleRun}
