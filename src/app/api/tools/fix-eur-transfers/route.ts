@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getAdminSession } from '@/lib/admin-session';
 import { detectTransferPairs, applyTransferFix, TransferPair } from '@/lib/ynab-transfers';
 
 // GET ?dry=true  → detect pairs, no mutations
 // POST           → detect pairs then apply fixes
 export async function GET(req: NextRequest) {
+  const session = await getAdminSession();
+  if (!session.isLoggedIn) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const isDry = req.nextUrl.searchParams.get('dry') === 'true';
 
   if (!isDry) {
@@ -20,6 +26,11 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(_req: NextRequest) {
+  const session = await getAdminSession();
+  if (!session.isLoggedIn) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const pairs: TransferPair[] = await detectTransferPairs();
 
