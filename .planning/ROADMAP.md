@@ -79,7 +79,7 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
 
 Plans:
 **Wave 1**
-- [ ] 29-01-PLAN.md — API route + detection logic + apply logic
+- [x] 29-01-PLAN.md — API route + detection logic + apply logic
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 29-02-PLAN.md — Tools page UI: Analyse → Run → Result flow

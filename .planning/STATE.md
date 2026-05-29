@@ -4,8 +4,8 @@ milestone: v6.2
 milestone_name: Settings & UX Polish
 status: executing
 stopped_at: Phase 29 UI-SPEC approved
-last_updated: "2026-05-29T18:27:38.421Z"
-last_activity: 2026-05-29 -- Phase 29 planning complete
+last_updated: "2026-05-29T18:50:13.673Z"
+last_activity: 2026-05-29 -- Phase 29 execution started
 progress:
   total_phases: 10
   completed_phases: 9
@@ -23,14 +23,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-16)
 
 **Core value:** Forwarded order confirmation email → YNAB transaction, fully automated, with zero per-transaction effort.
-**Current focus:** v6.2 Settings & UX Polish — restructure settings nav, remove Amazon-specific labels, make forwarding address prominent
+**Current focus:** Phase 29 — eur-gbp-transfer-reconciliation
 
 ## Current Position
 
-Phase: 28 — Forwarding Address Prominence
-Plan: 28-01 (complete)
-Status: Ready to execute
-Last activity: 2026-05-29 -- Phase 29 planning complete
+Phase: 29 (eur-gbp-transfer-reconciliation) — EXECUTING
+Plan: 1 of 2
+Status: Executing Phase 29
+Last activity: 2026-05-29 -- Phase 29 execution started
 
 Progress: [██████████] 100%
 
