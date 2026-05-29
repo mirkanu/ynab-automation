@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v6.2
 milestone_name: Settings & UX Polish
-status: executing
+status: milestone_complete
 stopped_at: Phase 29 UI-SPEC approved
 last_updated: "2026-05-29T18:50:13.673Z"
 last_activity: 2026-05-29 -- Phase 29 execution started
 progress:
   total_phases: 10
-  completed_phases: 9
+  completed_phases: 10
   total_plans: 32
   completed_plans: 30
-  percent: 94
+  percent: 100
 ---
 
 # Amazon to YNAB Automation — Project State
@@ -27,10 +27,10 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 
 ## Current Position
 
-Phase: 29 (eur-gbp-transfer-reconciliation) — EXECUTING
-Plan: 1 of 2
-Status: Executing Phase 29
-Last activity: 2026-05-29 -- Phase 29 execution started
+Phase: 29
+Plan: Not started
+Status: Milestone complete
+Last activity: 2026-05-29
 
 Progress: [██████████] 100%
 
