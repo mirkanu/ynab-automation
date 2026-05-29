@@ -140,9 +140,11 @@ export async function applyTransferFix(pairs: TransferPair[]): Promise<FixResult
   const results: FixResult[] = [];
 
   for (const pair of pairs) {
+    let eurDeleted = false;
     try {
       // Step 1: Delete raw EUR outgoing txn
       await ynabFetch(token, `/budgets/${budgetId}/transactions/${pair.eurTxnId}`, { method: 'DELETE' });
+      eurDeleted = true;
 
       // Step 2: Update GBP incoming txn payee to "Transfer : €Wise Euro"
       await ynabFetch(token, `/budgets/${budgetId}/transactions/${pair.gbpTxnId}`, {
@@ -170,6 +172,10 @@ export async function applyTransferFix(pairs: TransferPair[]): Promise<FixResult
         success: true,
       });
     } catch (err) {
+      const baseMessage = err instanceof Error ? err.message : String(err);
+      const errorMessage = eurDeleted
+        ? `EUR txn deleted but GBP update failed — manual cleanup required: ${baseMessage}`
+        : baseMessage;
       results.push({
         eurTxnId: pair.eurTxnId,
         gbpTxnId: pair.gbpTxnId,
@@ -177,7 +183,7 @@ export async function applyTransferFix(pairs: TransferPair[]): Promise<FixResult
         gbpAmountMilliunits: pair.gbpAmountMilliunits,
         date: pair.date,
         success: false,
-        error: err instanceof Error ? err.message : String(err),
+        error: errorMessage,
       });
     }
   }
