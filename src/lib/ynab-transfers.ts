@@ -1,4 +1,4 @@
-import { getSetting } from '@/lib/settings';
+import { getSetting } from '@/lib/settings'; // used for YNAB_ACCESS_TOKEN and YNAB_BUDGET_ID
 
 // Hardcoded account IDs — prototyped and verified 2026-05-29
 const UK_CURRENT_ID = '5bfba3fe-b8d4-41e1-8acb-c10459c99534';
@@ -67,16 +67,16 @@ export async function detectTransferPairs(): Promise<TransferPair[]> {
   if (!token) throw new Error('YNAB_ACCESS_TOKEN not configured in settings');
   const budgetId = await getSetting('YNAB_BUDGET_ID');
   if (!budgetId) throw new Error('YNAB_BUDGET_ID not configured in settings');
-  const currencyAccountsRaw = await getSetting('YNAB_CURRENCY_ACCOUNTS');
-  if (!currencyAccountsRaw) throw new Error('YNAB_CURRENCY_ACCOUNTS not configured in settings');
+  const currencyAccountsRaw = process.env.CURRENCY_ACCOUNTS;
+  if (!currencyAccountsRaw) throw new Error('CURRENCY_ACCOUNTS env var not configured');
   let currencyAccounts: Record<string, string>;
   try {
     currencyAccounts = JSON.parse(currencyAccountsRaw) as Record<string, string>;
   } catch {
-    throw new Error('YNAB_CURRENCY_ACCOUNTS is not valid JSON');
+    throw new Error('CURRENCY_ACCOUNTS env var is not valid JSON');
   }
   const eurAccountId = currencyAccounts['EUR'];
-  if (!eurAccountId) throw new Error('EUR account not found in YNAB_CURRENCY_ACCOUNTS');
+  if (!eurAccountId) throw new Error('EUR account not found in CURRENCY_ACCOUNTS');
 
   const sinceDate = daysAgo(7);
 
