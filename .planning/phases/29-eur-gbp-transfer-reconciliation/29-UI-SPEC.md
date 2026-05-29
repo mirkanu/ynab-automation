@@ -40,25 +40,27 @@ Declared values (multiples of 4):
 | xl | 32px | Layout section breaks |
 | 2xl | 48px | Major section spacing |
 
-Exceptions: 
-- Touch target (button height): 44px minimum (button padding: `0.5625rem` + font size `0.875rem` + line height) achieves ~32px, acceptable for mouse targets
-- None other.
+**Exception (grid offset):**
+- Button touch target: 44px (computed from padding `0.5625rem` + font `0.875rem` + line-height) achieves minimum touch-friendly height for mouse targets. Offset from 8-point grid to accommodate label text size; acceptable deviation for interactive elements.
 
 ---
 
 ## Typography
 
+**Sizes declared:** 4 (20px, 14px, 13px, 12px)
+
+**Weights declared:** 2 (400 regular, 700 bold)
+
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
-| Page Title | 1.25rem (20px) | 700 | 1.2 |
-| Section Title | 1.125rem (18px) | 700 | 1.2 |
+| Page / Section Title | 1.25rem (20px) | 700 | 1.2 |
+| Button | 0.875rem (14px) | 700 | 1.2 |
 | Body | 0.8125rem (13px) | 400 | 1.5 |
-| Label | 0.8125rem (13px) | 600 | 1.4 |
-| Button | 0.875rem (14px) | 600 | 1.2 |
+| Label | 0.8125rem (13px) | 700 | 1.4 |
 | Table text | 0.8125rem (13px) | 400 | 1.5 |
 | Hint/Secondary | 0.75rem (12px) | 400 | 1.4 |
 
-**Weights used:** 400 (regular), 600 (semibold), 700 (bold)
+**Note:** Section title and page title merged at 20px/700. Button labels use 700 (bold) for visual prominence.
 
 ---
 
@@ -144,9 +146,9 @@ Accent (#2563eb) reserved for:
 **Styling:** Use the consistent S object pattern from TestParseForm:
 ```
 section: white card, 12px border-radius, 1.5rem padding, subtle shadow
-sectionTitle: 1.125rem, weight 700, dark gray
-sectionDesc: 0.8125rem, weight 400, medium gray, 1.5 line-height
-btnPrimary: #2563eb, white text, 0.875rem, weight 600, 6px border-radius
+sectionTitle: 1.25rem (20px), weight 700, dark gray
+sectionDesc: 0.8125rem (13px), weight 400, medium gray, 1.5 line-height
+btnPrimary: #2563eb, white text, 0.875rem (14px), weight 700, 6px border-radius
 error: background #fef2f2, border 1px #fecaca, text #dc2626, padding 0.625rem 0.875rem
 ```
 
@@ -161,7 +163,7 @@ error: background #fef2f2, border 1px #fecaca, text #dc2626, padding 0.625rem 0.
 - Confidence (percentage, e.g. "95%", styled green for >80%, yellow for 50-80%, red for <50%)
 
 **Table styling:**
-- Header: bold (600), font-size 0.8125rem, text-align left, uppercase label styling
+- Header: bold (700), font-size 0.8125rem (13px), text-align left, uppercase label styling
 - Rows: alternating background (none / light gray on every other row for readability)
 - Row height: ~2rem per row
 - Margins: 1rem top + bottom
