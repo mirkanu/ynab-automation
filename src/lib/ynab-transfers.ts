@@ -101,10 +101,12 @@ export async function detectTransferPairs(): Promise<TransferPair[]> {
   ].filter(t => !t.deleted && t.amount > 0 && t.transfer_account_id === null);
 
   const pairs: TransferPair[] = [];
+  const usedGbpIds = new Set<string>();
 
   for (const eur of eurOutgoing) {
-    const matchingGbp = gbpTxns.find(g => g.date === eur.date);
+    const matchingGbp = gbpTxns.find(g => g.date === eur.date && !usedGbpIds.has(g.id));
     if (!matchingGbp) continue;
+    usedGbpIds.add(matchingGbp.id);
 
     const payee = (eur.payee_name ?? '').toLowerCase();
     const confidence = payee.includes('converted') ? 95 : 80;
