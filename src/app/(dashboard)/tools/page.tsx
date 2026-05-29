@@ -1,6 +1,7 @@
 import { getSetting } from '@/lib/settings'
 import SettingsForm from '../settings/SettingsForm'
 import TestParseForm from './TestParseForm';
+import FixEurGbpTransfersCard from './FixEurGbpTransfersCard';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,6 +25,7 @@ export default async function ToolsPage() {
       </p>
       <SettingsForm testMode={testMode} />
       <TestParseForm defaultSenderName={defaultSenderName} />
+      <FixEurGbpTransfersCard />
     </div>
   );
 }
