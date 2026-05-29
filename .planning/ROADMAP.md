@@ -82,7 +82,7 @@ Plans:
 - [x] 29-01-PLAN.md — API route + detection logic + apply logic
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 29-02-PLAN.md — Tools page UI: Analyse → Run → Result flow
+- [x] 29-02-PLAN.md — Tools page UI: Analyse → Run → Result flow
 
 ## Backlog
 
