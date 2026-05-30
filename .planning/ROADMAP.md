@@ -271,8 +271,11 @@ Note: Changes stay local until user manually tests at production. No git push un
   1. Admin can click "Email Automation" in the sidebar and navigate to any of its three sub-pages (Activity Log, Rules, Test & Replay) — each sub-page loads its existing content unchanged.
   2. Admin can click "Currency" in the sidebar and navigate to any of its three sub-pages (EUR→GBP Transfers, EUR Conversion, EUR Reconciliation) — EUR→GBP Transfers and EUR Reconciliation load the existing tools; EUR Conversion shows a placeholder.
   3. The old top-level "Logs" and "Rules" navigation items no longer appear — there are no duplicate nav entries for the same pages.
-**Plans:** TBD
-**UI hint**: yes
+**Plans:** 2 plans
+
+Plans:
+- [ ] 31-01-PLAN.md — Create Navigation component and nested route pages
+- [ ] 31-02-PLAN.md — Wire Navigation into layout and human verification checkpoint
 
 ### Phase 32: Dashboard Redesign
 **Milestone:** v6.4
