@@ -274,7 +274,10 @@ Note: Changes stay local until user manually tests at production. No git push un
 **Plans:** 2 plans
 
 Plans:
+**Wave 1**
 - [ ] 31-01-PLAN.md — Create Navigation component and nested route pages
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 31-02-PLAN.md — Wire Navigation into layout and human verification checkpoint
 
 ### Phase 32: Dashboard Redesign
