@@ -57,8 +57,8 @@ export async function getReconciliationStatus(): Promise<ReconciliationStatus> {
   if (!ynabToken) throw new Error('YNAB_ACCESS_TOKEN not configured');
   const budgetId = await getSetting('YNAB_BUDGET_ID');
   if (!budgetId) throw new Error('YNAB_BUDGET_ID not configured');
-  const wiseToken = process.env.YNAB_WISE_API_TOKEN;
-  if (!wiseToken) throw new Error('YNAB_WISE_API_TOKEN env var not set');
+  const wiseToken = process.env.WISE_API_TOKEN;
+  if (!wiseToken) throw new Error('WISE_API_TOKEN env var not set');
 
   const [balancesRaw, ratesRaw, accountRaw, txnsRaw] = await Promise.all([
     wiseFetch(wiseToken, `/v4/profiles/${WISE_PROFILE_ID}/balances?types=STANDARD`),
