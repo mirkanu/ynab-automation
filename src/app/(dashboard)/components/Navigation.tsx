@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
 interface NavItem {
   label: string;
@@ -41,6 +42,21 @@ export default function Navigation() {
     emailAutomation: false,
     currency: false,
   });
+  const navRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    function handleOutside(event: MouseEvent | FocusEvent) {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        setExpandedSections({ emailAutomation: false, currency: false });
+      }
+    }
+    document.addEventListener('mousedown', handleOutside);
+    document.addEventListener('focusin', handleOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleOutside);
+      document.removeEventListener('focusin', handleOutside);
+    };
+  }, []);
 
   function toggleSection(key: string) {
     setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
@@ -51,18 +67,25 @@ export default function Navigation() {
   }
 
   return (
-    <nav style={{
-      display: 'flex',
-      gap: '1.5rem',
-      padding: '0.5rem 1.5rem',
-      backgroundColor: '#f9fafb',
-      borderBottom: '1px solid #e5e7eb',
-      fontSize: '0.8125rem',
-      fontWeight: 400,
-      alignItems: 'flex-start',
-      flexWrap: 'wrap',
-    }}>
-      <a
+    <nav
+      ref={navRef}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') {
+          setExpandedSections({ emailAutomation: false, currency: false });
+        }
+      }}
+      style={{
+        display: 'flex',
+        gap: '1.5rem',
+        padding: '0.5rem 1.5rem',
+        backgroundColor: '#f9fafb',
+        borderBottom: '1px solid #e5e7eb',
+        fontSize: '0.8125rem',
+        fontWeight: 400,
+        alignItems: 'flex-start',
+        flexWrap: 'wrap',
+      }}>
+      <Link
         href="/dashboard"
         aria-current={isActive('/dashboard') ? 'page' : undefined}
         style={{
@@ -72,71 +95,74 @@ export default function Navigation() {
         }}
       >
         Dashboard
-      </a>
+      </Link>
 
-      {NAV_SECTIONS.map(section => (
-        <div key={section.key} style={{ position: 'relative' }}>
-          <button
-            onClick={() => toggleSection(section.key)}
-            aria-expanded={expandedSections[section.key]}
-            aria-label={expandedSections[section.key] ? `Collapse ${section.label}` : `Expand ${section.label}`}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#374151',
-              cursor: 'pointer',
-              padding: '0',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.25rem',
-              fontSize: '0.8125rem',
-              fontWeight: 400,
-            }}
-          >
-            {section.label}
-            <span style={{
-              display: 'inline-block',
-              transform: expandedSections[section.key] ? 'rotate(180deg)' : 'rotate(0deg)',
-              transition: 'transform 0.2s ease',
-              fontSize: '0.625rem',
-            }}>▼</span>
-          </button>
+      {NAV_SECTIONS.map(section => {
+        const sectionActive = section.items.some(item => isActive(item.href));
+        return (
+          <div key={section.key} style={{ position: 'relative' }}>
+            <button
+              onClick={() => toggleSection(section.key)}
+              aria-expanded={expandedSections[section.key]}
+              aria-label={expandedSections[section.key] ? `Collapse ${section.label}` : `Expand ${section.label}`}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: sectionActive ? '#111827' : '#374151',
+                cursor: 'pointer',
+                padding: '0',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+                fontSize: '0.8125rem',
+                fontWeight: sectionActive ? 700 : 400,
+              }}
+            >
+              {section.label}
+              <span style={{
+                display: 'inline-block',
+                transform: expandedSections[section.key] ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s ease',
+                fontSize: '0.625rem',
+              }}>▼</span>
+            </button>
 
-          {expandedSections[section.key] && (
-            <div style={{
-              position: 'absolute',
-              top: '100%',
-              left: 0,
-              zIndex: 10,
-              backgroundColor: '#f9fafb',
-              border: '1px solid #e5e7eb',
-              borderTop: 'none',
-              minWidth: '160px',
-              padding: '0.25rem 0',
-            }}>
-              {section.items.map(item => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  aria-current={isActive(item.href) ? 'page' : undefined}
-                  style={{
-                    display: 'block',
-                    padding: '0.375rem 1rem',
-                    color: isActive(item.href) ? '#111827' : '#374151',
-                    fontWeight: isActive(item.href) ? 700 : 400,
-                    fontSize: '0.8125rem',
-                    textDecoration: 'none',
-                  }}
-                >
-                  {item.label}
-                </a>
-              ))}
-            </div>
-          )}
-        </div>
-      ))}
+            {expandedSections[section.key] && (
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                zIndex: 10,
+                backgroundColor: '#f9fafb',
+                border: '1px solid #e5e7eb',
+                borderTop: 'none',
+                minWidth: '160px',
+                padding: '0.25rem 0',
+              }}>
+                {section.items.map(item => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    aria-current={isActive(item.href) ? 'page' : undefined}
+                    style={{
+                      display: 'block',
+                      padding: '0.375rem 1rem',
+                      color: isActive(item.href) ? '#111827' : '#374151',
+                      fontWeight: isActive(item.href) ? 700 : 400,
+                      fontSize: '0.8125rem',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
 
-      <a
+      <Link
         href="/settings"
         aria-current={isActive('/settings') ? 'page' : undefined}
         style={{
@@ -146,7 +172,7 @@ export default function Navigation() {
         }}
       >
         Settings
-      </a>
+      </Link>
     </nav>
   );
 }
