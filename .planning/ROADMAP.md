@@ -11,6 +11,7 @@
 - ✅ **v6.1** — README & Onboarding Polish (2026-04-16)
 - ✅ **v6.2** — Settings & UX Polish (2026-05-06)
 - ✅ **v6.3** — Financial Reconciliation Tools (2026-05-30)
+- 🔄 **v6.4** — Currency Tools & UI Consolidation (in progress)
 
 ## Phases
 
@@ -69,6 +70,13 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
 
 - [x] **Phase 29: EUR→GBP Transfer Reconciliation** — completed 2026-05-29
 - [x] **Phase 30: EUR Wise Account Reconciliation** — completed 2026-05-30
+
+### 🔄 v6.4 Currency Tools & UI Consolidation (Phases 31-34) — IN PROGRESS
+
+- [ ] **Phase 31: Navigation Restructure** — Not started
+- [ ] **Phase 32: Dashboard Redesign** — Not started
+- [ ] **Phase 33: EUR Multi-Currency Converter** — Not started
+- [ ] **Phase 34: Currency Workflow Integration** — Not started
 
 ## Phase Details
 
@@ -254,6 +262,53 @@ Note: Changes stay local until user manually tests at production. No git push un
 **Plans:** 1/1 plans complete
 **Completed:** 2026-05-30
 
+### Phase 31: Navigation Restructure
+**Milestone:** v6.4
+**Goal:** The admin navigation is reorganized into two new top-level sections — Email Automation (containing Activity Log, Rules, and Test & Replay sub-pages) and Currency (containing EUR→GBP Transfers, EUR Conversion, and EUR Reconciliation sub-pages) — replacing the current flat "Logs" and "Rules" top-level items.
+**Depends on:** Phase 30 (v6.3 shipped; stable nav foundation before restructuring)
+**Requirements:** NAV-03, NAV-04
+**Success Criteria** (what must be TRUE):
+  1. Admin can click "Email Automation" in the sidebar and navigate to any of its three sub-pages (Activity Log, Rules, Test & Replay) — each sub-page loads its existing content unchanged.
+  2. Admin can click "Currency" in the sidebar and navigate to any of its three sub-pages (EUR→GBP Transfers, EUR Conversion, EUR Reconciliation) — EUR→GBP Transfers and EUR Reconciliation load the existing tools; EUR Conversion shows a placeholder.
+  3. The old top-level "Logs" and "Rules" navigation items no longer appear — there are no duplicate nav entries for the same pages.
+**Plans:** TBD
+**UI hint**: yes
+
+### Phase 32: Dashboard Redesign
+**Milestone:** v6.4
+**Goal:** The dashboard is replaced with a two-panel overview: an Email Automation panel summarising last email processed, success rate, and last YNAB transaction; and a Currency panel summarising the last run date and outcome for each of the three currency tools.
+**Depends on:** Phase 31 (nav structure defines the two sections; dashboard panels mirror those sections)
+**Requirements:** DASH-03, DASH-04
+**Success Criteria** (what must be TRUE):
+  1. Admin opens the dashboard and sees an Email Automation panel showing the timestamp of the last processed email, the overall success rate, and the payee/amount of the last YNAB transaction created.
+  2. Admin opens the dashboard and sees a Currency panel showing the last transfer-fix run (date and number of pairs fixed), last EUR conversion run (date and number of transactions converted), and last reconciliation (date and gap amount).
+  3. Both panels update after running the corresponding tools — running EUR Reconciliation causes the Currency panel's last-reconciliation row to reflect the new run without a manual page reload.
+**Plans:** TBD
+**UI hint**: yes
+
+### Phase 33: EUR Multi-Currency Converter
+**Milestone:** v6.4
+**Goal:** A new Currency > EUR Conversion tool detects all unreconciled, unconverted EUR transactions in the €Wise Euro YNAB account, fetches the historical EUR→GBP rate for each transaction date from Frankfurter, shows a preview table, and bulk-applies conversions — updating each transaction's GBP amount and appending a conversion memo marker.
+**Depends on:** Phase 31 (Currency nav section and EUR Conversion route must exist before content can be built)
+**Requirements:** CONV-01, CONV-02, CONV-03, CONV-04, CONV-05
+**Success Criteria** (what must be TRUE):
+  1. Admin opens Currency > EUR Conversion and sees a table of all unreconciled EUR transactions that have no conversion memo marker — showing date, payee, EUR amount, historical EUR→GBP rate, and calculated GBP result for each.
+  2. Already-reconciled transactions are absent from the table and cannot be selected or modified.
+  3. Admin clicks "Apply Conversions" and each listed transaction is updated in YNAB with the correct GBP amount and a memo appended in the format `EUR X.XX @ Y.YYYY` — confirmed by re-opening the tool and seeing an empty pending list.
+**Plans:** TBD
+
+### Phase 34: Currency Workflow Integration
+**Milestone:** v6.4
+**Goal:** The Currency section gains a visible numbered 3-step workflow UI (1. EUR→GBP Transfers → 2. EUR Conversion → 3. EUR Reconciliation) with last-run status badges on each step, and the EUR Reconciliation tool gains a pre-flight check that warns the admin if unconverted transactions remain — with a count, a link to the EUR Conversion tool, and an option to proceed anyway.
+**Depends on:** Phase 33 (EUR Conversion tool must exist before it can be linked from the pre-flight warning and included as workflow step 2)
+**Requirements:** WKFL-01, WKFL-02, WKFL-03
+**Success Criteria** (what must be TRUE):
+  1. Admin opens the Currency section and sees three numbered steps displayed in order, each showing the tool name and a last-run status badge (e.g. "Last run: 2 days ago" or "Never run").
+  2. Admin opens EUR Reconciliation with unconverted transactions present — the tool displays a warning stating how many unconverted transactions exist and includes a direct link to the EUR Conversion page, before showing the reconciliation controls.
+  3. Admin clicks "Proceed anyway" on the pre-flight warning and can complete reconciliation normally — the warning does not block the workflow, only surfaces the risk.
+**Plans:** TBD
+**UI hint**: yes
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -279,3 +334,7 @@ Note: Changes stay local until user manually tests at production. No git push un
 | 28. Forwarding Address Prominence | v6.2 | 2/2 | Complete | 2026-05-06 |
 | 29. EUR→GBP Transfer Reconciliation | v6.3 | 2/2 | Complete | 2026-05-29 |
 | 30. EUR Wise Account Reconciliation | v6.3 | 1/1 | Complete | 2026-05-30 |
+| 31. Navigation Restructure | v6.4 | 0/? | Not started | - |
+| 32. Dashboard Redesign | v6.4 | 0/? | Not started | - |
+| 33. EUR Multi-Currency Converter | v6.4 | 0/? | Not started | - |
+| 34. Currency Workflow Integration | v6.4 | 0/? | Not started | - |
