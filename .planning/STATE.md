@@ -1,17 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v6.0
-milestone_name: Single-Tenant Rollback
+milestone: v6.4
+milestone_name: Currency Tools & UI Consolidation
 status: planning
-stopped_at: context exhaustion at 90% (2026-04-22)
-last_updated: "2026-04-22T14:03:32.882Z"
-last_activity: 2026-04-16 — Roadmap created for v6.2
+last_updated: "2026-05-30T12:33:19.865Z"
+last_activity: 2026-05-30
 progress:
-  total_phases: 28
-  completed_phases: 26
-  total_plans: 72
-  completed_plans: 72
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Amazon to YNAB Automation — Project State
@@ -27,12 +26,10 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 
 ## Current Position
 
-Phase: 27 — Settings Restructure & Label Cleanup
+Phase: Not started (defining requirements)
 Plan: —
-Status: Not started (roadmapped, ready for planning)
-Last activity: 2026-04-16 — Roadmap created for v6.2
-
-Progress: [░░░░░░░░░░] 0%
+Status: Defining requirements
+Last activity: 2026-05-30 — Milestone v6.4 started
 
 ## Roadmap Summary (v6.2)
 

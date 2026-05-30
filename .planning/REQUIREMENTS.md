@@ -1,56 +1,74 @@
-# Requirements: YNAB Automation — v6.2 Settings & UX Polish
+# Requirements: YNAB Automation — v6.4 Currency Tools & UI Consolidation
 
-**Defined:** 2026-04-16
+**Defined:** 2026-05-30
 **Core Value:** Forwarded order confirmation email → YNAB transaction, fully automated, with zero per-transaction effort.
 
 ## v1 Requirements
 
-Requirements for v6.2 milestone.
+Requirements for v6.4 milestone.
 
-### UI Labels
+### Navigation Restructure
 
-- [x] **LABEL-01**: Wizard step 3 and setup/done page use generic wording ("transactions") instead of "Amazon transactions"
+- [ ] **NAV-03**: Admin can navigate to an Email Automation section containing sub-pages: Activity Log, Rules, and Test & Replay (current top-level "Logs" and "Rules" fold into this section)
+- [ ] **NAV-04**: Admin can navigate to a Currency section containing sub-pages: EUR→GBP Transfers, EUR Conversion, and EUR Reconciliation
 
-### Settings Restructure
+### Dashboard
 
-- [x] **NAV-01**: Settings page split into two nav items: "Rules" (sender routing, currency routing) and "Settings" (API keys, YNAB connection, admin password)
-- [x] **NAV-02**: Test Mode toggle moved from Settings to Tools page
+- [ ] **DASH-03**: Dashboard Email Automation panel shows last email processed timestamp, success rate, and last YNAB transaction created
+- [ ] **DASH-04**: Dashboard Currency panel shows last transfer-fix run (date + pairs fixed), last EUR conversion run (date + transactions converted), and last reconciliation (date + gap amount)
 
-### Forwarding Address Visibility
+### EUR Conversion
 
-- [ ] **FWD-01**: Dashboard shows the inbound email/forwarding address prominently — first thing the user sees, not buried in a card below stats
-- [ ] **FWD-02**: Wizard done page clearly highlights the forwarding address with copy-to-clipboard and explains what to do with it
+- [ ] **CONV-01**: Admin can view all unreconciled, unconverted EUR transactions in the €Wise Euro YNAB account (transactions with no conversion memo marker and not yet reconciled)
+- [ ] **CONV-02**: Each pending transaction displays the historical EUR→GBP rate for its date, fetched from the Frankfurter API
+- [ ] **CONV-03**: Admin can preview the full set of pending conversions before applying — table shows date, payee, EUR amount, rate, and GBP result
+- [ ] **CONV-04**: Admin can bulk-apply all conversions — YNAB transactions are updated with GBP amount and memo is appended with `EUR X.XX @ Y.YYYY`
+- [ ] **CONV-05**: Already-reconciled transactions are excluded from conversion detection and cannot be modified by the converter
 
-## v2 Requirements
+### Currency Workflow
 
-Deferred to future release.
+- [ ] **WKFL-01**: Currency section displays a numbered 3-step workflow (1. EUR→GBP Transfers → 2. EUR Conversion → 3. EUR Reconciliation) with last-run status indicators for each step
+- [ ] **WKFL-02**: EUR Reconciliation tool runs a pre-flight check before allowing reconciliation and warns (with unconverted transaction count and link to EUR Conversion) if any cleared unreconciled transactions lack a conversion memo
+- [ ] **WKFL-03**: Admin can override the pre-flight warning and proceed with reconciliation anyway
 
-### Smart Categorization
+## Future Requirements
 
-- **SMART-01**: Auto-categorize transactions based on email content (e.g. Amazon purchase of "kitchen supplies" → Household category)
+### Automation
+
+- **AUTO-01**: Scheduled nightly conversion run (no manual trigger needed) — deferred; manual preview sufficient for household volume
+- **AUTO-02**: Non-EUR currency support (CHF, USD) — deferred; only EUR accounts in use currently
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Full Settings redesign / component library | Polish only — keep existing inline styles |
-| New dashboard widgets | Focus is on forwarding address prominence, not new features |
+| Non-EUR currencies (CHF, USD) | Only EUR accounts are active; complexity not justified |
+| Automatic daily sync | Manual trigger with preview is the right default for financial ops |
+| Crypto currency support | No crypto accounts in YNAB |
+| Separate currency conversion API key | Frankfurter is free and keyless |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LABEL-01 | Phase 27 | Complete |
-| NAV-01 | Phase 27 | Complete |
-| NAV-02 | Phase 27 | Complete |
-| FWD-01 | Phase 28 | Pending |
-| FWD-02 | Phase 28 | Pending |
+| NAV-03 | Phase 31 | Pending |
+| NAV-04 | Phase 31 | Pending |
+| DASH-03 | Phase 32 | Pending |
+| DASH-04 | Phase 32 | Pending |
+| CONV-01 | Phase 33 | Pending |
+| CONV-02 | Phase 33 | Pending |
+| CONV-03 | Phase 33 | Pending |
+| CONV-04 | Phase 33 | Pending |
+| CONV-05 | Phase 33 | Pending |
+| WKFL-01 | Phase 34 | Pending |
+| WKFL-02 | Phase 34 | Pending |
+| WKFL-03 | Phase 34 | Pending |
 
 **Coverage:**
-- v1 requirements: 5 total
-- Mapped to phases: 5
-- Unmapped: 0
+- v1 requirements: 12 total
+- Mapped to phases: 12
+- Unmapped: 0 ✓
 
 ---
-*Requirements defined: 2026-04-16*
-*Last updated: 2026-04-16 after v6.2 roadmap creation (Phases 27-28)*
+*Requirements defined: 2026-05-30*
+*Last updated: 2026-05-30 after milestone v6.4 kickoff*
