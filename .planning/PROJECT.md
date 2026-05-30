@@ -10,7 +10,7 @@ Forwarded order confirmation email → YNAB transaction, fully automated, with z
 
 ## Current State
 
-v6.3 shipped 2026-05-30. App runs on Hetzner VPS (`hetzner-vps`) as a Docker container (`ynab-api`, port 3001), with PostgreSQL (`ynab-db`). Includes two currency tools: EUR→GBP transfer reconciliation and EUR Wise account reconciliation. Phase 32 complete — dashboard redesigned with two-panel layout: Email Automation panel (server-rendered stats) and Currency panel (live-polling tool status). Forwarding Address grouped under Email Automation.
+v6.3 shipped 2026-05-30. App runs as a Docker container (`ynab-api`, port 3001), with PostgreSQL (`ynab-db`). Includes two currency tools: EUR→GBP transfer reconciliation and EUR Wise account reconciliation. Phase 32 complete — dashboard redesigned with two-panel layout: Email Automation panel (server-rendered stats) and Currency panel (live-polling tool status). Forwarding Address grouped under Email Automation.
 
 ## Current Milestone: v6.4 Currency Tools & UI Consolidation
 
@@ -80,7 +80,7 @@ v6.3 shipped 2026-05-30. App runs on Hetzner VPS (`hetzner-vps`) as a Docker con
 
 - Stack: Next.js (App Router, TypeScript) + PostgreSQL 16 + Prisma + iron-session
 - Inbound email: Pipedream → `/api/webhook` (active path)
-- Deployment: Hetzner VPS, Docker Compose (`/home/services/hetzner-vps/docker-compose.yml`)
+- Deployment: Docker Compose (self-hosted VPS)
 - Currency APIs: Wise API (live rates, account balances) + Frankfurter (historical ECB rates, free, no key)
 - YNAB accounts in use: €Wise Euro (EUR), Wise GBP (GBP), others
 - Single admin household; no multi-user, no public signup
@@ -88,8 +88,8 @@ v6.3 shipped 2026-05-30. App runs on Hetzner VPS (`hetzner-vps`) as a Docker con
 ## Constraints
 
 - **No new API keys**: Frankfurter is free and keyless — no account needed
-- **Hetzner VPS memory**: 3.7GB total, ~1.8GB available — keep builds lean
-- **Deploy via SSH**: `ssh hetzner-vps "git -C /home/services/ynab fetch..."`
+- **VPS memory**: limited RAM — keep builds lean
+- **Deploy via SSH**: pull + docker compose rebuild on server
 - **Privacy**: YNAB PAT stored as DB Setting, not committed to code
 
 ## Key Decisions
