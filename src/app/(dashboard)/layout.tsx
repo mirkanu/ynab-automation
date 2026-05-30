@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { getAdminSession } from '@/lib/admin-session'
 import { getSetting } from '@/lib/settings'
 import TestModeBanner from './components/TestModeBanner'
+import Navigation from './components/Navigation'
 
 export const dynamic = 'force-dynamic'
 
@@ -48,21 +49,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
           </button>
         </form>
       </header>
-      <nav style={{
-        display: 'flex',
-        gap: '1.5rem',
-        padding: '0.5rem 1.5rem',
-        backgroundColor: '#f9fafb',
-        borderBottom: '1px solid #e5e7eb',
-        fontSize: '0.8125rem',
-        fontWeight: 500,
-      }}>
-        <a href="/dashboard" style={{ color: '#374151', textDecoration: 'none' }}>Dashboard</a>
-        <a href="/logs" style={{ color: '#374151', textDecoration: 'none' }}>Activity Log</a>
-        <a href="/rules" style={{ color: '#374151', textDecoration: 'none' }}>Rules</a>
-        <a href="/settings" style={{ color: '#374151', textDecoration: 'none' }}>Settings</a>
-        <a href="/tools" style={{ color: '#374151', textDecoration: 'none' }}>Tools</a>
-      </nav>
+      <Navigation />
       <TestModeBanner testMode={testMode} />
       <main style={{ padding: '1.5rem' }}>
         {children}
