@@ -70,13 +70,17 @@ function ToolRow({
 
 export default function CurrencyPanel() {
   const [data, setData] = useState<LastToolRuns | null>(null)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
     function fetchStatus() {
       fetch('/api/dashboard/currency-status')
-        .then(r => r.json())
-        .then((d: LastToolRuns) => setData(d))
-        .catch(() => {})
+        .then(r => {
+          if (!r.ok) throw new Error(`HTTP ${r.status}`)
+          return r.json()
+        })
+        .then((d: LastToolRuns) => { setData(d); setError(false) })
+        .catch(() => setError(true))
     }
 
     fetchStatus()
@@ -94,6 +98,12 @@ export default function CurrencyPanel() {
           Financial tools status
         </div>
       </div>
+
+      {error && (
+        <div style={{ fontSize: '0.8125rem', color: '#991b1b', marginBottom: '0.75rem' }}>
+          Unable to load status
+        </div>
+      )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <ToolRow
