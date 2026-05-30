@@ -9,7 +9,8 @@
 - ✅ **v5.0** — Multi-Tenant SaaS (2026-04-10) → [archive](.planning/milestones/v5.0-ROADMAP.md)
 - ✅ **v6.0** — Single-Tenant Rollback (2026-04-16)
 - ✅ **v6.1** — README & Onboarding Polish (2026-04-16)
-- 🔄 **v6.2** — Settings & UX Polish (in progress)
+- ✅ **v6.2** — Settings & UX Polish (2026-05-06)
+- ✅ **v6.3** — Financial Reconciliation Tools (2026-05-30)
 
 ## Phases
 
@@ -59,10 +60,15 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
 
 - [x] **Phase 26: README & Onboarding Polish** — completed 2026-04-16
 
-### 🔄 v6.2 Settings & UX Polish (Phases 27-28) — In Progress
+### ✅ v6.2 Settings & UX Polish (Phases 27-28) — SHIPPED 2026-05-06
 
-- [x] **Phase 27: Settings Restructure & Label Cleanup** — not started (completed 2026-04-16)
-- [ ] **Phase 28: Forwarding Address Prominence** — not started
+- [x] **Phase 27: Settings Restructure & Label Cleanup** — completed 2026-04-16
+- [x] **Phase 28: Forwarding Address Prominence** — completed 2026-05-06
+
+### ✅ v6.3 Financial Reconciliation Tools (Phases 29-30) — SHIPPED 2026-05-30
+
+- [x] **Phase 29: EUR→GBP Transfer Reconciliation** — completed 2026-05-29
+- [x] **Phase 30: EUR Wise Account Reconciliation** — completed 2026-05-30
 
 ## Phase Details
 
@@ -225,6 +231,29 @@ Note: Changes stay local until user manually tests at production. No git push un
 
 Note: Changes stay local until user manually tests at production. No git push until user signs off.
 
+### Phase 29: EUR→GBP Transfer Reconciliation
+**Milestone:** v6.3
+**Goal:** When Wise converts EUR→GBP, the two raw transactions (EUR outflow + GBP inflow) are automatically linked as a proper YNAB transfer, clearing both sides and removing the unmatched entries.
+**Depends on:** Phase 22 (YNAB PAT in settings DB), Phase 27 (Tools page exists)
+**Success Criteria:**
+  1. GET `/api/tools/fix-eur-transfers?dry=true` detects unmatched EUR→GBP transfer pairs from the last 7 days.
+  2. POST `/api/tools/fix-eur-transfers` deletes the raw EUR outflow, sets the GBP inflow payee to "Transfer : €Wise Euro", and marks the auto-created counterpart as cleared.
+  3. The Tools page card shows detected pairs before applying, with confidence scores.
+**Plans:** 2/2 plans complete
+**Completed:** 2026-05-29
+
+### Phase 30: EUR Wise Account Reconciliation
+**Milestone:** v6.3
+**Goal:** A one-click tool on the Tools page reconciles the €Wise Euro YNAB account against the live Wise EUR balance: fetches the real balance via Wise API, converts to GBP using the live Wise rate, computes the gap, asks for the current interest rate, reports what percentage of the gap is explained by interest, then creates a "Wise Interest (Reconciliation)" adjustment and marks all cleared transactions as reconciled.
+**Depends on:** Phase 29 (Tools page pattern established; Wise API token available)
+**Success Criteria:**
+  1. "Check Balances" fetches Wise EUR balance + live EUR→GBP rate and shows the gap against YNAB cleared balance.
+  2. If Wise GBP equivalent < YNAB cleared, the tool blocks with a warning instead of reconciling.
+  3. User enters interest rate → tool shows "X% over Y days accounts for £Z of £W gap (N%)".
+  4. "Accept & Reconcile" creates a `Wise Interest (Reconciliation)` transaction with memo `EURx to GBPy, interest z%` and marks all cleared transactions as reconciled in one operation.
+**Plans:** 1/1 plans complete
+**Completed:** 2026-05-30
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -246,5 +275,7 @@ Note: Changes stay local until user manually tests at production. No git push un
 | 24. Test Suite Cleanup & Self-Host Docs | v6.0 | 3/4 | Complete | 2026-04-16 |
 | 25. Self-Host Polish | v6.0 | 3/4 | Complete | 2026-04-16 |
 | 26. README & Onboarding Polish | v6.1 | 1/1 | Complete | 2026-04-16 |
-| 27. Settings Restructure & Label Cleanup | 3/3 | Complete    | 2026-04-16 | — |
-| 28. Forwarding Address Prominence | v6.2 | 0/TBD | Not started | — |
+| 27. Settings Restructure & Label Cleanup | v6.2 | 3/3 | Complete | 2026-04-16 |
+| 28. Forwarding Address Prominence | v6.2 | 2/2 | Complete | 2026-05-06 |
+| 29. EUR→GBP Transfer Reconciliation | v6.3 | 2/2 | Complete | 2026-05-29 |
+| 30. EUR Wise Account Reconciliation | v6.3 | 1/1 | Complete | 2026-05-30 |
