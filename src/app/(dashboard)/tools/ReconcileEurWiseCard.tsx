@@ -217,9 +217,9 @@ export default function ReconcileEurWiseCard() {
 
           <div style={{ display: 'flex', gap: '0.75rem' }}>
             <button
-              style={{ ...S.btnSuccess, opacity: status === 'running' ? 0.6 : 1 }}
+              style={{ ...S.btnSuccess, opacity: rate <= 0 ? 0.6 : 1 }}
               onClick={handleApply}
-              disabled={status === 'running' || rate <= 0}
+              disabled={rate <= 0}
             >
               Accept &amp; Reconcile
             </button>

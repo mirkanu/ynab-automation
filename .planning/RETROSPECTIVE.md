@@ -53,52 +53,14 @@ Living document. Each milestone appends a new section; cross-milestone trends up
 
 ---
 
-## Milestone: v6.2 — Settings & UX Polish
-
-**Shipped:** 2026-05-29
-**Phases:** 2 (27-28) | **Plans:** 4
-
-### What Was Built
-
-- **Phase 27** — Amazon labels replaced with generic wording; /rules page created hosting SenderRulesSection + CurrencyRulesSection; 5-item nav bar; Settings scoped to credentials only; Test Mode toggle moved to Tools page
-- **Phase 28** — Forwarding address card repositioned above stats grid on dashboard with blue highlight; wizard done page gets copy-to-clipboard block replacing buried inline span
-
-### What Worked
-
-- **Tight scope, rapid execution** — 5 requirements across 2 phases; Phase 27 took ~10 min total (3 plans, label cleanup + nav split + toggle move); Phase 28 took ~8 min. Ultra-lean milestone.
-- **Component co-location pattern** — Rules and Tools pages import from `../settings/` rather than moving files; clean separation of rendering location from server action co-location.
-- **Audit caught Phase 29 regression** — `/gsd-audit-milestone` identified that a Phase 29 fix commit silently reverted FWD-01/FWD-02. Fixed inline at `f4e0272` without a new phase. Demonstrates the audit is load-bearing, not ceremonial.
-
-### What Was Inefficient
-
-- **Phase 28 originally shipped on 2026-04-16 but wasn't audited until 2026-05-29** — 43-day gap between Phase 28 execution and milestone close. The Phase 29 regression would have been caught much earlier with a prompt audit. Lesson: run `/gsd-audit-milestone` within 1-2 days of the final phase completing.
-- **Phase 29 clobbered Phase 28 silently** — `98748bd` overwrote `dashboard/page.tsx` and `setup/done/page.tsx` as collateral damage when wiring `FixEurGbpTransfersCard` into Tools. No conflict markers, no test failure — just silent regression. Lesson: when touching a page that a previous phase also modified, explicitly verify the earlier phase's invariants are preserved.
-
-### Patterns Established
-
-- **Blue-tinted left border for priority UI elements** — `borderLeft: '3px solid #2563eb'`, `backgroundColor: '#eff6ff'` is now the established pattern for visually distinguished dashboard cards
-- **Nav split by concern** — Rules (routing config) / Settings (credentials) / Tools (operational toggles) is a clean taxonomy that scales
-
-### Key Lessons
-
-1. **Audit promptly.** A 43-day gap between final phase and audit allowed a cross-phase regression to sit undetected. Target: audit within 2 days of the final phase completing.
-2. **Cross-phase file ownership needs explicit tracking.** When multiple phases touch the same files, later phases can silently undo earlier work. Consider adding a `guarded_files` field to phase plans for files where invariants must survive subsequent edits.
-
-### Cost Observations
-
-- Sessions: ~3 (Phase 27 execution, Phase 28 execution, audit + gap-close + milestone complete)
-- Notable: Entire milestone was UI-only changes — no new backend logic, no new API routes, no schema changes. Fastest milestone in the project by plan count and execution time.
-
----
-
 ## Cross-Milestone Trends
 
-| Metric | v4.0 | v5.0 | v6.2 |
-|--------|------|------|------|
-| Phases | 6 | 4 | 2 |
-| Plans | 7 | 20 | 4 |
-| Duration | ~3 days | ~3 days + 10 days UAT | ~20 min execution; 43-day audit gap |
-| Post-ship bugs found | 0 (no UAT) | 2 blockers | 1 regression (Phase 29 clobber, fixed by audit) |
+| Metric | v4.0 | v5.0 |
+|--------|------|------|
+| Phases | 6 | 4 |
+| Plans | 7 | 20 |
+| Duration | ~3 days | ~3 days (core) + 10 days (UAT gap) |
+| Post-ship bugs found | 0 (no UAT) | 2 blockers (test mode, middleware) |
 
 ### Recurring Patterns
 
