@@ -24,7 +24,8 @@ export default async function LogsPage({ searchParams }: Props) {
   const status = typeof params.status === 'string' ? params.status : undefined
   const from = typeof params.from === 'string' ? params.from : undefined
   const to = typeof params.to === 'string' ? params.to : undefined
-  const page = typeof params.page === 'string' ? Math.max(1, parseInt(params.page, 10) || 1) : 1
+  const rawPage = parseInt(params.page as string, 10)
+  const page = typeof params.page === 'string' && Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1
 
   const { logs, total, pageSize } = await getActivityLogs({ status, from, to, page })
 
