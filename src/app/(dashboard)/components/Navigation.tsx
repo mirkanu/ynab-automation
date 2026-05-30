@@ -36,18 +36,17 @@ const NAV_SECTIONS: NavSectionConfig[] = [
   },
 ];
 
+const allCollapsed = () => Object.fromEntries(NAV_SECTIONS.map(s => [s.key, false]));
+
 export default function Navigation() {
   const pathname = usePathname();
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    emailAutomation: false,
-    currency: false,
-  });
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(allCollapsed);
   const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     function handleOutside(event: MouseEvent | FocusEvent) {
       if (navRef.current && !navRef.current.contains(event.target as Node)) {
-        setExpandedSections({ emailAutomation: false, currency: false });
+        setExpandedSections(allCollapsed());
       }
     }
     document.addEventListener('mousedown', handleOutside);
@@ -71,7 +70,7 @@ export default function Navigation() {
       ref={navRef}
       onKeyDown={(e) => {
         if (e.key === 'Escape') {
-          setExpandedSections({ emailAutomation: false, currency: false });
+          setExpandedSections(allCollapsed());
         }
       }}
       style={{
