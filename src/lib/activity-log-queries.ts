@@ -4,6 +4,7 @@ export const PAGE_SIZE = 20
 
 export interface DashboardStats {
   thisWeek: { total: number; successes: number; rate: number }
+  lastEmailReceivedAt: Date | null
   lastTransaction: {
     retailer: string
     amount: number
@@ -17,7 +18,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay())
   startOfWeek.setHours(0, 0, 0, 0)
 
-  const [weekLogs, lastSuccess] = await Promise.all([
+  const [weekLogs, lastSuccess, lastEmail] = await Promise.all([
     prisma.activityLog.findMany({
       where: { receivedAt: { gte: startOfWeek } },
       select: { status: true },
@@ -26,6 +27,10 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       where: { status: 'success' },
       orderBy: { createdAt: 'desc' },
       select: { parseResult: true, receivedAt: true },
+    }),
+    prisma.activityLog.findFirst({
+      orderBy: { receivedAt: 'desc' },
+      select: { receivedAt: true },
     }),
   ])
 
@@ -44,7 +49,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     }
   }
 
-  return { thisWeek: { total, successes, rate }, lastTransaction }
+  return { thisWeek: { total, successes, rate }, lastEmailReceivedAt: lastEmail?.receivedAt ?? null, lastTransaction }
 }
 
 export async function getActivityLogs(params: {

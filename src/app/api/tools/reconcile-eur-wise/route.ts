@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminSession } from '@/lib/admin-session';
 import { getReconciliationStatus, applyReconciliation } from '@/lib/ynab-eur-reconciliation';
+import { saveSettings } from '@/lib/settings';
 
 // GET → fetch current balances and gap (no mutations)
 export async function GET(_req: NextRequest) {
@@ -33,6 +34,15 @@ export async function POST(req: NextRequest) {
 
   try {
     const result = await applyReconciliation(interestRate);
+
+    await saveSettings({
+      LAST_RUN_RECONCILIATION: JSON.stringify({
+        runAt: new Date().toISOString(),
+        gapAmount: result.adjustmentGbp,
+        status: 'success',
+      }),
+    });
+
     return NextResponse.json(result);
   } catch (err) {
     return NextResponse.json({ error: err instanceof Error ? err.message : 'Unknown error' }, { status: 500 });
