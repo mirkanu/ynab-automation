@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v6.4
 milestone_name: Currency Tools & UI Consolidation
-status: executing
+status: ready_to_plan
 stopped_at: Phase 32 UI-SPEC approved
 last_updated: "2026-05-30T20:42:15.005Z"
 last_activity: 2026-05-30 -- Phase 32 execution started
 progress:
   total_phases: 15
-  completed_phases: 10
+  completed_phases: 11
   total_plans: 36
   completed_plans: 36
-  percent: 100
+  percent: 73
 ---
 
 # Amazon to YNAB Automation — Project State
@@ -27,10 +27,10 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 
 ## Current Position
 
-Phase: 32 (dashboard-redesign) — EXECUTING
-Plan: 1 of 2
-Status: Executing Phase 32
-Last activity: 2026-05-30 -- Phase 32 execution started
+Phase: 33
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-05-30
 
 ## Roadmap Summary (v6.2)
 

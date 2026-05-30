@@ -74,7 +74,7 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
 ### 🔄 v6.4 Currency Tools & UI Consolidation (Phases 31-34) — IN PROGRESS
 
 - [x] **Phase 31: Navigation Restructure** — completed 2026-05-30
-- [ ] **Phase 32: Dashboard Redesign** — Not started
+- [x] **Phase 32: Dashboard Redesign** — Not started (completed 2026-05-30)
 - [ ] **Phase 33: EUR Multi-Currency Converter** — Not started
 - [ ] **Phase 34: Currency Workflow Integration** — Not started
 
@@ -289,14 +289,14 @@ Plans:
   1. Admin opens the dashboard and sees an Email Automation panel showing the timestamp of the last processed email, the overall success rate, and the payee/amount of the last YNAB transaction created.
   2. Admin opens the dashboard and sees a Currency panel showing the last transfer-fix run (date and number of pairs fixed), last EUR conversion run (date and number of transactions converted), and last reconciliation (date and gap amount).
   3. Both panels update after running the corresponding tools — running EUR Reconciliation causes the Currency panel's last-reconciliation row to reflect the new run without a manual page reload.
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 **Wave 1**
 - [x] 32-01-PLAN.md — Backend data layer: extend getDashboardStats, create tool-run-queries.ts, persist Setting metadata in tool routes, create GET /api/dashboard/currency-status
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 32-02-PLAN.md — Frontend: rewrite dashboard/page.tsx with two-panel layout, create CurrencyPanel.tsx client component
+- [x] 32-02-PLAN.md — Frontend: rewrite dashboard/page.tsx with two-panel layout, create CurrencyPanel.tsx client component
 
 ### Phase 33: EUR Multi-Currency Converter
 **Milestone:** v6.4
@@ -347,6 +347,6 @@ Plans:
 | 29. EUR→GBP Transfer Reconciliation | v6.3 | 2/2 | Complete | 2026-05-29 |
 | 30. EUR Wise Account Reconciliation | v6.3 | 1/1 | Complete | 2026-05-30 |
 | 31. Navigation Restructure | v6.4 | 1/2 | In Progress|  |
-| 32. Dashboard Redesign | v6.4 | 1/2 | In Progress|  |
+| 32. Dashboard Redesign | v6.4 | 2/2 | Complete    | 2026-05-30 |
 | 33. EUR Multi-Currency Converter | v6.4 | 0/? | Not started | - |
 | 34. Currency Workflow Integration | v6.4 | 0/? | Not started | - |

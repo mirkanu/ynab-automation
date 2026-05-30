@@ -14,8 +14,8 @@ Requirements for v6.4 milestone.
 
 ### Dashboard
 
-- [ ] **DASH-03**: Dashboard Email Automation panel shows last email processed timestamp, success rate, and last YNAB transaction created
-- [ ] **DASH-04**: Dashboard Currency panel shows last transfer-fix run (date + pairs fixed), last EUR conversion run (date + transactions converted), and last reconciliation (date + gap amount)
+- [x] **DASH-03**: Dashboard Email Automation panel shows last email processed timestamp, success rate, and last YNAB transaction created
+- [x] **DASH-04**: Dashboard Currency panel shows last transfer-fix run (date + pairs fixed), last EUR conversion run (date + transactions converted), and last reconciliation (date + gap amount)
 
 ### EUR Conversion
 
@@ -53,8 +53,8 @@ Requirements for v6.4 milestone.
 |-------------|-------|--------|
 | NAV-03 | Phase 31 | Pending |
 | NAV-04 | Phase 31 | Pending |
-| DASH-03 | Phase 32 | Pending |
-| DASH-04 | Phase 32 | Pending |
+| DASH-03 | Phase 32 | Complete |
+| DASH-04 | Phase 32 | Complete |
 | CONV-01 | Phase 33 | Pending |
 | CONV-02 | Phase 33 | Pending |
 | CONV-03 | Phase 33 | Pending |
