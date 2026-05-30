@@ -10,7 +10,7 @@ Forwarded order confirmation email → YNAB transaction, fully automated, with z
 
 ## Current State
 
-v6.3 shipped 2026-05-30. App runs on Hetzner VPS (`hetzner-vps`) as a Docker container (`ynab-api`, port 3001), with PostgreSQL (`ynab-db`). Includes two currency tools: EUR→GBP transfer reconciliation and EUR Wise account reconciliation. The Tools page currently mixes email automation tools and currency tools without clear separation.
+v6.3 shipped 2026-05-30. App runs on Hetzner VPS (`hetzner-vps`) as a Docker container (`ynab-api`, port 3001), with PostgreSQL (`ynab-db`). Includes two currency tools: EUR→GBP transfer reconciliation and EUR Wise account reconciliation. Phase 32 complete — dashboard redesigned with two-panel layout: Email Automation panel (server-rendered stats) and Currency panel (live-polling tool status). Forwarding Address grouped under Email Automation.
 
 ## Current Milestone: v6.4 Currency Tools & UI Consolidation
 
@@ -51,13 +51,13 @@ v6.3 shipped 2026-05-30. App runs on Hetzner VPS (`hetzner-vps`) as a Docker con
 - ✓ Forwarding address prominent on dashboard — v6.2
 - ✓ EUR→GBP transfer reconciliation tool — v6.3
 - ✓ EUR Wise account reconciliation tool — v6.3
+- ✓ Dashboard redesigned with Email Automation panel (stats) and Currency panel (live tool status) — Phase 32
 
 ### Active
 
 <!-- Current scope. Building toward these. -->
 
 - [ ] Restructure nav into Email Automation + Currency + Settings sections with sub-navigation
-- [ ] Redesign Dashboard with Email Automation and Currency summary panels
 - [ ] EUR Multi-Currency Converter (detect, preview, bulk-apply historical-rate conversions)
 - [ ] Currency workflow UI (numbered steps, status badges, reconciliation pre-flight check)
 
@@ -146,4 +146,4 @@ This document evolves at phase transitions and milestone boundaries.
 
 ---
 
-*Last updated: 2026-05-30 after v6.4 milestone started*
+*Last updated: 2026-05-30 after Phase 32 complete (dashboard redesign)*
