@@ -27,7 +27,8 @@ describe('getDashboardStats', () => {
       { status: 'success' },
       { status: 'parse_error' },
     ])
-    mockFindFirst.mockResolvedValue(null)
+    // getDashboardStats calls findFirst twice: lastSuccess, then lastEmail
+    mockFindFirst.mockResolvedValueOnce(null).mockResolvedValueOnce(null)
 
     const { getDashboardStats } = await import('./activity-log-queries')
     const stats = await getDashboardStats()
@@ -39,7 +40,7 @@ describe('getDashboardStats', () => {
 
   it('returns null lastTransaction when no success entries', async () => {
     mockFindMany.mockResolvedValue([{ status: 'parse_error' }])
-    mockFindFirst.mockResolvedValue(null)
+    mockFindFirst.mockResolvedValueOnce(null).mockResolvedValueOnce(null)
 
     const { getDashboardStats } = await import('./activity-log-queries')
     const stats = await getDashboardStats()
@@ -49,7 +50,7 @@ describe('getDashboardStats', () => {
 
   it('returns rate 0 when no logs this week', async () => {
     mockFindMany.mockResolvedValue([])
-    mockFindFirst.mockResolvedValue(null)
+    mockFindFirst.mockResolvedValueOnce(null).mockResolvedValueOnce(null)
 
     const { getDashboardStats } = await import('./activity-log-queries')
     const stats = await getDashboardStats()
@@ -60,10 +61,12 @@ describe('getDashboardStats', () => {
 
   it('extracts lastTransaction from parseResult JSON', async () => {
     mockFindMany.mockResolvedValue([{ status: 'success' }])
-    mockFindFirst.mockResolvedValue({
-      parseResult: { retailer: 'Amazon', amount: 12.99, date: '2024-03-15', currency: 'GBP', description: 'AirPods' },
-      receivedAt: new Date('2024-03-15T10:00:00Z'),
-    })
+    mockFindFirst
+      .mockResolvedValueOnce({
+        parseResult: { retailer: 'Amazon', amount: 12.99, date: '2024-03-15', currency: 'GBP', description: 'AirPods' },
+        receivedAt: new Date('2024-03-15T10:00:00Z'),
+      })
+      .mockResolvedValueOnce({ receivedAt: new Date('2024-03-15T10:00:00Z') })
 
     const { getDashboardStats } = await import('./activity-log-queries')
     const stats = await getDashboardStats()
@@ -74,6 +77,29 @@ describe('getDashboardStats', () => {
       date: '2024-03-15',
       receivedAt: new Date('2024-03-15T10:00:00Z'),
     })
+  })
+
+  it('returns lastEmailReceivedAt from most recent log regardless of status', async () => {
+    const lastEmailDate = new Date('2026-05-30T09:00:00Z')
+    mockFindMany.mockResolvedValue([{ status: 'parse_error' }])
+    // lastSuccess returns null (no successful emails), lastEmail returns a row
+    mockFindFirst.mockResolvedValueOnce(null).mockResolvedValueOnce({ receivedAt: lastEmailDate })
+
+    const { getDashboardStats } = await import('./activity-log-queries')
+    const stats = await getDashboardStats()
+
+    expect(stats.lastEmailReceivedAt).toEqual(lastEmailDate)
+    expect(stats.lastTransaction).toBeNull()
+  })
+
+  it('returns lastEmailReceivedAt null when ActivityLog table is empty', async () => {
+    mockFindMany.mockResolvedValue([])
+    mockFindFirst.mockResolvedValueOnce(null).mockResolvedValueOnce(null)
+
+    const { getDashboardStats } = await import('./activity-log-queries')
+    const stats = await getDashboardStats()
+
+    expect(stats.lastEmailReceivedAt).toBeNull()
   })
 })
 
