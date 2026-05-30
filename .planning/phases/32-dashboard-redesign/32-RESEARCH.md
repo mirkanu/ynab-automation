@@ -368,17 +368,17 @@ await saveSettings({
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Tool-run metadata storage: Setting table vs. new ToolRun model**
    - What we know: Setting table requires no migration; ToolRun model requires `prisma migrate dev` + new migration file
    - What's unclear: Phase 34 (workflow UI) will need last-run status badges — does it need run *history* (multiple rows) or only the latest? If history, ToolRun model is better now.
-   - Recommendation: Decide before planning. For Phase 32 alone, Setting table is sufficient. If Phase 34 needs history, add ToolRun model now.
+   - RESOLVED: Setting table approach chosen — no migration required, sufficient for Phase 32 and Phase 34 needs (only latest run needed for status badges). Keys: `LAST_RUN_TRANSFER_FIX`, `LAST_RUN_EUR_CONVERSION`, `LAST_RUN_RECONCILIATION`.
 
 2. **EUR Conversion "Never run" state**
    - What we know: Phase 33 (EUR Conversion tool) doesn't exist yet. The dashboard will show "Never run" for this row until Phase 33 ships.
    - What's unclear: Should Phase 32 wire the EUR Conversion row at all, or omit it until Phase 33?
-   - Recommendation: Wire the row now (renders "Never run" permanently until Phase 33 writes `LAST_RUN_EUR_CONVERSION`). This avoids touching the dashboard again in Phase 33.
+   - RESOLVED: Wire the EUR Conversion row now — renders "Never run" until Phase 33 writes `LAST_RUN_EUR_CONVERSION`. Avoids touching the dashboard again in Phase 33.
 
 ---
 
