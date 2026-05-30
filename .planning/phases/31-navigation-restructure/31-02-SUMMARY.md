@@ -2,7 +2,7 @@
 phase: 31-navigation-restructure
 plan: "02"
 subsystem: navigation
-status: partial — awaiting human verification (checkpoint:human-verify)
+status: complete
 tags:
   - navigation
   - layout
@@ -45,7 +45,7 @@ Two changes made to layout.tsx:
 
 Layout remains a Server Component — `getAdminSession()` and `getSetting()` still run server-side. The Navigation component handles `'use client'` internally.
 
-**Task 2 (pending):** Checkpoint — awaiting human verification after deploy.
+**Task 2 (complete):** Human verification approved — two-tier navigation confirmed working in deployed app.
 
 ## Commits
 
