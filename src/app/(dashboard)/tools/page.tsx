@@ -2,6 +2,7 @@ import { getSetting } from '@/lib/settings'
 import SettingsForm from '../settings/SettingsForm'
 import TestParseForm from './TestParseForm';
 import FixEurGbpTransfersCard from './FixEurGbpTransfersCard';
+import ReconcileEurWiseCard from './ReconcileEurWiseCard';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,6 +27,7 @@ export default async function ToolsPage() {
       <SettingsForm testMode={testMode} />
       <TestParseForm defaultSenderName={defaultSenderName} />
       <FixEurGbpTransfersCard />
+      <ReconcileEurWiseCard />
     </div>
   );
 }
