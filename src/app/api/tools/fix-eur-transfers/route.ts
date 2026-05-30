@@ -65,6 +65,14 @@ export async function POST(_req: NextRequest) {
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
+    // persist failure so dashboard reflects the error rather than last success
+    await saveSettings({
+      LAST_RUN_TRANSFER_FIX: JSON.stringify({
+        runAt: new Date().toISOString(),
+        status: 'error',
+        pairsFixed: 0,
+      }),
+    }).catch(() => {});   // best-effort — don't mask original error
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
