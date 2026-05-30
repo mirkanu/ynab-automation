@@ -17,8 +17,19 @@ export default async function ToolsPage() {
 
   let defaultSenderName = 'Test';
   try {
-    const senders = JSON.parse(process.env.SENDERS ?? '[]') as Array<{ name?: string }>;
-    if (senders[0]?.name) defaultSenderName = senders[0].name;
+    const raw = JSON.parse(process.env.SENDERS ?? '[]');
+    if (Array.isArray(raw)) {
+      const firstName = raw[0];
+      if (
+        firstName !== null &&
+        typeof firstName === 'object' &&
+        typeof firstName.name === 'string' &&
+        firstName.name.length > 0 &&
+        firstName.name.length <= 100
+      ) {
+        defaultSenderName = firstName.name;
+      }
+    }
   } catch { /* use default */ }
 
   return (
