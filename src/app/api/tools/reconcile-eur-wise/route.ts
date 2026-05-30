@@ -45,6 +45,15 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(result);
   } catch (err) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : 'Unknown error' }, { status: 500 });
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    // persist failure so dashboard reflects the error rather than last success
+    await saveSettings({
+      LAST_RUN_RECONCILIATION: JSON.stringify({
+        runAt: new Date().toISOString(),
+        status: 'error',
+        gapAmount: null,
+      }),
+    }).catch(() => {});   // best-effort — don't mask original error
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
