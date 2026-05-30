@@ -15,7 +15,9 @@ export interface DashboardStats {
 
 export async function getDashboardStats(): Promise<DashboardStats> {
   const startOfWeek = new Date()
-  startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay())
+  // ISO week: Monday = day 1; convert Sunday 0 → 7 so Monday is always day 1
+  const day = startOfWeek.getDay() || 7
+  startOfWeek.setDate(startOfWeek.getDate() - (day - 1))
   startOfWeek.setHours(0, 0, 0, 0)
 
   const [weekLogs, lastSuccess, lastEmail] = await Promise.all([
@@ -62,8 +64,16 @@ export async function getActivityLogs(params: {
   if (params.status) where.status = params.status
   if (params.from || params.to) {
     const receivedAt: Record<string, Date> = {}
-    if (params.from) receivedAt.gte = new Date(params.from)
-    if (params.to) receivedAt.lte = new Date(params.to + 'T23:59:59')
+    if (params.from) {
+      const d = new Date(params.from)
+      if (isNaN(d.getTime())) throw new Error('Invalid from date')
+      receivedAt.gte = d
+    }
+    if (params.to) {
+      const d = new Date(params.to + 'T23:59:59')
+      if (isNaN(d.getTime())) throw new Error('Invalid to date')
+      receivedAt.lte = d
+    }
     where.receivedAt = receivedAt
   }
 
