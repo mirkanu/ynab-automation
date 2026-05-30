@@ -340,7 +340,7 @@ Plans:
 | 28. Forwarding Address Prominence | v6.2 | 2/2 | Complete | 2026-05-06 |
 | 29. EUR→GBP Transfer Reconciliation | v6.3 | 2/2 | Complete | 2026-05-29 |
 | 30. EUR Wise Account Reconciliation | v6.3 | 1/1 | Complete | 2026-05-30 |
-| 31. Navigation Restructure | v6.4 | 3/3 | Complete   | 2026-05-30 |
+| 31. Navigation Restructure | v6.4 | 3/3 | Complete    | 2026-05-30 |
 | 32. Dashboard Redesign | v6.4 | 0/? | Not started | - |
 | 33. EUR Multi-Currency Converter | v6.4 | 0/? | Not started | - |
 | 34. Currency Workflow Integration | v6.4 | 0/? | Not started | - |
