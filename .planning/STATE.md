@@ -4,8 +4,8 @@ milestone: v6.4
 milestone_name: Currency Tools & UI Consolidation
 status: executing
 stopped_at: Phase 31 UI-SPEC approved
-last_updated: "2026-05-30T13:16:39.668Z"
-last_activity: 2026-05-30 -- Phase 31 planning complete
+last_updated: "2026-05-30T13:20:30.560Z"
+last_activity: 2026-05-30 -- Phase 31 execution started
 progress:
   total_phases: 15
   completed_phases: 9
@@ -23,14 +23,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-16)
 
 **Core value:** Forwarded order confirmation email → YNAB transaction, fully automated, with zero per-transaction effort.
-**Current focus:** v6.2 Settings & UX Polish — restructure settings nav, remove Amazon-specific labels, make forwarding address prominent
+**Current focus:** Phase 31 — navigation-restructure
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Ready to execute
-Last activity: 2026-05-30 -- Phase 31 planning complete
+Phase: 31 (navigation-restructure) — EXECUTING
+Plan: 1 of 2
+Status: Executing Phase 31
+Last activity: 2026-05-30 -- Phase 31 execution started
 
 ## Roadmap Summary (v6.2)
 
