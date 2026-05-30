@@ -50,11 +50,13 @@ Exceptions: None — all spacing multiples of 4px per existing pattern.
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
 | Body | 0.875rem (14px) | 400 | 1.5 |
-| Label | 0.8125rem (13px) | 500 | 1.4 |
+| Label | 0.8125rem (13px) | 400 | 1.4 |
 | Heading (h1) | 1.375rem (22px) | 700 | 1.2 |
 | Display | 1.75rem (28px) | 700 | 1.2 |
 
 **Font family:** System fonts: `-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`
+
+**Font weights:** Two weights total — 400 (normal/regular) and 700 (bold). No weight 500.
 
 ---
 
@@ -137,7 +139,7 @@ Old → New:
 - Text color: white
 - Padding: 0.75rem 1.5rem
 - Font size: 0.875rem
-- Font weight: 600
+- Font weight: 700
 - Contains app title + logout button
 
 ### Navigation Bar (updated for two-tier)
@@ -145,7 +147,7 @@ Old → New:
 - Border bottom: 1px solid #e5e7eb
 - Padding: 0.5rem 1.5rem
 - Font size: 0.8125rem
-- Font weight: 500
+- Font weight: 400
 - Text color (nav items): #374151
 - Text color (muted/inactive): #9ca3af
 - **Flex direction:** row (horizontal, like current)
@@ -171,6 +173,32 @@ Old → New:
 - Active item: bold + left border accent
 
 **Recommendation for phase 31:** Use Option A (inline expansion) for consistency with existing flat nav — simpler state management, no z-index issues, matches current nav bar design. Dropdown pattern can be reserved for future if complexity increases.
+
+---
+
+## Focal Point & Visual Hierarchy
+
+**Primary screen:** Dashboard (`/dashboard`)
+
+**Focal point (primary visual anchor):** The dashboard grid of account cards is the primary focal point after navigation restructure. The nav bar occupies the top visual layer, with the dashboard content area below containing:
+- Account status cards (ordered by default sort: checking, savings, credit)
+- Transaction summary section
+- Budget overview widgets
+
+This card grid region should have clear visual separation from the nav via the 1px border-bottom (#e5e7eb) and background color contrast (white cards on #f9fafb nav).
+
+---
+
+## Accessibility & Semantic HTML
+
+- Use `<nav>` element for main navigation
+- Use `<a>` tags for links with proper `href` attributes
+- Use `<button>` elements for collapsible section toggles
+- Add `aria-expanded` to section toggle buttons
+- Add `aria-label` to section toggle carets: `aria-label="Expand Email Automation section"` or `aria-label="Collapse Email Automation section"` (toggle label based on expanded state)
+- Add `aria-current="page"` to active nav item
+- Maintain keyboard navigation: Tab through nav items, Enter/Space to expand/collapse sections
+- Color contrast: all text ≥ 4.5:1 per WCAG AA (verify: #374151 on #f9fafb is 8.3:1 ✓)
 
 ---
 
@@ -222,7 +250,7 @@ Old → New:
   backgroundColor: '#f9fafb',
   borderBottom: '1px solid #e5e7eb',
   fontSize: '0.8125rem',
-  fontWeight: 500,
+  fontWeight: 400,
 }}>
   <a href="/dashboard" style={{ color: '#374151', textDecoration: 'none' }}>Dashboard</a>
   <a href="/logs" style={{ color: '#374151', textDecoration: 'none' }}>Activity Log</a>
@@ -285,12 +313,12 @@ const toggleSection = (section) => {
 ### Nav Top-Level Items
 - **Default:** text color #374151, no background
 - **Hover:** text color #1f2937 (darker), background rgba(0,0,0,0.03)
-- **Active (current page):** text color #111827 (dark), font-weight 600, or left border 3px #111827
+- **Active (current page):** text color #111827 (dark), font-weight 700, or left border 3px #111827
 
 ### Nav Sub-Items (when section expanded)
 - **Default:** text color #374151, font-size 0.75rem, left padding 1rem (indent)
 - **Hover:** background rgba(0,0,0,0.05), text color #1f2937
-- **Active (current sub-page):** text color #111827, font-weight 600, left border 2px #374151
+- **Active (current sub-page):** text color #111827, font-weight 700, left border 2px #374151
 
 ### Section Headers (collapsible)
 - **Default:** text color #374151, cursor pointer, display flex with icon/caret
@@ -300,24 +328,12 @@ const toggleSection = (section) => {
 
 ---
 
-## Accessibility & Semantic HTML
-
-- Use `<nav>` element for main navigation
-- Use `<a>` tags for links with proper `href` attributes
-- Use `<button>` elements for collapsible section toggles
-- Add `aria-expanded` to section toggle buttons
-- Add `aria-current="page"` to active nav item
-- Maintain keyboard navigation: Tab through nav items, Enter/Space to expand/collapse sections
-- Color contrast: all text ≥ 4.5:1 per WCAG AA (verify: #374151 on #f9fafb is 8.3:1 ✓)
-
----
-
 ## Checker Sign-Off
 
 - [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
+- [ ] Dimension 2 Visuals: PASS (focal point declared, aria-label confirmed)
 - [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
+- [ ] Dimension 4 Typography: PASS (2 weights: 400, 700 only)
 - [ ] Dimension 5 Spacing: PASS
 - [ ] Dimension 6 Registry Safety: PASS
 
@@ -340,5 +356,7 @@ const toggleSection = (section) => {
 - Colors: extracted from existing codebase (no new color palette needed)
 - Typography: reused from existing pages (no new font sizes/weights)
 - Spacing scale: derived from existing pattern (multiples of 0.25rem, which is 4px)
+- Focal point: inferred from project structure (dashboard is primary screen)
+- Accessibility: aria-label pattern added for collapsible caret elements
 
 **User confirmation needed:** None — all values pre-populated from existing code patterns.
