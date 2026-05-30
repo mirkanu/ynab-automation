@@ -10,7 +10,7 @@ Forwarded order confirmation email → YNAB transaction, fully automated, with z
 
 ## Current State
 
-v6.3 shipped 2026-05-30. Navigation restructure (Phase 31) complete 2026-05-30: admin UI reorganized into Email Automation (Activity Log, Rules, Test & Replay) and Currency (EUR→GBP Transfers, EUR Conversion, EUR Reconciliation) sections with dropdown navigation, client-side routing, and auth guards on all pages.
+v6.3 shipped 2026-05-30. App runs on Hetzner VPS (`hetzner-vps`) as a Docker container (`ynab-api`, port 3001), with PostgreSQL (`ynab-db`). Includes two currency tools: EUR→GBP transfer reconciliation and EUR Wise account reconciliation. The Tools page currently mixes email automation tools and currency tools without clear separation.
 
 ## Current Milestone: v6.4 Currency Tools & UI Consolidation
 

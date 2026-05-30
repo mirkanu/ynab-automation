@@ -9,8 +9,8 @@ Requirements for v6.4 milestone.
 
 ### Navigation Restructure
 
-- [x] **NAV-03**: Admin can navigate to an Email Automation section containing sub-pages: Activity Log, Rules, and Test & Replay (current top-level "Logs" and "Rules" fold into this section)
-- [x] **NAV-04**: Admin can navigate to a Currency section containing sub-pages: EUR→GBP Transfers, EUR Conversion, and EUR Reconciliation
+- [ ] **NAV-03**: Admin can navigate to an Email Automation section containing sub-pages: Activity Log, Rules, and Test & Replay (current top-level "Logs" and "Rules" fold into this section)
+- [ ] **NAV-04**: Admin can navigate to a Currency section containing sub-pages: EUR→GBP Transfers, EUR Conversion, and EUR Reconciliation
 
 ### Dashboard
 
@@ -51,8 +51,8 @@ Requirements for v6.4 milestone.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| NAV-03 | Phase 31 | Complete |
-| NAV-04 | Phase 31 | Complete |
+| NAV-03 | Phase 31 | Pending |
+| NAV-04 | Phase 31 | Pending |
 | DASH-03 | Phase 32 | Pending |
 | DASH-04 | Phase 32 | Pending |
 | CONV-01 | Phase 33 | Pending |

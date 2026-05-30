@@ -13,9 +13,6 @@ export default async function DashboardLayout({ children }: { children: ReactNod
     redirect('/setup')
   }
 
-  // Auth is centralized here for all dashboard routes. Child pages intentionally
-  // also call getAdminSession() as defence-in-depth — do not remove page-level
-  // guards thinking they are redundant; they protect against future layout refactors.
   const session = await getAdminSession()
   if (!session.isLoggedIn) {
     redirect('/login')
