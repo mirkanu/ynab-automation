@@ -289,8 +289,14 @@ Plans:
   1. Admin opens the dashboard and sees an Email Automation panel showing the timestamp of the last processed email, the overall success rate, and the payee/amount of the last YNAB transaction created.
   2. Admin opens the dashboard and sees a Currency panel showing the last transfer-fix run (date and number of pairs fixed), last EUR conversion run (date and number of transactions converted), and last reconciliation (date and gap amount).
   3. Both panels update after running the corresponding tools — running EUR Reconciliation causes the Currency panel's last-reconciliation row to reflect the new run without a manual page reload.
-**Plans:** TBD
-**UI hint**: yes
+**Plans:** 2 plans
+
+Plans:
+**Wave 1**
+- [ ] 32-01-PLAN.md — Backend data layer: extend getDashboardStats, create tool-run-queries.ts, persist Setting metadata in tool routes, create GET /api/dashboard/currency-status
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 32-02-PLAN.md — Frontend: rewrite dashboard/page.tsx with two-panel layout, create CurrencyPanel.tsx client component
 
 ### Phase 33: EUR Multi-Currency Converter
 **Milestone:** v6.4
