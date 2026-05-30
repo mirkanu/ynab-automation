@@ -5,12 +5,12 @@ depth: standard
 files_reviewed: 8
 files_reviewed_list:
   - src/app/(dashboard)/components/Navigation.tsx
+  - src/app/(dashboard)/currency/conversion/page.tsx
+  - src/app/(dashboard)/currency/reconciliation/page.tsx
+  - src/app/(dashboard)/currency/transfers/page.tsx
   - src/app/(dashboard)/email-automation/logs/page.tsx
   - src/app/(dashboard)/email-automation/rules/page.tsx
   - src/app/(dashboard)/email-automation/tools/page.tsx
-  - src/app/(dashboard)/currency/transfers/page.tsx
-  - src/app/(dashboard)/currency/reconciliation/page.tsx
-  - src/app/(dashboard)/currency/conversion/page.tsx
   - src/app/(dashboard)/layout.tsx
 findings:
   critical: 2
@@ -29,153 +29,166 @@ status: issues_found
 
 ## Summary
 
-This phase restructures the dashboard navigation into collapsible sections (Email Automation, Currency) and adds three new currency sub-pages (Transfers, Reconciliation, Conversion). The navigation component is new; the page files are mostly thin wrappers delegating to existing card components.
-
-Two critical issues were found: a missing authentication guard on the Tools page, and a missing click-outside handler that leaves dropdowns open indefinitely. Three warnings cover a broken active-state highlight for section buttons, an `NaN`-producing pagination edge case, and a plain `<a>` tag causing full-page reloads. Two info items cover a hardcoded phase reference in a placeholder and an inconsistent heading font size.
+This phase restructures the dashboard navigation into collapsible sections and adds new URL routes under `/email-automation/*` and `/currency/*`. The Navigation component is well-implemented with proper click-outside handling, Escape-key dismissal, and `Link`-based navigation. However, the migration is incomplete: the old flat routes (`/logs`, `/rules`) still exist alongside the new nested routes as live pages with divergent logic. The new `/email-automation/logs` page has a regression in its pagination guard compared to its predecessor. The `/email-automation/tools` page reads a JSON env var and passes content from it into a server-rendered prop with insufficient validation. The hardcoded section keys in reset calls will silently break if sections are added to `NAV_SECTIONS`.
 
 ---
 
 ## Critical Issues
 
-### CR-01: Missing authentication guard on ToolsPage
+### CR-01: `process.env.SENDERS` content exposed via server-rendered prop with insufficient validation
 
-**File:** `src/app/(dashboard)/email-automation/tools/page.tsx:7-29`
+**File:** `src/app/(dashboard)/email-automation/tools/page.tsx:19-22`
 
-**Issue:** Every other page in the dashboard calls `getAdminSession()` and redirects unauthenticated users to `/login`. `ToolsPage` does not. The dashboard layout (`layout.tsx`) does perform an auth check, so sub-pages inherit protection when rendered inside the layout. However, if Next.js route resolution ever bypasses the layout (e.g., parallel routes, error boundary fallback, or a future refactor that moves the file), this page will serve unauthenticated users. The inconsistency is a latent security risk and violates the established pattern enforced on all sibling pages.
+**Issue:** The page reads `process.env.SENDERS`, parses it as an arbitrary JSON blob, extracts `senders[0].name`, and passes it as `defaultSenderName` to `<TestParseForm>` where it will be rendered as a form field value. There is no validation beyond checking `senders[0]?.name` is truthy. The `SENDERS` env var is an opaque JSON array whose full schema is not visible in this file — if the `name` field ever contains anything beyond a display label (an email address, routing token, internal identifier), it will appear verbatim in the page HTML. There is also no length cap, no character allowlist, and no guard against malformed types: a `name` value of `{ toString() { return 'injection' } }` would pass the truthy check because objects are truthy.
 
-Additionally, `ToolsPage` renders `SettingsForm` — a form that presumably mutates application state — without any session check of its own. Defence-in-depth requires each server component that exposes sensitive UI to verify the session.
+The type assertion `as Array<{ name?: string }>` is a cast, not a runtime validation — it provides false confidence that the data matches the shape.
 
-**Fix:** Add the standard guard at the top of `ToolsPage`:
+**Fix:** Add runtime validation with a length cap before using the value:
+
 ```typescript
-import { redirect } from 'next/navigation'
-import { getAdminSession } from '@/lib/admin-session'
-
-export default async function ToolsPage() {
-  const session = await getAdminSession()
-  if (!session.isLoggedIn) {
-    redirect('/login')
+let defaultSenderName = 'Test';
+try {
+  const raw = JSON.parse(process.env.SENDERS ?? '[]');
+  if (Array.isArray(raw)) {
+    const firstName = raw[0];
+    if (
+      firstName !== null &&
+      typeof firstName === 'object' &&
+      typeof firstName.name === 'string' &&
+      firstName.name.length > 0 &&
+      firstName.name.length <= 100
+    ) {
+      defaultSenderName = firstName.name;
+    }
   }
-  // ... rest of function
-}
+} catch { /* use default */ }
 ```
+
+If `SENDERS` is not meant to produce user-visible content, remove this block and hard-code `'Test'`.
 
 ---
 
-### CR-02: Dropdown has no click-outside or focus-outside dismissal
+### CR-02: Old `/logs` route has divergent pagination guard compared to new `/email-automation/logs`
 
-**File:** `src/app/(dashboard)/components/Navigation.tsx:40-47, 105-135`
+**File:** `src/app/(dashboard)/email-automation/logs/page.tsx:27-28`
+**Also:** `src/app/(dashboard)/logs/page.tsx:27`
 
-**Issue:** The `expandedSections` state is toggled only by clicking the section button. There is no mechanism to close an open dropdown when the user clicks elsewhere on the page or presses Escape. This means:
+**Issue:** Both routes are active simultaneously (the old routes were not removed or redirected). Their pagination parsing diverges:
 
-1. A user opens "Currency", then clicks a link to `/dashboard` — the dropdown visually closes because a full navigation occurs, but if the user presses Back, the dropdown re-opens because React state is restored from cache.
-2. Both dropdowns can be open simultaneously, overlapping page content, with no way to dismiss them except clicking each button again.
-3. On keyboard navigation, focus can move outside the dropdown while it remains visually open, creating a broken experience.
-
-This is an interaction correctness bug, not merely a UX preference. The open dropdown obscures underlying page content (`zIndex: 10`) with no escape hatch.
-
-**Fix:** Add a `useEffect` that listens for `mousedown` or `focusin` outside the nav, and an `onKeyDown` handler for `Escape`:
+Old route (`/logs/page.tsx` line 27):
 ```typescript
-// Inside Navigation():
-const navRef = useRef<HTMLElement>(null);
-
-useEffect(() => {
-  function handleOutside(e: MouseEvent | FocusEvent) {
-    if (navRef.current && !navRef.current.contains(e.target as Node)) {
-      setExpandedSections({ emailAutomation: false, currency: false });
-    }
-  }
-  document.addEventListener('mousedown', handleOutside);
-  document.addEventListener('focusin', handleOutside);
-  return () => {
-    document.removeEventListener('mousedown', handleOutside);
-    document.removeEventListener('focusin', handleOutside);
-  };
-}, []);
-
-// On the <nav> element, add ref={navRef} and:
-onKeyDown={(e) => { if (e.key === 'Escape') setExpandedSections({ emailAutomation: false, currency: false }); }}
+const page = typeof params.page === 'string' ? Math.max(1, parseInt(params.page, 10) || 1) : 1
 ```
+
+New route (`/email-automation/logs/page.tsx` lines 27-28):
+```typescript
+const rawPage = parseInt(params.page as string, 10)
+const page = typeof params.page === 'string' && Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1
+```
+
+The new version calls `parseInt(params.page as string, 10)` *before* the `typeof params.page === 'string'` guard. `params.page` is typed as `string | string[] | undefined`. The `as string` cast suppresses TypeScript's type check. If `params.page` is a `string[]` (Next.js allows repeated query params), the array coerces to a comma-joined string (e.g., `"1,2"`) before being passed to `parseInt`, which silently parses as `1`. This is a type-safety bypass on an untrusted input.
+
+Additionally, two near-identical active pages with divergent logic is a maintenance hazard — any future fix to pagination will need to be applied twice or the pages will diverge further.
+
+**Fix:** Move the type check before the parse, matching the old pattern:
+
+```typescript
+const page = typeof params.page === 'string' ? Math.max(1, parseInt(params.page, 10) || 1) : 1
+```
+
+Then remove the old `/logs` route (and `/rules` route) entirely, replacing them with redirects to the canonical new paths, or delete them if no bookmarked links need preserving.
 
 ---
 
 ## Warnings
 
-### WR-01: Section button never shows active state when a child route is current
+### WR-01: Hardcoded section keys in `setExpandedSections` reset calls are not derived from `NAV_SECTIONS`
 
-**File:** `src/app/(dashboard)/components/Navigation.tsx:79-103`
+**File:** `src/app/(dashboard)/components/Navigation.tsx:41-44`, `50`, `74`
 
-**Issue:** The `isActive()` helper is used to bold/darken links when the current pathname matches. However, the section toggle `<button>` elements (lines 79–103) never receive any active styling even when the current page is a child of that section. For example, navigating to `/currency/transfers` leaves the "Currency" button visually identical to an inactive button, providing no breadcrumb cue.
+**Issue:** The initial state object `{ emailAutomation: false, currency: false }` (line 41-44) and the two reset calls on lines 50 and 74 all hardcode section keys. These must be manually kept in sync with the `key` fields on each entry in `NAV_SECTIONS`. If a developer adds a third section to `NAV_SECTIONS` without updating these three sites, the new section will never be collapsed by clicking outside or pressing Escape — it will stay open permanently after first toggle, with no escape path.
 
-The `isActive` function exists and would correctly return `true` for `/currency` when the pathname is `/currency/transfers`, but it is never called for the button's style computation.
+**Fix:** Derive the initial state and reset value from `NAV_SECTIONS`:
 
-**Fix:** Compute a `sectionActive` flag and apply it to the button style:
 ```typescript
-// In the map callback:
-const sectionActive = section.items.some(item => isActive(item.href));
-// Then in the button style:
-color: sectionActive ? '#111827' : '#374151',
-fontWeight: sectionActive ? 700 : 400,
+const allCollapsed = () => Object.fromEntries(NAV_SECTIONS.map(s => [s.key, false]));
+
+const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(allCollapsed);
+
+// Replace both reset call sites with:
+setExpandedSections(allCollapsed());
 ```
 
 ---
 
-### WR-02: `parseInt` on non-numeric `page` param produces `NaN`, then `Math.max(1, NaN)` returns `NaN`
+### WR-02: Old `/logs` and `/rules` routes remain as live, unlinked pages without redirects
 
-**File:** `src/app/(dashboard)/email-automation/logs/page.tsx:27`
+**File:** `src/app/(dashboard)/logs/page.tsx`
+**Also:** `src/app/(dashboard)/rules/page.tsx`
 
-**Issue:** The expression `Math.max(1, parseInt(params.page, 10) || 1)` intends to clamp the page to a minimum of 1. However, `parseInt('abc', 10)` returns `NaN`, and `NaN || 1` evaluates to `1`, so the `|| 1` fallback does work for strings. The issue is the ordering: `Math.max(1, parseInt(...) || 1)` is correct here. **However**, if `params.page` is `'0'`, then `parseInt('0', 10)` returns `0`, and `0 || 1` returns `1` — swallowing a legitimately passed (if invalid) value silently rather than using the `Math.max` clamp. More critically, if `params.page` is `'-5'`, `parseInt('-5', 10)` returns `-5`, `-5 || 1` is `-5` (truthy check passes), so `Math.max(1, -5)` = `1` — this actually works correctly. The real gap is that the `|| 1` and `Math.max(1, ...)` are redundant and could mislead future editors into removing one, breaking the guard. Consolidate to a single clear pattern:
+**Issue:** The Navigation component no longer links to `/logs` or `/rules`, but those routes are still fully active (they have `export const dynamic = 'force-dynamic'` and render real data). Any user or external system that bookmarked those old URLs will receive full, working pages that are permanently diverged from the new canonical pages. The old `/rules` page imports from `'../settings/SenderRulesSection'` via a relative path — any future directory restructure will silently break that import. Neither page has a redirect to its new counterpart. This creates two sources of truth with no guarantee they stay consistent.
 
-**Fix:**
+**Fix:** Replace the old route pages with thin redirects:
+
 ```typescript
-const rawPage = parseInt(params.page as string, 10);
-const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
+// src/app/(dashboard)/logs/page.tsx
+import { redirect } from 'next/navigation'
+export default function OldLogsRedirect() { redirect('/email-automation/logs') }
+
+// src/app/(dashboard)/rules/page.tsx
+import { redirect } from 'next/navigation'
+export default function OldRulesRedirect() { redirect('/email-automation/rules') }
 ```
+
+Or delete the files entirely if no external links to those paths need to be preserved.
 
 ---
 
-### WR-03: Navigation uses plain `<a>` tags instead of Next.js `<Link>`, causing full-page reloads
+### WR-03: `layout.tsx` performs auth check that all pages duplicate — double session lookup per request
 
-**File:** `src/app/(dashboard)/components/Navigation.tsx:65-75, 118-130, 139-149`
+**File:** `src/app/(dashboard)/layout.tsx:16-19`
 
-**Issue:** All navigation anchors — the Dashboard link, all dropdown item links, and the Settings link — use bare HTML `<a href="...">` tags. In a Next.js App Router application, this bypasses client-side navigation, causing a full server round-trip and page reload on every nav click. This defeats prefetching and causes a visible flash/reload between pages.
+**Issue:** `DashboardLayout` calls `getAdminSession()` and redirects to `/login` if unauthenticated (lines 16-19). Every page under the layout (including all 7 reviewed pages) independently performs the identical session check. This means every page request incurs two `getAdminSession()` calls. More importantly, it creates an implicit assumption that is easy to violate: a future developer seeing the layout-level check might reasonably remove the per-page redundancy, unknowingly leaving pages unprotected if the layout is later refactored.
 
-The `'use client'` directive is already present on this component (line 1), making `Link` available without any additional setup.
+**Fix:** Decide on one authoritative auth enforcement layer. Centralising in the layout is the idiomatic Next.js App Router approach:
 
-**Fix:** Import and use `Link` from `next/link`:
 ```typescript
-import Link from 'next/link';
-
-// Replace: <a href="/dashboard" ...>Dashboard</a>
-// With:    <Link href="/dashboard" ...>Dashboard</Link>
+// Keep auth in layout.tsx only.
+// Remove `getAdminSession()` + redirect blocks from all child page.tsx files.
 ```
-Apply the same replacement to all `<a>` elements in the component.
+
+If defence-in-depth per-page checks are intentional policy, add a comment stating that explicitly so it is not removed as "duplicate code."
 
 ---
 
 ## Info
 
-### IN-01: Hardcoded phase reference in placeholder content
+### IN-01: Hardcoded phase reference in user-facing placeholder text
 
 **File:** `src/app/(dashboard)/currency/conversion/page.tsx:29`
 
-**Issue:** The placeholder text reads "Check back after Phase 33." This is implementation trivia that will not be accurate after Phase 33 ships, and it leaks internal planning vocabulary to the user-facing UI.
+**Issue:** The placeholder reads "Check back after Phase 33." This leaks internal planning vocabulary to the user-facing UI and will become inaccurate once Phase 33 ships.
 
-**Fix:** Replace with a generic message:
+**Fix:**
 ```typescript
 EUR Conversion tool is coming soon.
 ```
 
 ---
 
-### IN-02: Inconsistent heading font size on Tools page
+### IN-02: `isActive` sub-route matching is implicit and undocumented
 
-**File:** `src/app/(dashboard)/email-automation/tools/page.tsx:19`
+**File:** `src/app/(dashboard)/components/Navigation.tsx:65-67`
 
-**Issue:** The `<h1>` on the Tools page uses `fontSize: '1.25rem'`, while all other pages in this phase (Logs, Rules, Transfers, Reconciliation, Conversion) use `fontSize: '1.375rem'`. This inconsistency is minor but produces a visually smaller heading on the Tools page compared to every sibling page.
+**Issue:** The `isActive` function matches both exact paths and any sub-routes (`pathname.startsWith(href + '/')`). This means that if a detail route such as `/email-automation/logs/[id]` is added in the future, the "Activity Log" nav item will be highlighted when viewing a log detail page. This may be the desired behaviour, but it is not documented and is easy to break. For example, if anyone creates `/email-automation/logs-archive`, the check `pathname.startsWith('/email-automation/logs/')` would NOT match it (because the trailing slash prevents the false positive) — but only because of the exact `href + '/'` construct. The correctness here is fragile and relies on that trailing slash, which is not obvious.
 
-**Fix:** Update the Tools page heading to match:
+**Fix:** Add an inline comment to make the intent explicit:
+
 ```typescript
-fontSize: '1.375rem'
+function isActive(href: string) {
+  // Exact match OR a sub-route of this path (highlights parent when on detail pages)
+  return pathname === href || pathname.startsWith(href + '/');
+}
 ```
 
 ---
