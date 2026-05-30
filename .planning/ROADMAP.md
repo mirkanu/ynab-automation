@@ -73,7 +73,7 @@ Bugs discovered post-facto during UAT (2026-04-10) and fixed:
 
 ### 🔄 v6.4 Currency Tools & UI Consolidation (Phases 31-34) — IN PROGRESS
 
-- [ ] **Phase 31: Navigation Restructure** — Not started
+- [x] **Phase 31: Navigation Restructure** — Not started (completed 2026-05-30)
 - [ ] **Phase 32: Dashboard Redesign** — Not started
 - [ ] **Phase 33: EUR Multi-Currency Converter** — Not started
 - [ ] **Phase 34: Currency Workflow Integration** — Not started
@@ -271,14 +271,14 @@ Note: Changes stay local until user manually tests at production. No git push un
   1. Admin can click "Email Automation" in the sidebar and navigate to any of its three sub-pages (Activity Log, Rules, Test & Replay) — each sub-page loads its existing content unchanged.
   2. Admin can click "Currency" in the sidebar and navigate to any of its three sub-pages (EUR→GBP Transfers, EUR Conversion, EUR Reconciliation) — EUR→GBP Transfers and EUR Reconciliation load the existing tools; EUR Conversion shows a placeholder.
   3. The old top-level "Logs" and "Rules" navigation items no longer appear — there are no duplicate nav entries for the same pages.
-**Plans:** 1/2 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 **Wave 1**
 - [x] 31-01-PLAN.md — Create Navigation component and nested route pages
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 31-02-PLAN.md — Wire Navigation into layout and human verification checkpoint
+- [x] 31-02-PLAN.md — Wire Navigation into layout and human verification checkpoint
 
 ### Phase 32: Dashboard Redesign
 **Milestone:** v6.4
@@ -340,7 +340,7 @@ Plans:
 | 28. Forwarding Address Prominence | v6.2 | 2/2 | Complete | 2026-05-06 |
 | 29. EUR→GBP Transfer Reconciliation | v6.3 | 2/2 | Complete | 2026-05-29 |
 | 30. EUR Wise Account Reconciliation | v6.3 | 1/1 | Complete | 2026-05-30 |
-| 31. Navigation Restructure | v6.4 | 1/2 | In Progress|  |
+| 31. Navigation Restructure | v6.4 | 3/3 | Complete   | 2026-05-30 |
 | 32. Dashboard Redesign | v6.4 | 0/? | Not started | - |
 | 33. EUR Multi-Currency Converter | v6.4 | 0/? | Not started | - |
 | 34. Currency Workflow Integration | v6.4 | 0/? | Not started | - |
