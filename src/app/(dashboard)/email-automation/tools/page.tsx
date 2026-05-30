@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation'
+import { getAdminSession } from '@/lib/admin-session'
 import { getSetting } from '@/lib/settings'
 import SettingsForm from '../../settings/SettingsForm'
 import TestParseForm from '../../tools/TestParseForm'
@@ -5,6 +7,11 @@ import TestParseForm from '../../tools/TestParseForm'
 export const dynamic = 'force-dynamic'
 
 export default async function ToolsPage() {
+  const session = await getAdminSession()
+  if (!session.isLoggedIn) {
+    redirect('/login')
+  }
+
   const testModeValue = await getSetting('TEST_MODE')
   const testMode = testModeValue === 'true'
 
@@ -16,7 +23,7 @@ export default async function ToolsPage() {
 
   return (
     <div>
-      <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>
+      <h1 style={{ fontSize: '1.375rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>
         Tools
       </h1>
       <p style={{ fontSize: '0.8125rem', color: '#6b7280', margin: '0 0 1.5rem', lineHeight: 1.5 }}>
