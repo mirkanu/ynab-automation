@@ -1,5 +1,9 @@
 # YNAB Automation
 
+> **Personal project:** This was built for the author's own use and has not been tested or optimised for deployment by others. It is shared in the hope it may be useful — no support is implied.
+
+> **Note:** This project was written entirely using [Claude Code](https://claude.ai/claude-code) and the [GSD workflow](https://github.com/pablof7z/gsd). No code was written by hand.
+
 YNAB automatically categorizes transactions by payee — which works great until you
 shop at a place like Amazon, where one order might be groceries, another electronics,
 and another home supplies. YNAB sees the same payee every time and can't tell them
