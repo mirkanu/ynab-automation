@@ -375,7 +375,7 @@ When converting from single-user to multi-user, existing data must be migrated t
 4. **Assign a migration owner who understands the data**
    - Not just a schema change, but a data transformation
    - The owner runs the migration in staging first, verifies the result, and then runs it in production
-   - Communicate with the user (Manuel) about the migration and potential data loss/changes
+   - Communicate with the owner about the migration and potential data loss/changes
 
 **Warning signs:**
 - Migration script has no backfill step (user_id is NULL for old records)

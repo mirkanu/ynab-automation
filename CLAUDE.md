@@ -19,20 +19,19 @@ Migrated from Railway to Hetzner VPS on 2026-04-25. Fully self-hosted.
 
 | | |
 |---|---|
-| **Host** | Hetzner VPS — `hetzner-vps` (37.27.212.18) |
+| **Host** | Self-hosted VPS |
 | **App container** | `ynab-api`, port 3001 on host |
 | **Database** | `ynab-db` PostgreSQL container |
-| **Compose file** | `/home/services/hetzner-vps/docker-compose.yml` |
+| **Compose file** | Docker Compose (see hetzner-vps repo) |
 | **Auto-deploy** | Claude deploys directly via SSH after each change (no GitHub Actions) |
 | **Railway** | No longer used |
-| **SSH key** | `~/.ssh/hetzner_claude` — `claude` user on both machines |
 
 ### Deploy command
 
 ```bash
-ssh hetzner-vps "set -eux && git -C /home/services/ynab fetch origin master && git -C /home/services/ynab checkout origin/master -- . && cd /home/services/hetzner-vps && docker compose --env-file /home/services/.env.production up --build -d ynab-api"
+ssh your-vps "git -C /path/to/ynab fetch origin master && git -C /path/to/ynab checkout origin/master -- . && docker compose up --build -d ynab-api"
 # Then health check:
-ssh hetzner-vps "sleep 10 && curl -sf http://localhost:3001/api/webhook"
+ssh your-vps "sleep 10 && curl -sf http://localhost:3001/api/webhook"
 ```
 
 Note: `RAILWAY_API_TOKEN` appears in the compose env vars — verify whether it is still

@@ -229,10 +229,10 @@ ALTER TABLE "Setting" ALTER COLUMN user_id SET NOT NULL;
 - Both coexist during Phase 2–4
 
 **Phase 5:** Backfill + make NOT NULL
-- Create User row for existing user: `INSERT INTO User (id, email, ...) VALUES ('manuel', 'manuel@example.com', ...)`
-- Backfill user_id: `UPDATE ActivityLog SET user_id = 'manuel' WHERE user_id IS NULL`
+- Create User row for existing user: `INSERT INTO User (id, email, ...) VALUES ('owner', 'owner@example.com', ...)`
+- Backfill user_id: `UPDATE ActivityLog SET user_id = 'owner' WHERE user_id IS NULL`
 - Add NOT NULL constraint: `ALTER TABLE ActivityLog ALTER COLUMN user_id SET NOT NULL`
-- Old code continues to work (routes to 'manuel')
+- Old code continues to work (routes to 'owner')
 - Cut over: Remove old admin auth; all routes now require Auth.js
 
 ## Build Order & Dependencies
@@ -423,7 +423,7 @@ export async function POST(request: NextRequest) {
 2. **Week 5:** Both auth systems active; users can access via either path
 3. **Week 5 end:** Data backfilled; add NOT NULL constraints
 4. **Week 6:** Remove old admin auth; all routes now require Auth.js
-5. **Cut-over:** Single user (Manuel) seamlessly migrated to user_id='manuel'
+5. **Cut-over:** Single user (owner) seamlessly migrated to user_id='owner'
 
 **Risk mitigation:**
 - Run both code paths simultaneously (don't fork main branch)

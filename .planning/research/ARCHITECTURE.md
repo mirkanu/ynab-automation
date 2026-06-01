@@ -195,7 +195,7 @@ ALTER TABLE "Setting" ALTER COLUMN user_id SET NOT NULL;
 #### Migration Strategy (Non-Breaking)
 
 1. **Phase 1 (Additive):** Add `user_id` column with `NULL` default; add Auth.js tables
-2. **Phase 2 (Backfill):** Create initial User row (id='manuel'), backfill existing ActivityLog/Settings rows with user_id='manuel'
+2. **Phase 2 (Backfill):** Create initial User row (id='owner'), backfill existing ActivityLog/Settings rows with user_id='owner'
 3. **Phase 3 (Constraint):** Add NOT NULL constraints; add unique indexes
 4. **Phase 4 (Cleanup):** Remove old env var config readers; migrate to User table config
 
@@ -787,7 +787,7 @@ Phase 5: User Dashboards & Settings
   ↓
 Phase 6: Data Migration
   ↓
-  6a. Create User row for existing user (manuel)
+  6a. Create User row for existing user (owner)
   6b. Backfill user_id on ActivityLog, Setting rows
   6c. Test both old and new code paths simultaneously
   6d. Deploy with backward compatibility; cut over
@@ -917,13 +917,13 @@ const setting = await db.setting.findUnique({
 6. **Deploy v2:** Make user_id NOT NULL on ActivityLog, Setting; remove admin auth routes
 7. **Cut-over complete:** All users now use Auth.js; old admin auth disabled
 
-### Existing User (Manuel) Migration
+### Existing User (owner) Migration
 
-1. Create User row: `{ id: 'manuel', email: 'manuel@...', oauth_token: encrypted(CURRENT_YNAB_TOKEN) }`
-2. Backfill: `UPDATE ActivityLog SET user_id = 'manuel'`
-3. Backfill: `UPDATE Setting SET user_id = 'manuel'`
-4. Assign forwarding address: `UPDATE User SET forwarding_email = 'manuel@ynab-automation.railway.app'` where email matches
-5. Test: Existing email processing continues to work (now scoped to user_id='manuel')
+1. Create User row: `{ id: 'owner', email: 'owner@...', oauth_token: encrypted(CURRENT_YNAB_TOKEN) }`
+2. Backfill: `UPDATE ActivityLog SET user_id = 'owner'`
+3. Backfill: `UPDATE Setting SET user_id = 'owner'`
+4. Assign forwarding address: `UPDATE User SET forwarding_email = 'owner@ynab-automation.railway.app'` where email matches
+5. Test: Existing email processing continues to work (now scoped to user_id='owner')
 
 ## Security Considerations
 

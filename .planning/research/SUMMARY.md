@@ -100,7 +100,7 @@ Research indicates a 4-phase implementation structure, with strong dependencies 
 - Auth.js + database sessions with `session.user.id` wired through
 - User table with encrypted YNAB OAuth token storage fields
 - Row-Level Security policies on ActivityLog and Settings tables
-- Migration of single-user data to initial user record (id='manuel')
+- Migration of single-user data to initial user record (id='owner')
 - API middleware pattern for user_id extraction and filtering
 - Pitfall prevention: data leakage (RLS backstop), session wiring, migration integrity
 
