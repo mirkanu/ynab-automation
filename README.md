@@ -2,7 +2,7 @@
 
 > **Personal project:** This was built to solve a specific problem for the author. It works for that purpose. It has not been tested for general deployment and is not actively maintained — use it as inspiration or a starting point, not a supported tool.
 
-> **100% AI-generated:** No code was written by hand. Every file was produced by [Claude Code](https://claude.ai/claude-code) via the [GSD workflow](https://github.com/pablof7z/gsd). The author is a non-programmer building personal tools with AI. PRs are welcome — if one arrives, Claude Code will review and merge it. Issues are unlikely to receive a response.
+> **100% AI-generated:** No code was written by hand. Every file was produced by [Claude Code](https://claude.ai/claude-code) via the [GSD workflow](https://github.com/open-gsd/gsd-core). The author is a non-programmer building personal tools with AI. PRs are welcome — if one arrives, Claude Code will review and merge it. Issues are unlikely to receive a response.
 
 YNAB automatically categorizes transactions by payee — which works great until you shop at a place like Amazon, where one order might be groceries, another electronics, and another home supplies. YNAB sees the same payee every time and can't tell them apart. This app eliminates that manual lookup: forward your order confirmation emails to a dedicated address, and it reads the receipt, extracts the line items, and creates a correctly-categorized YNAB transaction within seconds. It also handles Wise international transfers, syncing EUR bank transactions and converting amounts automatically.
 
