@@ -5,6 +5,7 @@ export interface NotificationOptions {
   cc?: string;
   subject: string;
   body: string;
+  html?: string;
 }
 
 /**
@@ -20,6 +21,7 @@ export async function sendErrorNotification(opts: NotificationOptions): Promise<
       ...(opts.cc ? { cc: opts.cc } : {}),
       subject: opts.subject,
       text: opts.body,
+      ...(opts.html ? { html: opts.html } : {}),
     });
   } catch (err) {
     console.error('sendErrorNotification failed:', err);

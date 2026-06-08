@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
     const config = loadConfig();
     const body = await req.json();
     const subject = body?.trigger?.event?.headers?.subject ?? null;
+    const html = body?.trigger?.event?.body?.html ?? '';
 
     // Step 1: Extract message ID
     const messageId = extractMessageId(body);
@@ -88,6 +89,7 @@ export async function POST(req: NextRequest) {
           `Sender: ${sender ?? 'unknown'}\n` +
           `Message ID: ${messageId}\n\n` +
           `Add this sender to the automation if needed.`,
+        html,
       });
       await writeActivityLog({
         messageId,
@@ -102,7 +104,6 @@ export async function POST(req: NextRequest) {
     }
 
     // Step 6: Extract HTML body and parse with Claude
-    const html = body?.trigger?.event?.body?.html ?? '';
     const categoryHint = extractCategoryHint(html);
     const parsed = await parseOrderEmail(html, senderInfo.name);
     if (!parsed) {
