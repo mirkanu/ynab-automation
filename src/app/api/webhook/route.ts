@@ -88,6 +88,12 @@ export async function POST(req: NextRequest) {
       : envSenderInfo;
     if (!senderInfo) {
       console.warn('Unrecognised sender — no YNAB transaction created:', sender);
+      console.log('Email body fields:', {
+        html: !!html,
+        text: !!text,
+        rawUrl: !!rawUrl,
+        htmlUrl: !!body?.trigger?.event?.body?.htmlUrl
+      });
       const notificationHtml = html || text || rawUrl ? `
 Original email content:
 ${html || text || 'Raw email available at: ' + rawUrl}
