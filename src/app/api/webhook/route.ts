@@ -22,6 +22,13 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const subject = body?.trigger?.event?.headers?.subject ?? null;
     const html = body?.trigger?.event?.body?.html ?? '';
+    const text = body?.trigger?.event?.body?.text ?? '';
+    const rawUrl = body?.trigger?.event?.rawUrl ?? '';
+
+    // Debug logging for Gmail forwarding emails
+    if (html === '' && text === '' && rawUrl === '') {
+      console.warn('Email has no html, text, or rawUrl:', { messageId: extractMessageId(body), subject });
+    }
 
     // Step 1: Extract message ID
     const messageId = extractMessageId(body);
@@ -81,6 +88,10 @@ export async function POST(req: NextRequest) {
       : envSenderInfo;
     if (!senderInfo) {
       console.warn('Unrecognised sender — no YNAB transaction created:', sender);
+      const notificationHtml = html || text || rawUrl ? `
+Original email content:
+${html || text || 'Raw email available at: ' + rawUrl}
+` : '';
       await sendErrorNotification({
         to: config.adminEmail,
         subject: 'YNAB automation: unknown sender',
@@ -89,7 +100,7 @@ export async function POST(req: NextRequest) {
           `Sender: ${sender ?? 'unknown'}\n` +
           `Message ID: ${messageId}\n\n` +
           `Add this sender to the automation if needed.`,
-        html,
+        html: html || notificationHtml,
       });
       await writeActivityLog({
         messageId,
