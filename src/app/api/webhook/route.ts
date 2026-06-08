@@ -94,10 +94,16 @@ export async function POST(req: NextRequest) {
         rawUrl: !!rawUrl,
         htmlUrl: !!body?.trigger?.event?.body?.htmlUrl
       });
-      const notificationHtml = html || text || rawUrl ? `
+
+      // Include available content in notification
+      const contentForNotification = html || text;
+      const notificationHtml = contentForNotification ? `
 Original email content:
-${html || text || 'Raw email available at: ' + rawUrl}
-` : '';
+<pre style="white-space: pre-wrap; font-family: monospace; font-size: 12px; background: #f5f5f5; padding: 10px; border-radius: 4px;">
+${contentForNotification}
+</pre>
+` : rawUrl ? `<a href="${rawUrl}">View raw email</a>` : '';
+
       await sendErrorNotification({
         to: config.adminEmail,
         subject: 'YNAB automation: unknown sender',
