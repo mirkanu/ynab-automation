@@ -81,6 +81,37 @@ export function extractOriginalSender(payload: unknown): string | null {
   }
 }
 
+/**
+ * Extracts the original recipient (the Gmail address that received the email before auto-forwarding).
+ * For Gmail auto-forwarding, this identifies which user's Gmail account forwarded the email.
+ * Path: trigger.event.headers.to.value[0].address
+ * Falls back to trigger.event.headers.to.text if value array is absent.
+ * Returns the email address string, or null if not found.
+ */
+export function extractOriginalRecipient(payload: unknown): string | null {
+  try {
+    const p = payload as PipedreamPayload;
+    const toHeader = p?.trigger?.event?.headers?.to;
+    if (!toHeader) return null;
+
+    // Prefer structured value array (most reliable)
+    const address = toHeader.value?.[0]?.address;
+    if (typeof address === 'string' && address.length > 0) {
+      return address;
+    }
+
+    // Fall back to text form
+    const text = toHeader.text;
+    if (typeof text === 'string' && text.length > 0) {
+      return text.trim();
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 // Signature line patterns that should be ignored when extracting a category hint
 const SIGNATURE_LINE_PATTERNS = [
   /^--\s*$/,                                  // standard email sig delimiter

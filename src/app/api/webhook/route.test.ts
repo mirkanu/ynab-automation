@@ -21,10 +21,12 @@ vi.mock('@/lib/db', () => ({
 
 const mockExtractMessageId = vi.fn().mockReturnValue('msg-123');
 const mockExtractOriginalSender = vi.fn().mockReturnValue('alice@example.com');
+const mockExtractOriginalRecipient = vi.fn().mockReturnValue(null);
 const mockExtractCategoryHint = vi.fn().mockReturnValue(null);
 vi.mock('@/lib/email', () => ({
   extractMessageId: mockExtractMessageId,
   extractOriginalSender: mockExtractOriginalSender,
+  extractOriginalRecipient: mockExtractOriginalRecipient,
   extractCategoryHint: mockExtractCategoryHint,
 }));
 

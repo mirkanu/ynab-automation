@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db';
 import {
   extractMessageId,
   extractOriginalSender,
+  extractOriginalRecipient,
   extractCategoryHint,
 } from '@/lib/email';
 import { parseOrderEmail } from '@/lib/claude';
@@ -81,11 +82,30 @@ export async function POST(req: NextRequest) {
     const dbCurrencyRules: Array<{ currency: string; accountId: string }> =
       currencyRulesRaw ? (JSON.parse(currencyRulesRaw) as Array<{ currency: string; accountId: string }>) : [];
 
-    const dbSenderMatch = dbSenderRules.find(r => r.email.toLowerCase() === senderKey);
-    const envSenderInfo = getSenderByEmail(config, senderKey);
-    const senderInfo = dbSenderMatch
+    // Try to match 'from' header first (manual forwards)
+    let dbSenderMatch = dbSenderRules.find(r => r.email.toLowerCase() === senderKey);
+    let envSenderInfo = getSenderByEmail(config, senderKey);
+    let senderInfo = dbSenderMatch
       ? { ...dbSenderMatch, name: dbSenderMatch.name || envSenderInfo?.name || '' }
       : envSenderInfo;
+
+    // If no match on 'from', try 'to' header (Gmail auto-forwards)
+    if (!senderInfo) {
+      const recipient = extractOriginalRecipient(body);
+      const recipientKey = (recipient ?? '').toLowerCase();
+      if (recipientKey) {
+        console.log('No sender match on from header, trying to header:', recipientKey);
+        dbSenderMatch = dbSenderRules.find(r => r.email.toLowerCase() === recipientKey);
+        envSenderInfo = getSenderByEmail(config, recipientKey);
+        senderInfo = dbSenderMatch
+          ? { ...dbSenderMatch, name: dbSenderMatch.name || envSenderInfo?.name || '' }
+          : envSenderInfo;
+        if (senderInfo) {
+          console.log('Matched recipient to sender config:', recipientKey, '→', senderInfo.name);
+        }
+      }
+    }
+
     if (!senderInfo) {
       console.warn('Unrecognised sender — no YNAB transaction created:', sender);
       console.log('Email body fields:', {

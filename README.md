@@ -9,6 +9,7 @@ YNAB automatically categorizes transactions by payee — which works great until
 ## Features
 
 - **Email-to-YNAB:** Forward any order confirmation email and get a transaction created automatically with the right amount, date, and payee
+- **Gmail auto-forward support:** Set up Gmail auto-forwarding once and all future order emails are processed automatically — routes to your default account based on your Gmail address
 - **AI-powered parsing:** Claude reads the email and extracts what matters — handles Amazon, eBay, Apple, and most other retailers
 - **Wise integration:** Syncs EUR bank transactions from Wise and reconciles them against YNAB
 - **Activity log:** Every processed email gets a row — green for success, red for failure, with full detail and one-click replay
