@@ -148,7 +148,7 @@ ${contentForNotification}
 
     // Step 6: Extract HTML body and parse with Claude
     const categoryHint = extractCategoryHint(html);
-    const parsed = await parseOrderEmail(html, senderInfo.name, text || undefined);
+    const parsed = await parseOrderEmail(html, senderInfo.name);
     if (!parsed) {
       console.error('Claude parsing failed for messageId:', messageId);
       const appUrl = process.env.YNAB_APP_URL ?? '';

@@ -11,49 +11,19 @@ export interface ParsedOrder {
   customNote?: string;  // Optional free-text note the forwarder typed at the very top of the email body
 }
 
-// Large HTML threshold: above this, the email is likely auto-forwarded with CSS bloat causing truncation
-const LARGE_HTML_THRESHOLD = 50000;
-
-/**
- * Strips CSS (style blocks, inline styles, HTML comments) from an HTML string.
- * Dramatically reduces size of CSS-heavy emails like Amazon order confirmations.
- */
-function stripHtmlCss(html: string): string {
-  return html
-    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-    .replace(/<!--[\s\S]*?-->/g, '')
-    .replace(/\s+style="[^"]*"/gi, '');
-}
-
 /**
  * Calls the Claude API to extract order amount, item description, and retailer name
  * from an order confirmation email HTML body.
  *
  * @param html - Raw HTML string (trigger.event.body.html from Pipedream)
  * @param senderName - Display name of the person who forwarded (e.g. "Alice")
- * @param text - Optional plain-text body (trigger.event.body.text from Pipedream)
  * @returns ParsedOrder with amount (number), description, and retailer, or null on any failure
  */
 export async function parseOrderEmail(
   html: string,
   senderName: string,
-  text?: string,
 ): Promise<ParsedOrder | null> {
   try {
-    // For large HTML emails (auto-forwarded: ~100k HTML of which ~78k is CSS, truncating real content),
-    // use plain text body which is compact and contains complete order details.
-    // For normal-size emails (manual forwards), strip CSS from HTML and use that.
-    let emailContent: string;
-    if (html.length > LARGE_HTML_THRESHOLD && text && text.length > 200) {
-      emailContent = text;
-    } else {
-      const strippedHtml = stripHtmlCss(html);
-      emailContent = strippedHtml || text || html;
-    }
-
-    const isHtml = emailContent.includes('<') && emailContent.includes('>');
-    const contentLabel = isHtml ? 'HTML' : 'plain text';
-
     const client = new Anthropic(); // reads ANTHROPIC_API_KEY from env at call time
 
     const msg = await client.messages.create({
@@ -65,14 +35,14 @@ export async function parseOrderEmail(
         {
           role: 'user',
           content:
-            `Extract the total order amount, a brief item description, the retailer/merchant name, the currency, the order date, and any custom note from this order confirmation email ${contentLabel}. ` +
+            `Extract the total order amount, a brief item description, the retailer/merchant name, the currency, the order date, and any custom note from this order confirmation email HTML. ` +
             `For multi-item orders, summarize as '2 items: Item1, Item2' (max 2 item names). ` +
             `For currency: set to "EUR" ONLY if the total amount is exclusively in Euros (€) with no conversion to GBP or another currency shown. ` +
             `If the email shows a Euro amount AND a GBP/sterling equivalent, or if the amount is in any non-Euro currency, set currency to "GBP". ` +
             `For date: extract the order date from the email and format as YYYY-MM-DD. If no date is found, use today's date: ${new Date().toISOString().split('T')[0]}. ` +
             `For customNote: the user sometimes types a short free-text comment at the very top of the email body BEFORE the forwarded order confirmation content (above any "---------- Forwarded message ----------" separator, quoted reply block, or "From:" header). If such a note exists, return its verbatim text (trimmed, single-line). If there is no such note — i.e. the body starts directly with the forwarded content — return an empty string "". Do NOT invent a note from the order content itself. ` +
             `Return JSON: {"amount": 12.99, "description": "brief description", "retailer": "Amazon", "currency": "GBP", "date": "2024-03-15", "customNote": ""}. ` +
-            `Email content:\n\n${emailContent}`,
+            `HTML:\n\n${html}`,
         },
       ],
     });
