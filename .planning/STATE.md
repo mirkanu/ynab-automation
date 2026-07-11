@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 Phase: 33
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-07-11 - Completed quick task 260711-erc: Show FX/interest breakdown in negative-gap reconciliation state
+Last activity: 2026-07-11 - Completed quick task 260711-h4n: Replace implied-rate heuristic with real historical Wise FX rate lookup and gate Accept & Reconcile on combined explained pct
 
 ## Roadmap Summary (v6.2)
 
@@ -162,11 +162,12 @@ None.
 
 ### Quick Tasks Completed
 
-| # | Description | Date | Commit | Directory |
-|---|-------------|------|--------|-----------|
-| 7 | Zero-config Railway deploy | 2026-04-16 | bc2aa41 | [7-zero-config-railway-deploy](./quick/7-zero-config-railway-deploy/) |
-| 260421-cvo | Parser extracts custom note from top of forwarded email body into memo | 2026-04-21 | eab63ed | [260421-parser-custom-note](./quick/260421-parser-custom-note/) |
-| 260711-erc | Show FX/interest breakdown in negative-gap reconciliation state | 2026-07-11 | 8fa09a7 | [260711-erc-show-fx-interest-breakdown-in-negative-g](./quick/260711-erc-show-fx-interest-breakdown-in-negative-g/) |
+| # | Description | Date | Commit | Status | Directory |
+|---|-------------|------|--------|--------|-----------|
+| 7 | Zero-config Railway deploy | 2026-04-16 | bc2aa41 | | [7-zero-config-railway-deploy](./quick/7-zero-config-railway-deploy/) |
+| 260421-cvo | Parser extracts custom note from top of forwarded email body into memo | 2026-04-21 | eab63ed | | [260421-parser-custom-note](./quick/260421-parser-custom-note/) |
+| 260711-erc | Show FX/interest breakdown in negative-gap reconciliation state | 2026-07-11 | 8fa09a7 | | [260711-erc-show-fx-interest-breakdown-in-negative-g](./quick/260711-erc-show-fx-interest-breakdown-in-negative-g/) |
+| 260711-h4n | Replace implied-rate heuristic with real historical Wise FX rate lookup and gate Accept & Reconcile on combined explained pct | 2026-07-11 | 49d4f3c | Verified | [260711-h4n-replace-implied-rate-heuristic-with-real](./quick/260711-h4n-replace-implied-rate-heuristic-with-real/) |
 
 ## Session Continuity
 
