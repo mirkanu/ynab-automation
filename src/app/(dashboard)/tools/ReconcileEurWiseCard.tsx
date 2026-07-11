@@ -187,12 +187,51 @@ export default function ReconcileEurWiseCard() {
 
       {/* Problem state */}
       {status === 'problem' && data && (
-        <div style={S.warningBox}>
-          <strong>⚠ Wise balance is lower than YNAB</strong><br />
-          Wise GBP equivalent (£{fmt(data.wiseGbpEquivalent)}) is less than YNAB cleared balance
-          (£{fmt(data.ynabClearedBalance)}). This suggests a missing transaction or an error.
-          Manual review required before reconciling.
-        </div>
+        <>
+          <div style={S.inputRow}>
+            <label style={{ fontSize: '0.875rem', color: '#374151' }}>
+              Current Wise EUR interest rate:
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              max="100"
+              value={interestRate}
+              onChange={e => setInterestRate(e.target.value)}
+              style={S.input}
+            />
+            <span style={{ fontSize: '0.875rem', color: '#374151' }}>% per year</span>
+          </div>
+
+          <div style={{
+            backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0',
+            borderRadius: '8px', padding: '0.875rem 1rem', marginBottom: '1rem',
+            fontSize: '0.875rem', color: '#166534',
+          }}>
+            <strong>{rate}% over {days} days</strong> accounts for{' '}
+            <strong>£{fmt(estInterest)}</strong> of the{' '}
+            <strong>£{fmt(Math.abs(data.gap))}</strong> gap{' '}
+            ({sharePct}%)
+          </div>
+
+          <div style={S.infoBox}>
+            Current Wise rate: <strong>{data.eurGbpRate.toFixed(4)}</strong>. Implied rate needed
+            to match YNAB exactly: <strong>{impliedRate.toFixed(4)}</strong>{' '}
+            ({rateDeltaPct >= 0 ? '+' : ''}{rateDeltaPct.toFixed(2)}% difference).
+            <p style={{ margin: '0.5rem 0 0', fontSize: '0.75rem', color: '#6b7280' }}>
+              This is a derived comparison, not a historical rate — the app does not record what
+              the rate was when transactions cleared. A large delta suggests FX movement is a
+              likely contributor to the gap; a small delta means the gap is likely unexplained
+              (missing transaction or error).
+            </p>
+          </div>
+
+          <div style={S.warningBox}>
+            <strong>⚠ Wise balance is lower than YNAB</strong><br />
+            Manual review required before reconciling — this analysis is informational only.
+          </div>
+        </>
       )}
 
       {/* Review + interest rate input */}
