@@ -64,6 +64,10 @@ const S = {
     backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0',
     borderRadius: '8px', padding: '1rem', color: '#166534', marginTop: '1rem',
   },
+  infoBox: {
+    fontSize: '0.8125rem', color: '#1e40af', backgroundColor: '#eff6ff',
+    border: '1px solid #bfdbfe', borderRadius: '8px', padding: '0.875rem 1rem', marginTop: '1rem',
+  },
   inputRow: { display: 'flex' as const, alignItems: 'center' as const, gap: '0.5rem', margin: '1rem 0' },
   input: {
     width: '80px', padding: '0.4rem 0.6rem', fontSize: '0.875rem',
@@ -83,8 +87,17 @@ export default function ReconcileEurWiseCard() {
   const estInterest = data
     ? Math.round(data.wiseEurBalance * (rate / 100) * (days / 365) * data.eurGbpRate * 100) / 100
     : 0;
-  const sharePct = data && data.gap > 0
-    ? Math.round((estInterest / data.gap) * 100)
+  const sharePct = data && data.gap !== 0
+    ? Math.round((estInterest / Math.abs(data.gap)) * 100)
+    : 0;
+  // Implied rate: the EUR-GBP rate at which wiseEurBalance would exactly equal
+  // ynabClearedBalance. This is NOT a historical actual rate; there is no stored rate history.
+  // It is a derived "what rate would reconcile cleanly" figure.
+  const impliedRate = data && data.wiseEurBalance !== 0
+    ? data.ynabClearedBalance / data.wiseEurBalance
+    : 0;
+  const rateDeltaPct = data && impliedRate !== 0
+    ? ((data.eurGbpRate - impliedRate) / impliedRate) * 100
     : 0;
 
   async function handleFetch() {
