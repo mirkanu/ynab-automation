@@ -13,6 +13,9 @@ export interface ReconciliationStatus {
   lastReconciliationDate:   string | null;  // ISO date of last reconciliation adj
   daysSinceLastRecon:       number | null;
   clearedCount:             number;   // transactions that will be marked reconciled
+  historicalRate:           number | null;  // Wise EUR->GBP rate on lastReconciliationDate, if lookup succeeded
+  historicalRateDate:       string | null;  // actual timestamp Wise returned for the historical rate
+  fxImpactGbp:              number | null;  // wiseEurBalance * (eurGbpRate - historicalRate), null if historicalRate unavailable
 }
 
 export interface ReconciliationResult {
@@ -83,6 +86,24 @@ async function wiseFetch(wiseToken: string, path: string) {
   return res.json();
 }
 
+async function fetchHistoricalRate(
+  wiseToken: string,
+  lastReconciliationDate: string | null,
+): Promise<{ rate: number; time: string } | null> {
+  if (lastReconciliationDate === null) return null;
+  try {
+    const ratesRaw = await wiseFetch(
+      wiseToken,
+      `/v1/rates?source=EUR&target=GBP&time=${lastReconciliationDate}T12:00:00Z`,
+    );
+    const rateObj = (ratesRaw as Array<{ rate: number; time: string }>)[0];
+    if (!rateObj) return null;
+    return { rate: rateObj.rate, time: rateObj.time };
+  } catch {
+    return null;
+  }
+}
+
 export async function getReconciliationStatus(): Promise<ReconciliationStatus> {
   const ynabToken = await getSetting('YNAB_ACCESS_TOKEN');
   if (!ynabToken) throw new Error('YNAB_ACCESS_TOKEN not configured');
@@ -134,6 +155,11 @@ export async function getReconciliationStatus(): Promise<ReconciliationStatus> {
 
   const clearedCount = txns.filter(t => t.cleared === 'cleared').length;
 
+  const historicalRateResult = await fetchHistoricalRate(wiseToken, lastReconciliationDate);
+  const historicalRate = historicalRateResult?.rate ?? null;
+  const historicalRateDate = historicalRateResult?.time ?? null;
+  const fxImpactGbp = computeFxImpactGbp(wiseEurBalance, eurGbpRate, historicalRate);
+
   return {
     wiseEurBalance,
     eurGbpRate,
@@ -143,6 +169,9 @@ export async function getReconciliationStatus(): Promise<ReconciliationStatus> {
     lastReconciliationDate,
     daysSinceLastRecon,
     clearedCount,
+    historicalRate,
+    historicalRateDate,
+    fxImpactGbp,
   };
 }
 
@@ -156,27 +185,37 @@ export async function applyReconciliation(
 
   const status = await getReconciliationStatus();
 
+  // days since last reconciliation, hoisted so both gap branches can use it
+  const days = status.daysSinceLastRecon ?? 30;
+  const interestGbp = computeInterestGbp(status.wiseEurBalance, interestRatePct, days, status.eurGbpRate);
+
   if (status.gap < 0) {
-    throw new Error(
-      `Wise GBP equivalent (£${status.wiseGbpEquivalent.toFixed(2)}) is LOWER than YNAB cleared balance (£${status.ynabClearedBalance.toFixed(2)}). Manual review required before reconciling.`,
-    );
+    const explainedPct = status.fxImpactGbp !== null
+      ? computeExplainedPct(interestGbp, status.fxImpactGbp, status.gap)
+      : null;
+    if (explainedPct === null || !isWithinReconcileBand(explainedPct)) {
+      throw new Error(
+        `Wise GBP equivalent (£${status.wiseGbpEquivalent.toFixed(2)}) is LOWER than YNAB cleared balance (£${status.ynabClearedBalance.toFixed(2)}). Manual review required before reconciling.`,
+      );
+    }
+    // explainedPct is non-null and in [85,115] here -- fall through to the shared
+    // adjustment-creation + reconciliation-marking logic below, same as the positive-gap path.
   }
 
   if (status.gap === 0) {
     throw new Error('No gap to reconcile — YNAB already matches Wise.');
   }
 
-  // Interest estimate: interestRate% × wiseEurBalance × days / 365, converted to GBP
-  const days = status.daysSinceLastRecon ?? 30;
-  const interestEur = status.wiseEurBalance * (interestRatePct / 100) * (days / 365);
-  const interestGbp = Math.round(interestEur * status.eurGbpRate * 100) / 100;
   const interestSharePct = Math.round((interestGbp / status.gap) * 100);
 
   const adjustmentMilliunits = Math.round(status.gap * 1000);
 
   const wiseEurFmt  = status.wiseEurBalance.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const wiseGbpFmt  = status.wiseGbpEquivalent.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  const memo = `EUR${wiseEurFmt} to GBP${wiseGbpFmt}, interest ${interestRatePct}%`;
+  let memo = `EUR${wiseEurFmt} to GBP${wiseGbpFmt}, interest ${interestRatePct}%`;
+  if (status.gap < 0 && status.fxImpactGbp !== null && status.historicalRate !== null) {
+    memo = `${memo}, FX impact £${status.fxImpactGbp.toFixed(2)} (rate ${status.historicalRate.toFixed(4)}->${status.eurGbpRate.toFixed(4)})`;
+  }
 
   // Create reconciliation transaction
   await ynabFetch(ynabToken, `/budgets/${budgetId}/transactions`, {
