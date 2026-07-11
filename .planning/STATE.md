@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 Phase: 33
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-07-11 - Completed quick task 260711-h4n: Replace implied-rate heuristic with real historical Wise FX rate lookup and gate Accept & Reconcile on combined explained pct
+Last activity: 2026-07-11 - EUR Wise reconciliation tool: real historical FX-rate lookup, band-gated auto-reconcile, sign-error fix in explained-% calc, and FX visibility in positive-gap review state. Also manually corrected a missing Hertz pre-auth transaction in YNAB (confirmed via Wise reservedAmount that holds are already deducted from reported balance).
 
 ## Roadmap Summary (v6.2)
 
@@ -168,6 +168,8 @@ None.
 | 260421-cvo | Parser extracts custom note from top of forwarded email body into memo | 2026-04-21 | eab63ed | | [260421-parser-custom-note](./quick/260421-parser-custom-note/) |
 | 260711-erc | Show FX/interest breakdown in negative-gap reconciliation state | 2026-07-11 | 8fa09a7 | | [260711-erc-show-fx-interest-breakdown-in-negative-g](./quick/260711-erc-show-fx-interest-breakdown-in-negative-g/) |
 | 260711-h4n | Replace implied-rate heuristic with real historical Wise FX rate lookup and gate Accept & Reconcile on combined explained pct | 2026-07-11 | 49d4f3c | Verified | [260711-h4n-replace-implied-rate-heuristic-with-real](./quick/260711-h4n-replace-implied-rate-heuristic-with-real/) |
+| 260711-fix1 | Fix sign error in explained-% calc (Math.abs(gap) inverted result for negative fxImpactGbp) | 2026-07-11 | d76e843 | | direct fix, no plan dir |
+| 260711-fix2 | Show historical FX-rate impact box in positive-gap 'review' state (informational only) | 2026-07-11 | b64dc85 | | direct fix, no plan dir |
 
 ## Session Continuity
 
