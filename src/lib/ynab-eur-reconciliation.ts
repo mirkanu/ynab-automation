@@ -68,7 +68,12 @@ export function computeExplainedPct(
   fxImpactGbp: number | null,
   gap: number,
 ): number {
-  return ((interestGbp + (fxImpactGbp ?? 0)) / Math.abs(gap)) * 100;
+  // Divide by the SIGNED gap, not its magnitude. interestGbp is always >= 0;
+  // fxImpactGbp carries the sign of the underlying rate move (negative when
+  // the rate dropped). For a negative gap, only a combination that is itself
+  // negative and close in magnitude to gap actually explains it — dividing by
+  // Math.abs(gap) here would flip the sign and silently invert the result.
+  return ((interestGbp + (fxImpactGbp ?? 0)) / gap) * 100;
 }
 
 export function isWithinReconcileBand(explainedPct: number): boolean {

@@ -104,11 +104,16 @@ export default function ReconcileEurWiseCard() {
     : 0;
 
   const fxImpactGbp = data?.fxImpactGbp ?? null;
+  // Divide by the SIGNED gap, not its magnitude — see computeExplainedPct in
+  // ynab-eur-reconciliation.ts for why Math.abs(gap) here would flip the sign
+  // and silently invert the result (e.g. turn "63% explained" into "-63%").
   const combinedExplainedPct = data && data.gap < 0
-    ? Math.round(((estInterest + (fxImpactGbp ?? 0)) / Math.abs(data.gap)) * 100)
+    ? Math.round(((estInterest + (fxImpactGbp ?? 0)) / data.gap) * 100)
     : sharePct;
+  // Signed subtraction: unexplainedGbp is what's left of the (signed) gap
+  // after netting out interest + FX impact, not abs(gap) minus their sum.
   const unexplainedGbp = data && data.gap < 0
-    ? Math.abs(data.gap) - (estInterest + (fxImpactGbp ?? 0))
+    ? data.gap - (estInterest + (fxImpactGbp ?? 0))
     : 0;
   const inBand = data ? combinedExplainedPct >= 85 && combinedExplainedPct <= 115 : false;
 

@@ -28,12 +28,24 @@ describe('computeFxImpactGbp', () => {
 });
 
 describe('computeExplainedPct', () => {
-  it('interestGbp=50, fxImpactGbp=30, gap=-100 -> 80', () => {
-    expect(computeExplainedPct(50, 30, -100)).toBe(80);
+  it('interestGbp=20, fxImpactGbp=-80, gap=-100 -> 60 (FX loss dominates, interest offsets part of it)', () => {
+    expect(computeExplainedPct(20, -80, -100)).toBe(60);
   });
 
-  it('interestGbp=50, fxImpactGbp=null, gap=-100 -> 50', () => {
-    expect(computeExplainedPct(50, null, -100)).toBe(50);
+  it('interestGbp=10, fxImpactGbp=-110, gap=-100 -> 100 (fully explained: FX loss + interest offset match the gap exactly)', () => {
+    expect(computeExplainedPct(10, -110, -100)).toBe(100);
+  });
+
+  it('interestGbp=10.54, fxImpactGbp=-173.03, gap=-257.88 -> ~63 (real case: FX+interest cover most but not all of the gap)', () => {
+    expect(computeExplainedPct(10.54, -173.03, -257.88)).toBeCloseTo(63.0, 1);
+  });
+
+  it('interestGbp=50, fxImpactGbp=null, gap=-100 -> -50 (interest alone points the WRONG way for a negative gap; never explains it)', () => {
+    expect(computeExplainedPct(50, null, -100)).toBe(-50);
+  });
+
+  it('interestGbp=50, fxImpactGbp=30, gap=-100 -> -80 (both positive contributors contradict a negative gap; must not read as "explained")', () => {
+    expect(computeExplainedPct(50, 30, -100)).toBe(-80);
   });
 });
 
