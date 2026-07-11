@@ -10,6 +10,9 @@ interface ReconciliationStatus {
   lastReconciliationDate: string | null;
   daysSinceLastRecon:     number | null;
   clearedCount:           number;
+  historicalRate:         number | null;
+  historicalRateDate:     string | null;
+  fxImpactGbp:            number | null;
 }
 
 interface ReconciliationResult {
@@ -99,6 +102,15 @@ export default function ReconcileEurWiseCard() {
   const rateDeltaPct = data && impliedRate !== 0
     ? ((data.eurGbpRate - impliedRate) / impliedRate) * 100
     : 0;
+
+  const fxImpactGbp = data?.fxImpactGbp ?? null;
+  const combinedExplainedPct = data && data.gap < 0
+    ? Math.round(((estInterest + (fxImpactGbp ?? 0)) / Math.abs(data.gap)) * 100)
+    : sharePct;
+  const unexplainedGbp = data && data.gap < 0
+    ? Math.abs(data.gap) - (estInterest + (fxImpactGbp ?? 0))
+    : 0;
+  const inBand = data ? combinedExplainedPct >= 85 && combinedExplainedPct <= 115 : false;
 
   async function handleFetch() {
     setStatus('loading');
@@ -215,22 +227,47 @@ export default function ReconcileEurWiseCard() {
             ({sharePct}%)
           </div>
 
-          <div style={S.infoBox}>
-            Current Wise rate: <strong>{data.eurGbpRate.toFixed(4)}</strong>. Implied rate needed
-            to match YNAB exactly: <strong>{impliedRate.toFixed(4)}</strong>{' '}
-            ({rateDeltaPct >= 0 ? '+' : ''}{rateDeltaPct.toFixed(2)}% difference).
-            <p style={{ margin: '0.5rem 0 0', fontSize: '0.75rem', color: '#6b7280' }}>
-              This is a derived comparison, not a historical rate — the app does not record what
-              the rate was when transactions cleared. A large delta suggests FX movement is a
-              likely contributor to the gap; a small delta means the gap is likely unexplained
-              (missing transaction or error).
-            </p>
-          </div>
+          {data.historicalRate !== null ? (
+            <div style={S.infoBox}>
+              Historical Wise rate on <strong>{data.historicalRateDate ?? data.lastReconciliationDate}</strong>:{' '}
+              <strong>{data.historicalRate.toFixed(4)}</strong> vs today&apos;s rate{' '}
+              <strong>{data.eurGbpRate.toFixed(4)}</strong>. FX impact:{' '}
+              <strong>{fxImpactGbp !== null && fxImpactGbp >= 0 ? '+' : ''}£{fmt(fxImpactGbp ?? 0)}</strong>
+            </div>
+          ) : (
+            <div style={S.infoBox}>
+              Current Wise rate: <strong>{data.eurGbpRate.toFixed(4)}</strong>. Implied rate needed
+              to match YNAB exactly: <strong>{impliedRate.toFixed(4)}</strong>{' '}
+              ({rateDeltaPct >= 0 ? '+' : ''}{rateDeltaPct.toFixed(2)}% difference).
+              <p style={{ margin: '0.5rem 0 0', fontSize: '0.75rem', color: '#6b7280' }}>
+                This is a derived comparison, not a historical rate — the app does not record what
+                the rate was when transactions cleared. A large delta suggests FX movement is a
+                likely contributor to the gap; a small delta means the gap is likely unexplained
+                (missing transaction or error).
+              </p>
+            </div>
+          )}
+
+          <p style={{ ...S.desc, marginTop: '0.75rem', marginBottom: 0 }}>
+            £{fmt(Math.abs(unexplainedGbp))} ({100 - combinedExplainedPct}%) unexplained
+          </p>
 
           <div style={S.warningBox}>
             <strong>⚠ Wise balance is lower than YNAB</strong><br />
             Manual review required before reconciling — this analysis is informational only.
           </div>
+
+          {inBand && (
+            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
+              <button
+                style={{ ...S.btnSuccess, opacity: rate <= 0 ? 0.6 : 1 }}
+                onClick={handleApply}
+                disabled={rate <= 0}
+              >
+                Accept &amp; Reconcile
+              </button>
+            </div>
+          )}
         </>
       )}
 
