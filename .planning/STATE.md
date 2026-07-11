@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 Phase: 33
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-05-30
+Last activity: 2026-07-11 - Completed quick task 260711-erc: Show FX/interest breakdown in negative-gap reconciliation state
 
 ## Roadmap Summary (v6.2)
 
@@ -166,6 +166,7 @@ None.
 |---|-------------|------|--------|-----------|
 | 7 | Zero-config Railway deploy | 2026-04-16 | bc2aa41 | [7-zero-config-railway-deploy](./quick/7-zero-config-railway-deploy/) |
 | 260421-cvo | Parser extracts custom note from top of forwarded email body into memo | 2026-04-21 | eab63ed | [260421-parser-custom-note](./quick/260421-parser-custom-note/) |
+| 260711-erc | Show FX/interest breakdown in negative-gap reconciliation state | 2026-07-11 | 8fa09a7 | [260711-erc-show-fx-interest-breakdown-in-negative-g](./quick/260711-erc-show-fx-interest-breakdown-in-negative-g/) |
 
 ## Session Continuity
 
