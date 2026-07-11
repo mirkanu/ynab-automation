@@ -41,6 +41,37 @@ async function ynabFetch(token: string, path: string, opts?: RequestInit) {
   return res.json();
 }
 
+export function computeInterestGbp(
+  wiseEurBalance: number,
+  interestRatePct: number,
+  days: number,
+  eurGbpRate: number,
+): number {
+  const interestEur = wiseEurBalance * (interestRatePct / 100) * (days / 365);
+  return Math.round(interestEur * eurGbpRate * 100) / 100;
+}
+
+export function computeFxImpactGbp(
+  wiseEurBalance: number,
+  currentRate: number,
+  historicalRate: number | null,
+): number | null {
+  if (historicalRate === null) return null;
+  return wiseEurBalance * (currentRate - historicalRate);
+}
+
+export function computeExplainedPct(
+  interestGbp: number,
+  fxImpactGbp: number | null,
+  gap: number,
+): number {
+  return ((interestGbp + (fxImpactGbp ?? 0)) / Math.abs(gap)) * 100;
+}
+
+export function isWithinReconcileBand(explainedPct: number): boolean {
+  return explainedPct >= 85 && explainedPct <= 115;
+}
+
 async function wiseFetch(wiseToken: string, path: string) {
   const res = await fetch(`https://api.wise.com${path}`, {
     headers: { 'Authorization': `Bearer ${wiseToken}` },
