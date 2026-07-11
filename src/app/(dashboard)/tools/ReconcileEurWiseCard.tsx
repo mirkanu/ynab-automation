@@ -309,6 +309,20 @@ export default function ReconcileEurWiseCard() {
             {sharePct > 120 && ' — interest overshoot; rate may be too high'}
           </div>
 
+          {data.historicalRate !== null && (
+            <div style={S.infoBox}>
+              Historical Wise rate on <strong>{data.historicalRateDate ?? data.lastReconciliationDate}</strong>:{' '}
+              <strong>{data.historicalRate.toFixed(4)}</strong> vs today&apos;s rate{' '}
+              <strong>{data.eurGbpRate.toFixed(4)}</strong>. FX impact on the balance:{' '}
+              <strong>{fxImpactGbp !== null && fxImpactGbp >= 0 ? '+' : ''}£{fmt(fxImpactGbp ?? 0)}</strong>
+              <p style={{ margin: '0.5rem 0 0', fontSize: '0.75rem', color: '#6b7280' }}>
+                Informational only — does not change whether Accept &amp; Reconcile is available.
+                If this FX impact doesn&apos;t line up with the size of the gap, the gap is more likely
+                driven by a real transaction (missing, settled, or corrected) than by rate movement.
+              </p>
+            </div>
+          )}
+
           <div style={{ display: 'flex', gap: '0.75rem' }}>
             <button
               style={{ ...S.btnSuccess, opacity: rate <= 0 ? 0.6 : 1 }}
