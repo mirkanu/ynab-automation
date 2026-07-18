@@ -170,6 +170,7 @@ None.
 | 260711-h4n | Replace implied-rate heuristic with real historical Wise FX rate lookup and gate Accept & Reconcile on combined explained pct | 2026-07-11 | 49d4f3c | Verified | [260711-h4n-replace-implied-rate-heuristic-with-real](./quick/260711-h4n-replace-implied-rate-heuristic-with-real/) |
 | 260711-fix1 | Fix sign error in explained-% calc (Math.abs(gap) inverted result for negative fxImpactGbp) | 2026-07-11 | d76e843 | | direct fix, no plan dir |
 | 260711-fix2 | Show historical FX-rate impact box in positive-gap 'review' state (informational only) | 2026-07-11 | b64dc85 | | direct fix, no plan dir |
+| 260718-cb7 | Reject parsed order emails with amount <= 0 or NaN; notify admin and log as invalid_amount | 2026-07-18 | 2b8c6ac | Complete | [260718-cb7-reject-parsed-order-emails-with-amount-0](./quick/260718-cb7-reject-parsed-order-emails-with-amount-0/) |
 
 ## Session Continuity
 
