@@ -174,6 +174,46 @@ ${contentForNotification}
       return NextResponse.json({ received: true }, { status: 200 });
     }
 
+    // Step 6a: Reject unusable amounts (e.g. shipping/dispatch emails with no price shown,
+    // which Claude may extract as amount: 0). Zero and NaN both pass `typeof === 'number'`
+    // in parseOrderEmail's validation, so this guard catches what that check misses.
+    if (!Number.isFinite(parsed.amount) || parsed.amount <= 0) {
+      console.warn('Rejected parsed order — invalid amount:', parsed.amount, 'messageId:', messageId);
+      const appUrl = process.env.YNAB_APP_URL ?? '';
+      await sendErrorNotification({
+        to: config.adminEmail,
+        subject: `YNAB automation: no valid amount found${notificationSuffix(senderInfo)}`,
+        body:
+          `An order confirmation email forwarded by ${senderInfo.name} was parsed, but no valid ` +
+          `amount could be extracted (parsed amount: ${parsed.amount}). No YNAB transaction was created.\n\n` +
+          `Description: ${parsed.description}\n` +
+          `Retailer: ${parsed.retailer}\n` +
+          `Forwarded by: ${senderInfo.name}\n\n` +
+          `This usually means the email was a shipping/dispatch notice rather than a purchase ` +
+          `receipt, and had no price shown. Please check the original email and add the ` +
+          `transaction to YNAB manually if needed.\n\n` +
+          `Message ID: ${messageId}\n` +
+          `View in log: ${appUrl}/logs`,
+      });
+      await writeActivityLog({
+        messageId,
+        status: 'invalid_amount',
+        sender: sender ?? undefined,
+        subject: subject ?? undefined,
+        rawBody: html || undefined,
+        parseResult: {
+          retailer: parsed.retailer,
+          amount: parsed.amount,
+          date: parsed.date,
+          currency: parsed.currency,
+          description: parsed.description,
+        },
+        errorType: 'invalid_amount',
+        errorMessage: `Parsed amount ${parsed.amount} is not usable (<= 0 or NaN)`,
+      });
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
+
     // Step 6b: Resolve category hint to YNAB category ID (if hint was present)
     const budgetId = (await getSetting('YNAB_BUDGET_ID')) ?? '';
     let categoryId: string | undefined;
