@@ -10,6 +10,7 @@ const statuses = [
   { value: 'ynab_error', label: 'YNAB Error' },
   { value: 'unknown_sender', label: 'Unknown Sender' },
   { value: 'duplicate', label: 'Duplicate' },
+  { value: 'duplicate_order', label: 'Duplicate Order' },
   { value: 'no_message_id', label: 'No Message ID' },
 ];
 

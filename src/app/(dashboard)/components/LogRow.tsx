@@ -24,6 +24,7 @@ const statusColors: Record<string, { bg: string; text: string }> = {
   unknown_sender: { bg: '#fefce8', text: '#854d0e' },
   duplicate: { bg: '#f3f4f6', text: '#6b7280' },
   no_message_id: { bg: '#f3f4f6', text: '#6b7280' },
+  duplicate_order: { bg: '#f3f4f6', text: '#6b7280' },
 };
 
 const statusLabels: Record<string, string> = {
@@ -34,6 +35,7 @@ const statusLabels: Record<string, string> = {
   unknown_sender: 'Unknown Sender',
   duplicate: 'Duplicate',
   no_message_id: 'No ID',
+  duplicate_order: 'Duplicate Order',
 };
 
 type ReplayStatus = 'idle' | 'confirm' | 'confirm-live' | 'loading' | 'success' | 'error';
