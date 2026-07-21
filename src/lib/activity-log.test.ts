@@ -73,6 +73,22 @@ describe('writeActivityLog', () => {
     expect(data.ynabResult).toBeUndefined();
   });
 
+  it('writes a duplicate_order entry with orderNumber passed through', async () => {
+    const { writeActivityLog } = await import('./activity-log');
+    const entry: ActivityLogEntry = {
+      messageId: 'msg-dup-order',
+      status: 'duplicate_order',
+      sender: 'alice@example.com',
+      orderNumber: '204-6619432-1614766',
+    };
+
+    await writeActivityLog(entry);
+
+    const data = mockCreate.mock.calls[0][0].data;
+    expect(data.status).toBe('duplicate_order');
+    expect(data.orderNumber).toBe('204-6619432-1614766');
+  });
+
   it('does not throw on database errors', async () => {
     mockCreate.mockRejectedValueOnce(new Error('DB connection lost'));
     const { writeActivityLog } = await import('./activity-log');

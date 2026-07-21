@@ -2,10 +2,11 @@ import { prisma } from '@/lib/db'
 
 export interface ActivityLogEntry {
   messageId: string
-  status: 'success' | 'test' | 'parse_error' | 'ynab_error' | 'unknown_sender' | 'duplicate' | 'no_message_id' | 'invalid_amount'
+  status: 'success' | 'test' | 'parse_error' | 'ynab_error' | 'unknown_sender' | 'duplicate' | 'no_message_id' | 'invalid_amount' | 'duplicate_order'
   sender?: string
   subject?: string
   rawBody?: string
+  orderNumber?: string
   parseResult?: {
     retailer: string
     amount: number
@@ -37,6 +38,7 @@ export async function writeActivityLog(entry: ActivityLogEntry): Promise<void> {
         sender: entry.sender,
         subject: entry.subject,
         rawBody: entry.rawBody,
+        orderNumber: entry.orderNumber,
         parseResult: entry.parseResult ?? undefined,
         ynabResult: entry.ynabResult ?? undefined,
         errorType: entry.errorType,

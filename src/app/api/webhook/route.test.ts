@@ -10,11 +10,15 @@ vi.mock('@/lib/activity-log', () => ({
 
 const mockFindUnique = vi.fn().mockResolvedValue(null);
 const mockCreate = vi.fn().mockResolvedValue({ id: 1 });
+const mockActivityLogFindFirst = vi.fn().mockResolvedValue(null);
 vi.mock('@/lib/db', () => ({
   prisma: {
     processedEmail: {
       findUnique: mockFindUnique,
       create: mockCreate,
+    },
+    activityLog: {
+      findFirst: mockActivityLogFindFirst,
     },
   },
 }));
@@ -23,11 +27,13 @@ const mockExtractMessageId = vi.fn().mockReturnValue('msg-123');
 const mockExtractOriginalSender = vi.fn().mockReturnValue('alice@example.com');
 const mockExtractOriginalRecipient = vi.fn().mockReturnValue(null);
 const mockExtractCategoryHint = vi.fn().mockReturnValue(null);
+const mockExtractOrderNumber = vi.fn().mockReturnValue(null);
 vi.mock('@/lib/email', () => ({
   extractMessageId: mockExtractMessageId,
   extractOriginalSender: mockExtractOriginalSender,
   extractOriginalRecipient: mockExtractOriginalRecipient,
   extractCategoryHint: mockExtractCategoryHint,
+  extractOrderNumber: mockExtractOrderNumber,
 }));
 
 const mockParseOrderEmail = vi.fn().mockResolvedValue({
@@ -93,6 +99,8 @@ describe('POST /api/webhook - activity logging', () => {
     mockExtractMessageId.mockReturnValue('msg-123');
     mockExtractOriginalSender.mockReturnValue('alice@example.com');
     mockFindUnique.mockResolvedValue(null);
+    mockActivityLogFindFirst.mockResolvedValue(null);
+    mockExtractOrderNumber.mockReturnValue(null);
     mockParseOrderEmail.mockResolvedValue({
       retailer: 'Amazon', amount: 12.99, date: '2024-03-15', currency: 'GBP', description: 'AirPods case',
     });
@@ -176,6 +184,49 @@ describe('POST /api/webhook - activity logging', () => {
     expect(mockWriteActivityLog).toHaveBeenCalledOnce();
     const entry = mockWriteActivityLog.mock.calls[0][0];
     expect(entry.status).toBe('no_message_id');
+  });
+
+  it('logs duplicate_order and skips transaction creation when a prior success row shares the order number', async () => {
+    mockExtractOrderNumber.mockReturnValue('204-6619432-1614766');
+    mockActivityLogFindFirst.mockResolvedValue({ id: 152, orderNumber: '204-6619432-1614766', status: 'success' });
+
+    const { POST } = await import('./route');
+    const { sendErrorNotification } = await import('@/lib/notify');
+    await POST(makeRequest(webhookBody));
+
+    expect(mockCreateYnabTransaction).not.toHaveBeenCalled();
+    expect(sendErrorNotification).not.toHaveBeenCalled();
+    expect(mockWriteActivityLog).toHaveBeenCalledOnce();
+    const entry = mockWriteActivityLog.mock.calls[0][0];
+    expect(entry.status).toBe('duplicate_order');
+    expect(entry.orderNumber).toBe('204-6619432-1614766');
+  });
+
+  it('proceeds to create the transaction normally when no order number is extracted', async () => {
+    mockExtractOrderNumber.mockReturnValue(null);
+
+    const { POST } = await import('./route');
+    await POST(makeRequest(webhookBody));
+
+    expect(mockActivityLogFindFirst).not.toHaveBeenCalled();
+    expect(mockCreateYnabTransaction).toHaveBeenCalledOnce();
+    const entry = mockWriteActivityLog.mock.calls[0][0];
+    expect(entry.status).toBe('success');
+    expect(entry.orderNumber).toBeUndefined();
+  });
+
+  it('proceeds to create the transaction when an order number is extracted but no prior success row matches', async () => {
+    mockExtractOrderNumber.mockReturnValue('204-6619432-1614766');
+    mockActivityLogFindFirst.mockResolvedValue(null);
+
+    const { POST } = await import('./route');
+    await POST(makeRequest(webhookBody));
+
+    expect(mockActivityLogFindFirst).toHaveBeenCalledOnce();
+    expect(mockCreateYnabTransaction).toHaveBeenCalledOnce();
+    const entry = mockWriteActivityLog.mock.calls[0][0];
+    expect(entry.status).toBe('success');
+    expect(entry.orderNumber).toBe('204-6619432-1614766');
   });
 });
 
