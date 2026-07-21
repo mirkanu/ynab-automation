@@ -42,5 +42,10 @@ model ActivityLog {
   errorType    String?
   errorMessage String?
 
+  // Cross-email (confirmation + dispatch) order-number dedup (ORDER-DEDUP-01)
+  orderNumber  String?
+
   createdAt    DateTime @default(now())
+
+  @@index([orderNumber])
 }

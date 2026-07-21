@@ -163,6 +163,28 @@ export function extractCategoryHint(html: string): string | null {
   return null;
 }
 
+/**
+ * Extracts an Amazon order number (format NNN-NNNNNNN-NNNNNNN) from the raw HTML body.
+ *
+ * Scans the whole raw string — does NOT strip HTML tags first and does NOT anchor to
+ * an "Order #" label. Some Amazon emails insert a hidden U+202B RTL-embedding character
+ * between "#" and the digits, which breaks label-anchored regexes; a bare body-wide scan
+ * sidesteps that entirely. Also matches order numbers embedded in tracking URL query params
+ * (e.g. `?orderID=204-6619432-1614766`) via the same code path.
+ *
+ * @param html - The full HTML body of the email (or any raw string)
+ * @returns The first matched order number, or null if none found
+ */
+export function extractOrderNumber(html: string): string | null {
+  try {
+    if (!html) return null;
+    const match = html.match(/\d{3}-\d{7}-\d{7}/);
+    return match?.[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+
 // Amazon domain patterns to match against body HTML
 const AMAZON_DOMAIN_PATTERNS = [
   /@amazon\.co\.uk/i,
