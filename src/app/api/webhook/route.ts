@@ -5,6 +5,7 @@ import {
   extractOriginalSender,
   extractOriginalRecipient,
   extractCategoryHint,
+  extractOrderNumber,
 } from '@/lib/email';
 import { parseOrderEmail } from '@/lib/claude';
 import { createYnabTransaction, getCategories, findCategory, getAccountName, formatMemo } from '@/lib/ynab';
@@ -214,6 +215,37 @@ ${contentForNotification}
       return NextResponse.json({ received: true }, { status: 200 });
     }
 
+    // Step 6c: Order-number-based dedup — catches cross-email duplicates (e.g. confirmation
+    // + dispatch emails for the same order) that Step 2's messageId dedup cannot catch, since
+    // those emails have different Message-IDs. Only matches against a prior 'success' row, so
+    // a forged/coincidental order-number match against a failed/duplicate row can never block
+    // a legitimate transaction.
+    const orderNumber = extractOrderNumber(html) ?? undefined;
+    if (orderNumber) {
+      const priorSuccess = await prisma.activityLog.findFirst({
+        where: { orderNumber, status: 'success' },
+      });
+      if (priorSuccess) {
+        console.log('Duplicate order skipped (order-number match):', orderNumber, 'messageId:', messageId);
+        await writeActivityLog({
+          messageId,
+          status: 'duplicate_order',
+          sender: sender ?? undefined,
+          subject: subject ?? undefined,
+          rawBody: html || undefined,
+          orderNumber,
+          parseResult: {
+            retailer: parsed.retailer,
+            amount: parsed.amount,
+            date: parsed.date,
+            currency: parsed.currency,
+            description: parsed.description,
+          },
+        });
+        return NextResponse.json({ received: true }, { status: 200 });
+      }
+    }
+
     // Step 6b: Resolve category hint to YNAB category ID (if hint was present)
     const budgetId = (await getSetting('YNAB_BUDGET_ID')) ?? '';
     let categoryId: string | undefined;
@@ -249,6 +281,7 @@ ${contentForNotification}
         sender: sender ?? undefined,
         subject: subject ?? undefined,
         rawBody: html || undefined,
+        orderNumber,
         parseResult: {
           retailer: parsed.retailer,
           amount: parsed.amount,
@@ -290,6 +323,7 @@ ${contentForNotification}
         sender: sender ?? undefined,
         subject: subject ?? undefined,
         rawBody: html || undefined,
+        orderNumber,
         parseResult: {
           retailer: parsed.retailer,
           amount: parsed.amount,
