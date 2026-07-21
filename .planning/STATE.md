@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v6.4
 milestone_name: Currency Tools & UI Consolidation
-status: ready_to_plan
+status: planning
 stopped_at: Phase 32 UI-SPEC approved
-last_updated: "2026-05-30T20:42:15.005Z"
-last_activity: 2026-05-30 -- Phase 32 execution started
+last_updated: "2026-07-21T09:25:02.887Z"
+last_activity: "2026-07-11 - EUR Wise reconciliation tool: real historical FX-rate lookup, band-gated auto-reconcile, sign-error fix in explained-% calc, and FX visibility in positive-gap review state. Also manually corrected a missing Hertz pre-auth transaction in YNAB (confirmed via Wise reservedAmount that holds are already deducted from reported balance)."
 progress:
   total_phases: 15
   completed_phases: 11
   total_plans: 36
-  completed_plans: 36
-  percent: 73
+  completed_plans: 38
+  percent: 100
 ---
 
 # Amazon to YNAB Automation — Project State
@@ -151,6 +151,8 @@ Decisions logged in PROJECT.md Key Decisions table.
 - [Phase 27-02]: Rules page imports SenderRulesSection and CurrencyRulesSection from ../settings/ — components stay co-located with their server actions, only rendering location changes
 - [Phase 27-02]: settings/page.tsx removes budgetId/connected reads entirely — not even passed through, since no consumers remain on that page after the split
 - [Phase 27-settings-restructure-and-label-cleanup]: [Phase 27-03]: SettingsForm stays co-located under settings/ folder; tools/page.tsx imports via '../settings/SettingsForm' — same pattern as rules page split in plan 02
+- [Phase 260721-cqc]: extractOrderNumber scans raw HTML body with no label anchoring — Amazon inserts a hidden U+202B RTL-embedding char between 'Order #' and digits that breaks label-anchored regex
+- [Phase 260721-cqc]: Order-number dedup scoped to prior status:'success' rows only — a forged/coincidental match against a failed row can never suppress a legitimate transaction
 
 ### Pending Todos
 
@@ -171,9 +173,10 @@ None.
 | 260711-fix1 | Fix sign error in explained-% calc (Math.abs(gap) inverted result for negative fxImpactGbp) | 2026-07-11 | d76e843 | | direct fix, no plan dir |
 | 260711-fix2 | Show historical FX-rate impact box in positive-gap 'review' state (informational only) | 2026-07-11 | b64dc85 | | direct fix, no plan dir |
 | 260718-cb7 | Reject parsed order emails with amount <= 0 or NaN; notify admin and log as invalid_amount | 2026-07-18 | 2b8c6ac | Complete | [260718-cb7-reject-parsed-order-emails-with-amount-0](./quick/260718-cb7-reject-parsed-order-emails-with-amount-0/) |
+| 260721-cqc | Add order-number-based dedup so Amazon confirmation+dispatch email pairs create exactly one YNAB transaction; new 'duplicate_order' ActivityLog status | 2026-07-21 | 62be60e | Complete | [260721-cqc-add-order-number-based-deduplication-for](./quick/260721-cqc-add-order-number-based-deduplication-for/) |
 
 ## Session Continuity
 
-Last session: 2026-05-30T18:53:26.218Z
+Last session: 2026-07-21T09:23:40.188Z
 Stopped at: Phase 32 UI-SPEC approved
-Resume file: .planning/phases/32-dashboard-redesign/32-UI-SPEC.md
+Resume file: None
