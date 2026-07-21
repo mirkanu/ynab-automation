@@ -4,6 +4,7 @@ import {
   extractOriginalSender,
   isFromAmazon,
   extractCategoryHint,
+  extractOrderNumber,
 } from './email';
 
 // Minimal valid Pipedream payload matching PAYLOAD.md structure
@@ -163,6 +164,31 @@ describe('extractCategoryHint', () => {
 
   it('returns null when there is no blockquote and no meaningful text', () => {
     expect(extractCategoryHint('<html><body></body></html>')).toBeNull();
+  });
+});
+
+describe('extractOrderNumber', () => {
+  it('extracts order number despite a hidden RTL-embedding char between "#" and digits', () => {
+    const html = '<html><body>Order # ‫204-6619432-1614766<br>Thanks!</body></html>';
+    expect(extractOrderNumber(html)).toBe('204-6619432-1614766');
+  });
+
+  it('matches an order number inside a tracking URL query param, no label needed', () => {
+    const html = '<a href="https://track.amazon.co.uk/track?orderID=204-6619432-1614766">Track package</a>';
+    expect(extractOrderNumber(html)).toBe('204-6619432-1614766');
+  });
+
+  it('returns null when no order number pattern is present', () => {
+    expect(extractOrderNumber('<html>no order number here</html>')).toBeNull();
+  });
+
+  it('returns null for empty string', () => {
+    expect(extractOrderNumber('')).toBeNull();
+  });
+
+  it('returns the first match when two different order numbers are present', () => {
+    const html = 'Order 111-2222222-3333333 replaces order 444-5555555-6666666';
+    expect(extractOrderNumber(html)).toBe('111-2222222-3333333');
   });
 });
 
