@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 Phase: 33
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-07-11 - EUR Wise reconciliation tool: real historical FX-rate lookup, band-gated auto-reconcile, sign-error fix in explained-% calc, and FX visibility in positive-gap review state. Also manually corrected a missing Hertz pre-auth transaction in YNAB (confirmed via Wise reservedAmount that holds are already deducted from reported balance).
+Last activity: 2026-07-21 - Fixed undercounted multi-item order totals by fetching full email HTML from htmlUrl when Pipedream truncates the inline body at ~100,000 chars (quick task 260721-e1e). Also added order-number-based dedup for Amazon confirmation+dispatch email pairs (260721-cqc) and manually corrected a £19.47 undercount and 7 duplicate transactions found live in YNAB during testing.
 
 ## Roadmap Summary (v6.2)
 
@@ -174,6 +174,7 @@ None.
 | 260711-fix2 | Show historical FX-rate impact box in positive-gap 'review' state (informational only) | 2026-07-11 | b64dc85 | | direct fix, no plan dir |
 | 260718-cb7 | Reject parsed order emails with amount <= 0 or NaN; notify admin and log as invalid_amount | 2026-07-18 | 2b8c6ac | Complete | [260718-cb7-reject-parsed-order-emails-with-amount-0](./quick/260718-cb7-reject-parsed-order-emails-with-amount-0/) |
 | 260721-cqc | Add order-number-based dedup so Amazon confirmation+dispatch email pairs create exactly one YNAB transaction; new 'duplicate_order' ActivityLog status | 2026-07-21 | 62be60e | Complete | [260721-cqc-add-order-number-based-deduplication-for](./quick/260721-cqc-add-order-number-based-deduplication-for/) |
+| 260721-e1e | Fetch full email HTML from htmlUrl when Pipedream truncates the inline body at ~100,000 chars, fixing undercounted multi-item order totals | 2026-07-21 | 0d3c893 | Complete | [260721-e1e-fetch-full-email-html-from-htmlurl-when-](./quick/260721-e1e-fetch-full-email-html-from-htmlurl-when-/) |
 
 ## Session Continuity
 
