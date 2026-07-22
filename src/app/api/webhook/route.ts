@@ -23,12 +23,13 @@ export async function POST(req: NextRequest) {
     const config = loadConfig();
     const body = await req.json();
     const subject = body?.trigger?.event?.headers?.subject ?? null;
-    const html = body?.trigger?.event?.body?.html ?? '';
+    const originalHtml = body?.trigger?.event?.body?.html ?? '';
+    const htmlUrl = body?.trigger?.event?.body?.htmlUrl ?? '';
     const text = body?.trigger?.event?.body?.text ?? '';
     const rawUrl = body?.trigger?.event?.rawUrl ?? '';
 
     // Debug logging for Gmail forwarding emails
-    if (html === '' && text === '' && rawUrl === '') {
+    if (originalHtml === '' && text === '' && rawUrl === '') {
       console.warn('Email has no html, text, or rawUrl:', { messageId: extractMessageId(body), subject });
     }
 
@@ -55,6 +56,36 @@ export async function POST(req: NextRequest) {
         sender: extractOriginalSender(body) ?? undefined,
       });
       return NextResponse.json({ received: true }, { status: 200 });
+    }
+
+    // Step 2b: Resolve full HTML — Pipedream truncates the inline `html` field at exactly
+    // 100,000 characters. When that happens, fetch the untruncated body from `htmlUrl` (an
+    // S3 URL Pipedream also provides) so Claude parsing and the stored activity-log rawBody
+    // see the complete email, not a cut-off fragment (root cause of undercounted multi-item
+    // order totals — the real total often appears after the truncation point). Falls back to
+    // the original (possibly truncated) inline html on any fetch failure; never throws, never
+    // blocks webhook processing.
+    let html = originalHtml;
+    if (originalHtml.length >= 100000 && htmlUrl) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      try {
+        const res = await fetch(htmlUrl, { signal: controller.signal });
+        if (res.ok) {
+          html = await res.text();
+        } else {
+          console.warn(
+            'htmlUrl fetch returned non-2xx status, falling back to truncated inline html:',
+            res.status, 'messageId:', messageId,
+          );
+        }
+      } catch (err) {
+        console.warn(
+          'htmlUrl fetch failed, falling back to truncated inline html:', err, 'messageId:', messageId,
+        );
+      } finally {
+        clearTimeout(timeout);
+      }
     }
 
     // Step 3: Extract sender early (needed for notifications)
@@ -140,7 +171,7 @@ ${contentForNotification}
         status: 'unknown_sender',
         sender: sender ?? undefined,
         subject: subject ?? undefined,
-        rawBody: body?.trigger?.event?.body?.html ?? undefined,
+        rawBody: html || undefined,
         errorType: 'unknown_sender',
         errorMessage: `No sender config found for: ${sender ?? 'unknown'}`,
       });

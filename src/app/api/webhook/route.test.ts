@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, type MockedFunction } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, type MockedFunction } from 'vitest';
 import { NextRequest } from 'next/server';
 
 // --- Mocks ---
@@ -88,6 +88,18 @@ const webhookBody = {
     event: {
       headers: { 'message-id': 'msg-123', subject: 'Your Amazon order', from: { text: 'alice@example.com' } },
       body: { html: '<html>order details</html>' },
+    },
+  },
+};
+
+const truncatedHtml = 'a'.repeat(100000);
+const fullHtml = `<html>full order details...TOTAL £44.96...${'b'.repeat(100000)}</html>`;
+
+const webhookBodyTruncated = {
+  trigger: {
+    event: {
+      headers: { 'message-id': 'msg-123', subject: 'Your Amazon order', from: { text: 'alice@example.com' } },
+      body: { html: truncatedHtml, htmlUrl: 'https://s3.example.com/full-email.html' },
     },
   },
 };
@@ -315,5 +327,85 @@ describe('POST /api/webhook - DB rules override', () => {
     expect(mockCreateYnabTransaction).not.toHaveBeenCalled();
     const entry = mockWriteActivityLog.mock.calls[0][0];
     expect(entry.status).toBe('unknown_sender');
+  });
+});
+
+describe('POST /api/webhook - htmlUrl truncation fallback', () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    mockExtractMessageId.mockReturnValue('msg-123');
+    mockExtractOriginalSender.mockReturnValue('alice@example.com');
+    mockFindUnique.mockResolvedValue(null);
+    mockActivityLogFindFirst.mockResolvedValue(null);
+    mockExtractOrderNumber.mockReturnValue(null);
+    mockParseOrderEmail.mockResolvedValue({
+      retailer: 'Amazon', amount: 12.99, date: '2024-03-15', currency: 'GBP', description: 'AirPods case',
+    });
+    mockCreateYnabTransaction.mockResolvedValue('txn-456');
+    mockGetSenderByEmail.mockReturnValue(mockSenderInfo);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.clearAllMocks();
+  });
+
+  it('does not fetch htmlUrl and uses the original inline html when under the truncation threshold', async () => {
+    const { POST } = await import('./route');
+    await POST(makeRequest(webhookBody));
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(mockParseOrderEmail).toHaveBeenCalledWith('<html>order details</html>', 'Alice');
+    const entry = mockWriteActivityLog.mock.calls[0][0];
+    expect(entry.rawBody).toBe('<html>order details</html>');
+  });
+
+  it('fetches the full html from htmlUrl when the inline html is truncated and uses it for parsing and rawBody', async () => {
+    fetchMock.mockResolvedValueOnce({ ok: true, text: async () => fullHtml });
+
+    const { POST } = await import('./route');
+    await POST(makeRequest(webhookBodyTruncated));
+
+    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(fetchMock.mock.calls[0][0]).toBe('https://s3.example.com/full-email.html');
+    expect(mockParseOrderEmail).toHaveBeenCalledWith(fullHtml, 'Alice');
+    const entry = mockWriteActivityLog.mock.calls[0][0];
+    expect(entry.rawBody).toBe(fullHtml);
+  });
+
+  it('falls back to the truncated inline html and logs a warning when the htmlUrl fetch rejects', async () => {
+    fetchMock.mockRejectedValueOnce(new Error('network error'));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const { POST } = await import('./route');
+    const res = await POST(makeRequest(webhookBodyTruncated));
+
+    expect(res.status).toBe(200);
+    expect(mockParseOrderEmail).toHaveBeenCalledWith(truncatedHtml, 'Alice');
+    const entry = mockWriteActivityLog.mock.calls[0][0];
+    expect(entry.rawBody).toBe(truncatedHtml);
+    expect(warnSpy).toHaveBeenCalled();
+
+    warnSpy.mockRestore();
+  });
+
+  it('falls back to the truncated inline html and logs a warning when the htmlUrl fetch returns non-2xx', async () => {
+    fetchMock.mockResolvedValueOnce({ ok: false, status: 404 });
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const { POST } = await import('./route');
+    const res = await POST(makeRequest(webhookBodyTruncated));
+
+    expect(res.status).toBe(200);
+    expect(mockParseOrderEmail).toHaveBeenCalledWith(truncatedHtml, 'Alice');
+    const entry = mockWriteActivityLog.mock.calls[0][0];
+    expect(entry.rawBody).toBe(truncatedHtml);
+    expect(warnSpy).toHaveBeenCalled();
+
+    warnSpy.mockRestore();
   });
 });
