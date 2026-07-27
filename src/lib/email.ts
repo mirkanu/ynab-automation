@@ -185,6 +185,55 @@ export function extractOrderNumber(html: string): string | null {
   }
 }
 
+/**
+ * Subject prefixes (lowercase) that indicate a pure delivery-status update with no price
+ * shown anywhere in the email — e.g. "Out for delivery:", not a purchase confirmation.
+ *
+ * This is intentionally a maintainable allow-list, not a general classifier. Future non-priced
+ * subjects (e.g. new Amazon wording) should be added here — no changes needed elsewhere in the
+ * codebase to support them.
+ */
+export const NON_PRICED_TRACKING_SUBJECT_PREFIXES: string[] = [
+  'out for delivery:',
+  'delivered:',
+  'arriving today:',
+  'arriving tomorrow:',
+];
+
+/**
+ * Sender addresses (lowercase) known to send BOTH priced (dispatch/order confirmation) and
+ * non-priced (delivery-status) emails through the same address. Scoping the subject-prefix
+ * check to this list prevents an unrelated sender's similarly-worded subject line from being
+ * misclassified as a non-priced tracking update.
+ */
+export const TRACKING_ONLY_SENDERS: string[] = [
+  'shipment-tracking@amazon.co.uk',
+];
+
+/**
+ * Determines whether an email subject/sender combination represents a non-priced delivery-status
+ * tracking update (e.g. "Out for delivery:") that should be skipped before Claude parsing —
+ * these emails contain no price to extract by design.
+ *
+ * Deliberately does NOT match "Dispatched:" subjects — those are genuine order confirmations
+ * that still need Claude parsing and the existing order-number dedup flow.
+ *
+ * @param subject - The email subject line, or null
+ * @param senderEmail - The sender's email address, or null
+ * @returns true if this is a non-priced tracking update from a tracking-type sender
+ */
+export function isNonPricedTrackingSubject(subject: string | null, senderEmail: string | null): boolean {
+  try {
+    if (!subject || !senderEmail) return false;
+    const senderLower = senderEmail.toLowerCase();
+    if (!TRACKING_ONLY_SENDERS.includes(senderLower)) return false;
+    const subjectLower = subject.trim().toLowerCase();
+    return NON_PRICED_TRACKING_SUBJECT_PREFIXES.some((prefix) => subjectLower.startsWith(prefix));
+  } catch {
+    return false;
+  }
+}
+
 // Amazon domain patterns to match against body HTML
 const AMAZON_DOMAIN_PATTERNS = [
   /@amazon\.co\.uk/i,
