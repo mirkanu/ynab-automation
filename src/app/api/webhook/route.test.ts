@@ -29,6 +29,7 @@ const mockExtractOriginalRecipient = vi.fn().mockReturnValue(null);
 const mockExtractCategoryHint = vi.fn().mockReturnValue(null);
 const mockExtractOrderNumber = vi.fn().mockReturnValue(null);
 const mockIsNonPricedTrackingSubject = vi.fn().mockReturnValue(false);
+const mockExtractHtmlFromRawMime = vi.fn().mockResolvedValue(null);
 vi.mock('@/lib/email', () => ({
   extractMessageId: mockExtractMessageId,
   extractOriginalSender: mockExtractOriginalSender,
@@ -36,6 +37,7 @@ vi.mock('@/lib/email', () => ({
   extractCategoryHint: mockExtractCategoryHint,
   extractOrderNumber: mockExtractOrderNumber,
   isNonPricedTrackingSubject: mockIsNonPricedTrackingSubject,
+  extractHtmlFromRawMime: mockExtractHtmlFromRawMime,
 }));
 
 const mockParseOrderEmail = vi.fn().mockResolvedValue({
@@ -465,6 +467,142 @@ describe('POST /api/webhook - htmlUrl truncation fallback', () => {
     expect(mockParseOrderEmail).toHaveBeenCalledWith(truncatedHtml, 'Alice');
     const entry = mockWriteActivityLog.mock.calls[0][0];
     expect(entry.rawBody).toBe(truncatedHtml);
+    expect(warnSpy).toHaveBeenCalled();
+
+    warnSpy.mockRestore();
+  });
+});
+
+const webhookBodyTruncatedNoHtmlUrl = {
+  trigger: {
+    event: {
+      headers: { 'message-id': 'msg-123', subject: 'Your Amazon order', from: { text: 'alice@example.com' } },
+      body: { html: truncatedHtml },
+      rawUrl: 'https://s3.example.com/raw-email.eml',
+    },
+  },
+};
+
+describe('POST /api/webhook - rawUrl MIME fallback', () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    mockExtractMessageId.mockReturnValue('msg-123');
+    mockExtractOriginalSender.mockReturnValue('alice@example.com');
+    mockFindUnique.mockResolvedValue(null);
+    mockActivityLogFindFirst.mockResolvedValue(null);
+    mockExtractOrderNumber.mockReturnValue(null);
+    mockExtractHtmlFromRawMime.mockResolvedValue(null);
+    mockParseOrderEmail.mockResolvedValue({
+      retailer: 'Amazon', amount: 12.99, date: '2024-03-15', currency: 'GBP', description: 'AirPods case',
+    });
+    mockCreateYnabTransaction.mockResolvedValue('txn-456');
+    mockGetSenderByEmail.mockReturnValue(mockSenderInfo);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.clearAllMocks();
+  });
+
+  it('does not attempt the rawUrl fallback when htmlUrl succeeds', async () => {
+    fetchMock.mockResolvedValueOnce({ ok: true, text: async () => fullHtml });
+
+    const { POST } = await import('./route');
+    await POST(makeRequest(webhookBodyTruncated));
+
+    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(mockExtractHtmlFromRawMime).not.toHaveBeenCalled();
+    expect(mockParseOrderEmail).toHaveBeenCalledWith(fullHtml, 'Alice');
+  });
+
+  it('uses the rawUrl-parsed html when htmlUrl is missing and rawUrl fetch + parse succeeds', async () => {
+    const rawMime = 'raw mime email text';
+    fetchMock.mockResolvedValueOnce({ ok: true, text: async () => rawMime });
+    mockExtractHtmlFromRawMime.mockResolvedValue(fullHtml);
+
+    const { POST } = await import('./route');
+    const res = await POST(makeRequest(webhookBodyTruncatedNoHtmlUrl));
+
+    expect(res.status).toBe(200);
+    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(fetchMock.mock.calls[0][0]).toBe('https://s3.example.com/raw-email.eml');
+    expect(mockExtractHtmlFromRawMime).toHaveBeenCalledWith(rawMime);
+    expect(mockParseOrderEmail).toHaveBeenCalledWith(fullHtml, 'Alice');
+    const entry = mockWriteActivityLog.mock.calls[0][0];
+    expect(entry.rawBody).toBe(fullHtml);
+  });
+
+  it('falls back to the truncated inline html when htmlUrl and rawUrl are both missing/absent', async () => {
+    const webhookBodyTruncatedNoUrls = {
+      trigger: {
+        event: {
+          headers: { 'message-id': 'msg-123', subject: 'Your Amazon order', from: { text: 'alice@example.com' } },
+          body: { html: truncatedHtml },
+        },
+      },
+    };
+
+    const { POST } = await import('./route');
+    const res = await POST(makeRequest(webhookBodyTruncatedNoUrls));
+
+    expect(res.status).toBe(200);
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(mockExtractHtmlFromRawMime).not.toHaveBeenCalled();
+    expect(mockParseOrderEmail).toHaveBeenCalledWith(truncatedHtml, 'Alice');
+  });
+
+  it('uses the rawUrl-parsed html when the htmlUrl fetch fails and rawUrl fetch + parse succeeds', async () => {
+    const rawMime = 'raw mime email text';
+    fetchMock.mockRejectedValueOnce(new Error('htmlUrl network error'));
+    fetchMock.mockResolvedValueOnce({ ok: true, text: async () => rawMime });
+    mockExtractHtmlFromRawMime.mockResolvedValue(fullHtml);
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const webhookBodyBothUrls = {
+      trigger: {
+        event: {
+          headers: { 'message-id': 'msg-123', subject: 'Your Amazon order', from: { text: 'alice@example.com' } },
+          body: { html: truncatedHtml, htmlUrl: 'https://s3.example.com/full-email.html' },
+          rawUrl: 'https://s3.example.com/raw-email.eml',
+        },
+      },
+    };
+
+    const { POST } = await import('./route');
+    const res = await POST(makeRequest(webhookBodyBothUrls));
+
+    expect(res.status).toBe(200);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock.mock.calls[1][0]).toBe('https://s3.example.com/raw-email.eml');
+    expect(mockParseOrderEmail).toHaveBeenCalledWith(fullHtml, 'Alice');
+
+    warnSpy.mockRestore();
+  });
+
+  it('falls back to the truncated inline html when both htmlUrl and rawUrl fail', async () => {
+    fetchMock.mockRejectedValueOnce(new Error('htmlUrl network error'));
+    fetchMock.mockRejectedValueOnce(new Error('rawUrl network error'));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const webhookBodyBothUrls = {
+      trigger: {
+        event: {
+          headers: { 'message-id': 'msg-123', subject: 'Your Amazon order', from: { text: 'alice@example.com' } },
+          body: { html: truncatedHtml, htmlUrl: 'https://s3.example.com/full-email.html' },
+          rawUrl: 'https://s3.example.com/raw-email.eml',
+        },
+      },
+    };
+
+    const { POST } = await import('./route');
+    const res = await POST(makeRequest(webhookBodyBothUrls));
+
+    expect(res.status).toBe(200);
+    expect(mockParseOrderEmail).toHaveBeenCalledWith(truncatedHtml, 'Alice');
     expect(warnSpy).toHaveBeenCalled();
 
     warnSpy.mockRestore();

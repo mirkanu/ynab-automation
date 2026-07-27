@@ -7,6 +7,7 @@ import {
   extractCategoryHint,
   extractOrderNumber,
   isNonPricedTrackingSubject,
+  extractHtmlFromRawMime,
 } from '@/lib/email';
 import { parseOrderEmail } from '@/lib/claude';
 import { createYnabTransaction, getCategories, findCategory, getAccountName, formatMemo } from '@/lib/ynab';
@@ -83,6 +84,45 @@ export async function POST(req: NextRequest) {
       } catch (err) {
         console.warn(
           'htmlUrl fetch failed, falling back to truncated inline html:', err, 'messageId:', messageId,
+        );
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+
+    // Step 2c: Second-tier fallback — when htmlUrl was missing/absent OR the htmlUrl fetch
+    // above failed (detectable because `html` still equals the untouched truncated
+    // `originalHtml`), fetch the raw MIME email from `rawUrl` (an S3 link Pipedream also
+    // provides) and parse it to recover the full body. Covers manually-forwarded emails
+    // where Pipedream never populates htmlUrl at all (root cause of ActivityLog id 169 —
+    // a truncated fragment with no price in it, misparsed as amount 0). Never throws;
+    // falls back to whatever `html` already holds on any failure.
+    if (originalHtml.length >= 100000 && html === originalHtml && rawUrl) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      try {
+        const res = await fetch(rawUrl, { signal: controller.signal });
+        if (res.ok) {
+          const rawMime = await res.text();
+          const parsedHtml = await extractHtmlFromRawMime(rawMime);
+          if (parsedHtml) {
+            html = parsedHtml;
+            console.log('rawUrl MIME fallback succeeded, using parsed body:', 'messageId:', messageId);
+          } else {
+            console.warn(
+              'rawUrl MIME parse returned no usable content, falling back to truncated inline html:',
+              'messageId:', messageId,
+            );
+          }
+        } else {
+          console.warn(
+            'rawUrl fetch returned non-2xx status, falling back to truncated inline html:',
+            res.status, 'messageId:', messageId,
+          );
+        }
+      } catch (err) {
+        console.warn(
+          'rawUrl fetch/parse failed, falling back to truncated inline html:', err, 'messageId:', messageId,
         );
       } finally {
         clearTimeout(timeout);
