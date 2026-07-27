@@ -5,6 +5,7 @@ import {
   isFromAmazon,
   extractCategoryHint,
   extractOrderNumber,
+  isNonPricedTrackingSubject,
 } from './email';
 
 // Minimal valid Pipedream payload matching PAYLOAD.md structure
@@ -189,6 +190,40 @@ describe('extractOrderNumber', () => {
   it('returns the first match when two different order numbers are present', () => {
     const html = 'Order 111-2222222-3333333 replaces order 444-5555555-6666666';
     expect(extractOrderNumber(html)).toBe('111-2222222-3333333');
+  });
+});
+
+describe('isNonPricedTrackingSubject', () => {
+  it('returns true for "Out for delivery:" from a tracking-only sender', () => {
+    expect(isNonPricedTrackingSubject('Out for delivery: "Anker USB-C Cable"', 'shipment-tracking@amazon.co.uk')).toBe(true);
+  });
+
+  it('returns true for "Delivered:" from a tracking-only sender', () => {
+    expect(isNonPricedTrackingSubject('Delivered: "Anker USB-C Cable"', 'shipment-tracking@amazon.co.uk')).toBe(true);
+  });
+
+  it('returns true for "Arriving today:" from a tracking-only sender', () => {
+    expect(isNonPricedTrackingSubject('Arriving today: Your Amazon.co.uk order', 'shipment-tracking@amazon.co.uk')).toBe(true);
+  });
+
+  it('matches case-insensitively', () => {
+    expect(isNonPricedTrackingSubject('OUT FOR DELIVERY: item', 'shipment-tracking@amazon.co.uk')).toBe(true);
+  });
+
+  it('returns false for "Dispatched:" subjects — those still need Claude parsing and dedup', () => {
+    expect(isNonPricedTrackingSubject('Dispatched: "Anker USB-C Cable"', 'shipment-tracking@amazon.co.uk')).toBe(false);
+  });
+
+  it('returns false when sender is not a tracking-type sender, even with a matching subject', () => {
+    expect(isNonPricedTrackingSubject('Out for delivery: "Anker USB-C Cable"', 'auto-confirm@amazon.co.uk')).toBe(false);
+  });
+
+  it('returns false when subject is null', () => {
+    expect(isNonPricedTrackingSubject(null, 'shipment-tracking@amazon.co.uk')).toBe(false);
+  });
+
+  it('returns false when senderEmail is null', () => {
+    expect(isNonPricedTrackingSubject('Out for delivery: item', null)).toBe(false);
   });
 });
 
