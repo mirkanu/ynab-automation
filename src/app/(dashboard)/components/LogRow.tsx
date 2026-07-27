@@ -25,6 +25,7 @@ const statusColors: Record<string, { bg: string; text: string }> = {
   duplicate: { bg: '#f3f4f6', text: '#6b7280' },
   no_message_id: { bg: '#f3f4f6', text: '#6b7280' },
   duplicate_order: { bg: '#f3f4f6', text: '#6b7280' },
+  no_price_expected: { bg: '#f3f4f6', text: '#6b7280' },
 };
 
 const statusLabels: Record<string, string> = {
@@ -36,6 +37,7 @@ const statusLabels: Record<string, string> = {
   duplicate: 'Duplicate',
   no_message_id: 'No ID',
   duplicate_order: 'Duplicate Order',
+  no_price_expected: 'No Price Expected',
 };
 
 type ReplayStatus = 'idle' | 'confirm' | 'confirm-live' | 'loading' | 'success' | 'error';

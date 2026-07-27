@@ -11,6 +11,7 @@ const statuses = [
   { value: 'unknown_sender', label: 'Unknown Sender' },
   { value: 'duplicate', label: 'Duplicate' },
   { value: 'duplicate_order', label: 'Duplicate Order' },
+  { value: 'no_price_expected', label: 'No Price Expected' },
   { value: 'no_message_id', label: 'No Message ID' },
 ];
 
