@@ -1,4 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+const { mockSimpleParser } = vi.hoisted(() => ({
+  mockSimpleParser: vi.fn(),
+}));
+vi.mock('mailparser', () => ({
+  simpleParser: mockSimpleParser,
+}));
+
 import {
   extractMessageId,
   extractOriginalSender,
@@ -6,6 +14,7 @@ import {
   extractCategoryHint,
   extractOrderNumber,
   isNonPricedTrackingSubject,
+  extractHtmlFromRawMime,
 } from './email';
 
 // Minimal valid Pipedream payload matching PAYLOAD.md structure
@@ -275,5 +284,36 @@ describe('isFromAmazon', () => {
 
   it('returns false for null input', () => {
     expect(isFromAmazon(null)).toBe(false);
+  });
+});
+
+describe('extractHtmlFromRawMime', () => {
+  beforeEach(() => {
+    mockSimpleParser.mockReset();
+  });
+
+  it('returns the HTML body when the raw MIME email has an HTML part', async () => {
+    mockSimpleParser.mockResolvedValue({ html: '<html>hello</html>', text: 'plain' });
+    const result = await extractHtmlFromRawMime('raw mime text');
+    expect(result).toBe('<html>hello</html>');
+    expect(mockSimpleParser).toHaveBeenCalledWith('raw mime text');
+  });
+
+  it('returns the plain text body when no HTML part exists', async () => {
+    mockSimpleParser.mockResolvedValue({ html: false, text: 'plain body' });
+    const result = await extractHtmlFromRawMime('raw mime text');
+    expect(result).toBe('plain body');
+  });
+
+  it('returns null when simpleParser rejects', async () => {
+    mockSimpleParser.mockRejectedValue(new Error('parse failure'));
+    const result = await extractHtmlFromRawMime('raw mime text');
+    expect(result).toBeNull();
+  });
+
+  it('returns null for empty/falsy raw input without calling simpleParser', async () => {
+    const result = await extractHtmlFromRawMime('');
+    expect(result).toBeNull();
+    expect(mockSimpleParser).not.toHaveBeenCalled();
   });
 });

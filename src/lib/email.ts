@@ -2,6 +2,8 @@
 // All functions are pure — no side effects, no DB calls.
 // Field paths derived from .planning/phases/02-email-inflow/PAYLOAD.md
 
+import { simpleParser } from 'mailparser';
+
 export interface PipedreamPayload {
   trigger?: {
     event?: {
@@ -254,6 +256,35 @@ const AMAZON_DOMAIN_PATTERNS = [
  * Scans trigger.event.body.html for known Amazon email domain patterns.
  * Returns true if an Amazon sender is detected, false otherwise.
  */
+/**
+ * Parses a raw MIME email (as fetched from Pipedream's rawUrl, an S3 link to the
+ * full untruncated raw email) and extracts the HTML body, falling back to the
+ * plain-text body if no HTML part exists.
+ *
+ * Second-tier fallback for when the inline `body.html` field is truncated at
+ * Pipedream's ~100,000-char boundary AND the primary htmlUrl fallback is missing
+ * or failed. Never throws — returns null on any parse failure so callers can
+ * fall back to whatever content they already have.
+ *
+ * @param raw - The full raw MIME email text
+ * @returns The parsed HTML (or plain text) body, or null on failure/empty input
+ */
+export async function extractHtmlFromRawMime(raw: string): Promise<string | null> {
+  try {
+    if (!raw) return null;
+    const parsed = await simpleParser(raw);
+    if (typeof parsed.html === 'string' && parsed.html.length > 0) {
+      return parsed.html;
+    }
+    if (typeof parsed.text === 'string' && parsed.text.length > 0) {
+      return parsed.text;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export function isFromAmazon(payload: unknown): boolean {
   try {
     const p = payload as PipedreamPayload;
