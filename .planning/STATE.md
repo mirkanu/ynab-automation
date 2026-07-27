@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 Phase: 33
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-07-27 - Added pre-parse skip check so non-priced Amazon delivery-status tracking emails (Out for delivery/Delivered/Arriving today-tomorrow) no longer fall through to parse_error and fire a false "add manually" notification; new 'no_price_expected' ActivityLog status (quick task 260727-edb). Deployed to production ynab-api container, health check passed.
+Last activity: 2026-07-27 - Added second-tier rawUrl MIME-parsing fallback (extractHtmlFromRawMime via mailparser) to the webhook route, so manually-forwarded emails with no htmlUrl still get their full untruncated body recovered instead of parsing a truncated 100k-char fragment with a missing price (quick task 260727-v4v, fixes root cause of ActivityLog id 169 false invalid_amount). Deployed to production ynab-api container, health check passed.
 
 ## Roadmap Summary (v6.2)
 
@@ -154,6 +154,8 @@ Decisions logged in PROJECT.md Key Decisions table.
 - [Phase 260721-cqc]: extractOrderNumber scans raw HTML body with no label anchoring — Amazon inserts a hidden U+202B RTL-embedding char between 'Order #' and digits that breaks label-anchored regex
 - [Phase 260721-cqc]: Order-number dedup scoped to prior status:'success' rows only — a forged/coincidental match against a failed row can never suppress a legitimate transaction
 - [Quick-260727-edb]: isNonPricedTrackingSubject scoped to both subject-prefix allow-list AND sender allow-list (TRACKING_ONLY_SENDERS) — avoids misclassifying an unrelated sender's similarly-worded subject as a non-priced tracking update
+- [Quick-260727-v4v]: rawUrl MIME fallback gated on `html === originalHtml` after the htmlUrl step — composes cleanly with the existing htmlUrl fallback without duplicating the truncation-length check; only fires when htmlUrl step produced no replacement content
+- [Quick-260727-v4v]: extractHtmlFromRawMime mocked directly in route.test.ts (not mailparser) since email.test.ts already unit-tests the mailparser integration in isolation
 
 ### Pending Todos
 
@@ -177,6 +179,7 @@ None.
 | 260721-cqc | Add order-number-based dedup so Amazon confirmation+dispatch email pairs create exactly one YNAB transaction; new 'duplicate_order' ActivityLog status | 2026-07-21 | 62be60e | Complete | [260721-cqc-add-order-number-based-deduplication-for](./quick/260721-cqc-add-order-number-based-deduplication-for/) |
 | 260721-e1e | Fetch full email HTML from htmlUrl when Pipedream truncates the inline body at ~100,000 chars, fixing undercounted multi-item order totals | 2026-07-21 | 0d3c893 | Complete | [260721-e1e-fetch-full-email-html-from-htmlurl-when-](./quick/260721-e1e-fetch-full-email-html-from-htmlurl-when-/) |
 | 260727-edb | Skip non-priced Amazon delivery-status tracking emails (Out for delivery/Delivered/Arriving today-tomorrow) before Claude parsing; new 'no_price_expected' ActivityLog status | 2026-07-27 | 06235c6 | Complete | [260727-edb-skip-non-priced-tracking-emails](./quick/260727-edb-skip-non-priced-tracking-emails/) |
+| 260727-v4v | Add rawUrl MIME-parsing fallback (mailparser) to webhook route for when htmlUrl is missing/failed and inline html is truncated | 2026-07-27 | 242644a | Complete | [260727-v4v-add-rawurl-mime-parsing-fallback-to-webh](./quick/260727-v4v-add-rawurl-mime-parsing-fallback-to-webh/) |
 
 ## Session Continuity
 
