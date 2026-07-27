@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 Phase: 33
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-07-21 - Fixed undercounted multi-item order totals by fetching full email HTML from htmlUrl when Pipedream truncates the inline body at ~100,000 chars (quick task 260721-e1e). Also added order-number-based dedup for Amazon confirmation+dispatch email pairs (260721-cqc) and manually corrected a £19.47 undercount and 7 duplicate transactions found live in YNAB during testing.
+Last activity: 2026-07-27 - Added pre-parse skip check so non-priced Amazon delivery-status tracking emails (Out for delivery/Delivered/Arriving today-tomorrow) no longer fall through to parse_error and fire a false "add manually" notification; new 'no_price_expected' ActivityLog status (quick task 260727-edb). Deployed to production ynab-api container, health check passed.
 
 ## Roadmap Summary (v6.2)
 
@@ -153,6 +153,7 @@ Decisions logged in PROJECT.md Key Decisions table.
 - [Phase 27-settings-restructure-and-label-cleanup]: [Phase 27-03]: SettingsForm stays co-located under settings/ folder; tools/page.tsx imports via '../settings/SettingsForm' — same pattern as rules page split in plan 02
 - [Phase 260721-cqc]: extractOrderNumber scans raw HTML body with no label anchoring — Amazon inserts a hidden U+202B RTL-embedding char between 'Order #' and digits that breaks label-anchored regex
 - [Phase 260721-cqc]: Order-number dedup scoped to prior status:'success' rows only — a forged/coincidental match against a failed row can never suppress a legitimate transaction
+- [Quick-260727-edb]: isNonPricedTrackingSubject scoped to both subject-prefix allow-list AND sender allow-list (TRACKING_ONLY_SENDERS) — avoids misclassifying an unrelated sender's similarly-worded subject as a non-priced tracking update
 
 ### Pending Todos
 
@@ -175,6 +176,7 @@ None.
 | 260718-cb7 | Reject parsed order emails with amount <= 0 or NaN; notify admin and log as invalid_amount | 2026-07-18 | 2b8c6ac | Complete | [260718-cb7-reject-parsed-order-emails-with-amount-0](./quick/260718-cb7-reject-parsed-order-emails-with-amount-0/) |
 | 260721-cqc | Add order-number-based dedup so Amazon confirmation+dispatch email pairs create exactly one YNAB transaction; new 'duplicate_order' ActivityLog status | 2026-07-21 | 62be60e | Complete | [260721-cqc-add-order-number-based-deduplication-for](./quick/260721-cqc-add-order-number-based-deduplication-for/) |
 | 260721-e1e | Fetch full email HTML from htmlUrl when Pipedream truncates the inline body at ~100,000 chars, fixing undercounted multi-item order totals | 2026-07-21 | 0d3c893 | Complete | [260721-e1e-fetch-full-email-html-from-htmlurl-when-](./quick/260721-e1e-fetch-full-email-html-from-htmlurl-when-/) |
+| 260727-edb | Skip non-priced Amazon delivery-status tracking emails (Out for delivery/Delivered/Arriving today-tomorrow) before Claude parsing; new 'no_price_expected' ActivityLog status | 2026-07-27 | 06235c6 | Complete | [260727-edb-skip-non-priced-tracking-emails](./quick/260727-edb-skip-non-priced-tracking-emails/) |
 
 ## Session Continuity
 
