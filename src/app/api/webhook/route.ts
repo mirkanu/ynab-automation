@@ -6,6 +6,7 @@ import {
   extractOriginalRecipient,
   extractCategoryHint,
   extractOrderNumber,
+  isNonPricedTrackingSubject,
 } from '@/lib/email';
 import { parseOrderEmail } from '@/lib/claude';
 import { createYnabTransaction, getCategories, findCategory, getAccountName, formatMemo } from '@/lib/ynab';
@@ -174,6 +175,24 @@ ${contentForNotification}
         rawBody: html || undefined,
         errorType: 'unknown_sender',
         errorMessage: `No sender config found for: ${sender ?? 'unknown'}`,
+      });
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
+
+    // Step 5b: Skip non-priced delivery-status tracking updates (e.g. "Out for delivery:") before
+    // spending a Claude call on them — they contain no price to extract by design, so treating
+    // "nothing extracted" as parse_error fires a false "add manually" notification for an order
+    // whose total was already recorded via the earlier confirmation email. Does NOT match
+    // "Dispatched:" subjects, which still need Claude parsing + the existing order-number dedup.
+    if (isNonPricedTrackingSubject(subject, senderKey)) {
+      console.log('Skipping non-priced tracking update:', subject, 'messageId:', messageId);
+      const orderNumber = extractOrderNumber(html) ?? undefined;
+      await writeActivityLog({
+        messageId,
+        status: 'no_price_expected',
+        sender: sender ?? undefined,
+        subject: subject ?? undefined,
+        orderNumber,
       });
       return NextResponse.json({ received: true }, { status: 200 });
     }
