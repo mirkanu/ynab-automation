@@ -28,12 +28,14 @@ const mockExtractOriginalSender = vi.fn().mockReturnValue('alice@example.com');
 const mockExtractOriginalRecipient = vi.fn().mockReturnValue(null);
 const mockExtractCategoryHint = vi.fn().mockReturnValue(null);
 const mockExtractOrderNumber = vi.fn().mockReturnValue(null);
+const mockIsNonPricedTrackingSubject = vi.fn().mockReturnValue(false);
 vi.mock('@/lib/email', () => ({
   extractMessageId: mockExtractMessageId,
   extractOriginalSender: mockExtractOriginalSender,
   extractOriginalRecipient: mockExtractOriginalRecipient,
   extractCategoryHint: mockExtractCategoryHint,
   extractOrderNumber: mockExtractOrderNumber,
+  isNonPricedTrackingSubject: mockIsNonPricedTrackingSubject,
 }));
 
 const mockParseOrderEmail = vi.fn().mockResolvedValue({
@@ -113,6 +115,7 @@ describe('POST /api/webhook - activity logging', () => {
     mockFindUnique.mockResolvedValue(null);
     mockActivityLogFindFirst.mockResolvedValue(null);
     mockExtractOrderNumber.mockReturnValue(null);
+    mockIsNonPricedTrackingSubject.mockReturnValue(false);
     mockParseOrderEmail.mockResolvedValue({
       retailer: 'Amazon', amount: 12.99, date: '2024-03-15', currency: 'GBP', description: 'AirPods case',
     });
@@ -239,6 +242,64 @@ describe('POST /api/webhook - activity logging', () => {
     const entry = mockWriteActivityLog.mock.calls[0][0];
     expect(entry.status).toBe('success');
     expect(entry.orderNumber).toBe('204-6619432-1614766');
+  });
+
+  it('skips parsing and logs no_price_expected for a non-priced tracking subject', async () => {
+    mockIsNonPricedTrackingSubject.mockReturnValue(true);
+    mockExtractOrderNumber.mockReturnValue('204-6619432-1614766');
+    const { sendErrorNotification } = await import('@/lib/notify');
+
+    const { POST } = await import('./route');
+    const res = await POST(makeRequest({
+      trigger: {
+        event: {
+          headers: { 'message-id': 'msg-123', subject: 'Out for delivery: "Anker USB-C Cable"', from: { text: 'shipment-tracking@amazon.co.uk' } },
+          body: { html: '<html>out for delivery details</html>' },
+        },
+      },
+    }));
+
+    expect(res.status).toBe(200);
+    expect(mockParseOrderEmail).not.toHaveBeenCalled();
+    expect(sendErrorNotification).not.toHaveBeenCalled();
+    expect(mockWriteActivityLog).toHaveBeenCalledOnce();
+    const entry = mockWriteActivityLog.mock.calls[0][0];
+    expect(entry.status).toBe('no_price_expected');
+    expect(entry.messageId).toBe('msg-123');
+    expect(entry.subject).toBe('Out for delivery: "Anker USB-C Cable"');
+    expect(entry.orderNumber).toBe('204-6619432-1614766');
+  });
+
+  it('proceeds through Claude parsing unaffected for a Dispatched: subject (isNonPricedTrackingSubject false)', async () => {
+    mockIsNonPricedTrackingSubject.mockReturnValue(false);
+    mockExtractOrderNumber.mockReturnValue('204-6619432-1614766');
+    mockActivityLogFindFirst.mockResolvedValue(null);
+
+    const { POST } = await import('./route');
+    await POST(makeRequest({
+      trigger: {
+        event: {
+          headers: { 'message-id': 'msg-123', subject: 'Dispatched: "Anker USB-C Cable"', from: { text: 'shipment-tracking@amazon.co.uk' } },
+          body: { html: '<html>dispatched details</html>' },
+        },
+      },
+    }));
+
+    expect(mockParseOrderEmail).toHaveBeenCalledOnce();
+    const entry = mockWriteActivityLog.mock.calls[0][0];
+    expect(entry.status).toBe('success');
+  });
+
+  it('proceeds through Claude parsing unaffected for a normal order confirmation subject', async () => {
+    mockIsNonPricedTrackingSubject.mockReturnValue(false);
+
+    const { POST } = await import('./route');
+    await POST(makeRequest(webhookBody));
+
+    expect(mockParseOrderEmail).toHaveBeenCalledOnce();
+    expect(mockCreateYnabTransaction).toHaveBeenCalledOnce();
+    const entry = mockWriteActivityLog.mock.calls[0][0];
+    expect(entry.status).toBe('success');
   });
 });
 
