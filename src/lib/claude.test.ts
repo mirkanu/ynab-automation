@@ -235,4 +235,27 @@ describe('parseOrderEmail', () => {
 
     expect(result).toBeNull();
   });
+
+  it('instructs Claude not to guess an amount when no explicit total is present (truncation guard)', async () => {
+    mockCreate.mockResolvedValueOnce({
+      content: [{ type: 'text', text: '{"amount": 0, "description": "some item", "retailer": "Amazon", "currency": "GBP", "date": "2024-03-15"}' }],
+    });
+
+    await parseOrderEmail(sampleHtml, 'Alice');
+
+    const sentPrompt = mockCreate.mock.calls[0][0].messages[0].content as string;
+    expect(sentPrompt).toContain('Never guess, estimate, or infer an amount');
+    expect(sentPrompt).toContain('return amount: 0');
+  });
+
+  it('passes through amount 0 when Claude reports no explicit total found (route layer rejects it downstream)', async () => {
+    mockCreate.mockResolvedValueOnce({
+      content: [{ type: 'text', text: '{"amount": 0, "description": "some item", "retailer": "Amazon", "currency": "GBP", "date": "2024-03-15"}' }],
+    });
+
+    const result = await parseOrderEmail(sampleHtml, 'Alice');
+
+    expect(result).not.toBeNull();
+    expect(result!.amount).toBe(0);
+  });
 });

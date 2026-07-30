@@ -40,6 +40,10 @@ export async function parseOrderEmail(
             `For currency: set to "EUR" ONLY if the total amount is exclusively in Euros (€) with no conversion to GBP or another currency shown. ` +
             `If the email shows a Euro amount AND a GBP/sterling equivalent, or if the amount is in any non-Euro currency, set currency to "GBP". ` +
             `For date: extract the order date from the email and format as YYYY-MM-DD. If no date is found, use today's date: ${new Date().toISOString().split('T')[0]}. ` +
+            `For amount: only extract a total that is EXPLICITLY shown as a price/total in the HTML (e.g. "Total: £12.99", "Order total", a line-item price). ` +
+            `The email body may be a truncated fragment that cuts off before the pricing section — if so, no real total will appear anywhere in the text. ` +
+            `Never guess, estimate, or infer an amount from item names, other numbers (order IDs, quantities, CSS/class values), or general knowledge of typical prices. ` +
+            `If no explicit total or price is present anywhere in the HTML, return amount: 0. ` +
             `For customNote: the user sometimes types a short free-text comment at the very top of the email body BEFORE the forwarded order confirmation content (above any "---------- Forwarded message ----------" separator, quoted reply block, or "From:" header). If such a note exists, return its verbatim text (trimmed, single-line). If there is no such note — i.e. the body starts directly with the forwarded content — return an empty string "". Do NOT invent a note from the order content itself. ` +
             `Return JSON: {"amount": 12.99, "description": "brief description", "retailer": "Amazon", "currency": "GBP", "date": "2024-03-15", "customNote": ""}. ` +
             `HTML:\n\n${html}`,
