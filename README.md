@@ -24,7 +24,7 @@ YNAB automatically categorizes transactions by payee — which works great until
 2. **Set up a PostgreSQL database** and set `DATABASE_URL` in your environment
 3. **Run migrations:** `npx prisma migrate deploy`
 4. **Set required environment variables** (see `.env.example` for the full list):
-   - `ANTHROPIC_API_KEY` — from [console.anthropic.com](https://console.anthropic.com)
+   - `MINIMAX_API_KEY` — from [MiniMax](https://www.minimax.io) (used to parse forwarded order emails)
    - `YNAB_ACCESS_TOKEN` — from [YNAB Developer Settings](https://app.ynab.com/settings/developer)
    - `RESEND_API_KEY` — from [resend.com](https://resend.com) (for error alerts)
    - `IRON_SESSION_SECRET` — any 32+ character random string

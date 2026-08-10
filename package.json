@@ -12,7 +12,6 @@
     "docs:feature-screenshots": "npx tsx scripts/capture-feature-screenshots.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.20.0",
     "@prisma/client": "^5.13.0",
     "iron-session": "^8.0.4",
     "mailparser": "^3.7.0",
