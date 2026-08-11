@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 Phase: 33
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-07-27 - Added second-tier rawUrl MIME-parsing fallback (extractHtmlFromRawMime via mailparser) to the webhook route, so manually-forwarded emails with no htmlUrl still get their full untruncated body recovered instead of parsing a truncated 100k-char fragment with a missing price (quick task 260727-v4v, fixes root cause of ActivityLog id 169 false invalid_amount). Deployed to production ynab-api container, health check passed.
+Last activity: 2026-08-11 - Made parseOrderEmail provider-aware (LLM_PROVIDER setting now switches between Anthropic Claude 3.5 Haiku and MiniMax-M3 at runtime, no redeploy); added LLM Provider field + per-provider API key fields to the settings UI and first-install wizard step 4; updated .env.example and README (quick task 260811-cbn). Deployed to production ynab-api container, health check passed.
 
 ## Roadmap Summary (v6.2)
 
@@ -180,6 +180,7 @@ None.
 | 260721-e1e | Fetch full email HTML from htmlUrl when Pipedream truncates the inline body at ~100,000 chars, fixing undercounted multi-item order totals | 2026-07-21 | 0d3c893 | Complete | [260721-e1e-fetch-full-email-html-from-htmlurl-when-](./quick/260721-e1e-fetch-full-email-html-from-htmlurl-when-/) |
 | 260727-edb | Skip non-priced Amazon delivery-status tracking emails (Out for delivery/Delivered/Arriving today-tomorrow) before Claude parsing; new 'no_price_expected' ActivityLog status | 2026-07-27 | 06235c6 | Complete | [260727-edb-skip-non-priced-tracking-emails](./quick/260727-edb-skip-non-priced-tracking-emails/) |
 | 260727-v4v | Add rawUrl MIME-parsing fallback (mailparser) to webhook route for when htmlUrl is missing/failed and inline html is truncated | 2026-07-27 | 242644a | Complete | [260727-v4v-add-rawurl-mime-parsing-fallback-to-webh](./quick/260727-v4v-add-rawurl-mime-parsing-fallback-to-webh/) |
+| 260811-cbn | Make parseOrderEmail provider-aware (LLM_PROVIDER setting switches between Anthropic Claude 3.5 Haiku and MiniMax-M3 at runtime, no redeploy); add LLM Provider field + per-provider API key fields to settings UI and first-install wizard step 4; update .env.example and README | 2026-08-11 | 77b2167 | Complete | [260811-cbn-can-you-add-the-minimax-option-to-https-](./quick/260811-cbn-can-you-add-the-minimax-option-to-https-/) |
 
 ## Session Continuity
 
