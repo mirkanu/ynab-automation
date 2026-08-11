@@ -1,6 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { parseOrderEmail } from './claude';
 
+// Mock the settings module so we can control which LLM_PROVIDER / API keys
+// the parser sees without touching the real DB.
+const mockGetSetting = vi.fn<(key: string) => Promise<string | undefined>>();
+
+vi.mock('@/lib/settings', () => ({
+  getSetting: (key: string) => mockGetSetting(key),
+}));
+
 // Mock global fetch used to call the MiniMax chat-completions endpoint
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
@@ -15,7 +23,29 @@ function minimaxResponse(content: string) {
   };
 }
 
+// Helper: wraps an Anthropic Messages-shaped response body in a fetch Response-like object
+function anthropicResponse(content: string) {
+  return {
+    ok: true,
+    status: 200,
+    json: async () => ({ content: [{ type: 'text', text: content }] }),
+    text: async () => JSON.stringify({ content: [{ type: 'text', text: content }] }),
+  };
+}
+
+// Default DB-setting stub: no LLM_PROVIDER row, no API keys. Individual tests
+// override this in `mockGetSetting.mockImplementation(...)` as needed.
 beforeEach(() => {
+  mockGetSetting.mockReset();
+  mockGetSetting.mockImplementation(async (key: string) => {
+    if (key === 'MINIMAX_API_KEY') return 'test-key';
+    if (key === 'ANTHROPIC_API_KEY') return '';
+    if (key === 'LLM_PROVIDER') return undefined; // default → minimax
+    return undefined;
+  });
+  // Keep process.env.MINIMAX_API_KEY set for the env-var fallback path used by
+  // the "key missing from DB" branch. Tests that need to assert the key is
+  // missing can clear this themselves.
   process.env.MINIMAX_API_KEY = 'test-key';
 });
 
@@ -252,11 +282,105 @@ describe('parseOrderEmail', () => {
   });
 
   it('returns null when MINIMAX_API_KEY is not configured', async () => {
+    // Both DB setting and env-var fallback must be empty for this guard to fire.
+    mockGetSetting.mockImplementation(async () => undefined);
     delete process.env.MINIMAX_API_KEY;
 
     const result = await parseOrderEmail(sampleHtml, 'Alice');
 
     expect(result).toBeNull();
     expect(mockFetch).not.toHaveBeenCalled();
+  });
+});
+
+describe('parseOrderEmail — provider=anthropic', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Override default mock: provider=anthropic, ANTHROPIC key present,
+    // MiniMax key present too (so the missing-key guard for anthropic
+    // doesn't accidentally trip — anthropic's own key is what matters).
+    mockGetSetting.mockImplementation(async (key: string) => {
+      if (key === 'LLM_PROVIDER') return 'anthropic';
+      if (key === 'ANTHROPIC_API_KEY') return 'sk-ant-test';
+      if (key === 'MINIMAX_API_KEY') return 'test-key';
+      return undefined;
+    });
+  });
+
+  it('calls the Anthropic messages endpoint when LLM_PROVIDER=anthropic', async () => {
+    mockFetch.mockResolvedValueOnce(anthropicResponse('{"amount": 12.99, "description": "AirPods case", "retailer": "Amazon", "currency": "GBP", "date": "2024-03-15"}'));
+
+    const result = await parseOrderEmail(sampleHtml, 'Alice');
+
+    expect(result).not.toBeNull();
+    expect(result!.amount).toBe(12.99);
+    expect(result!.description).toBe('AirPods case');
+    expect(result!.retailer).toBe('Amazon');
+
+    // Verify it routed to the Anthropic endpoint, not MiniMax
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toContain('api.anthropic.com');
+    expect(url).not.toContain('api.minimax.io');
+
+    // Verify Anthropic-specific request shape
+    const headers = (init as RequestInit).headers as Record<string, string>;
+    expect(headers['x-api-key']).toBe('sk-ant-test');
+    expect(headers['anthropic-version']).toBe('2023-06-01');
+    expect(headers['Authorization']).toBeUndefined();
+
+    const body = JSON.parse((init as RequestInit).body as string);
+    expect(body.model).toBe('claude-3-5-haiku-latest');
+    expect(body.max_tokens).toBe(1024);
+    expect(body.system).toContain('Extract order information');
+    expect(Array.isArray(body.messages)).toBe(true);
+    expect(body.messages[0].role).toBe('user');
+  });
+
+  it('returns null when ANTHROPIC_API_KEY is missing for provider=anthropic', async () => {
+    mockGetSetting.mockImplementation(async (key: string) => {
+      if (key === 'LLM_PROVIDER') return 'anthropic';
+      if (key === 'ANTHROPIC_API_KEY') return '';
+      if (key === 'MINIMAX_API_KEY') return 'test-key';
+      return undefined;
+    });
+
+    const result = await parseOrderEmail(sampleHtml, 'Alice');
+
+    expect(result).toBeNull();
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it('returns null when Anthropic API returns a non-2xx status', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 401,
+      text: async () => 'invalid x-api-key',
+    });
+
+    const result = await parseOrderEmail(sampleHtml, 'Alice');
+
+    expect(result).toBeNull();
+  });
+
+  it('strips markdown code fences from Anthropic text blocks', async () => {
+    mockFetch.mockResolvedValueOnce(anthropicResponse('```json\n{"amount": 12.99, "description": "Test item", "retailer": "Amazon", "currency": "GBP", "date": "2024-03-15"}\n```'));
+
+    const result = await parseOrderEmail(sampleHtml, 'Alice');
+
+    expect(result).not.toBeNull();
+    expect(result!.amount).toBe(12.99);
+  });
+
+  it('returns null when Anthropic response shape is unexpected (no text block)', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({ content: [] }),
+      text: async () => JSON.stringify({ content: [] }),
+    });
+
+    const result = await parseOrderEmail(sampleHtml, 'Alice');
+
+    expect(result).toBeNull();
   });
 });

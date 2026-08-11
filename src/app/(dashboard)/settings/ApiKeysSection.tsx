@@ -12,10 +12,23 @@ interface Field {
 
 const FIELDS: Field[] = [
   {
+    label: 'LLM Provider',
+    key: 'LLM_PROVIDER',
+    type: 'text',
+    placeholder: 'minimax or anthropic',
+    hint: 'Choose which provider parses forwarded emails. Set one of the two API keys below to match.',
+  },
+  {
     label: 'Anthropic Claude API Key',
     key: 'ANTHROPIC_API_KEY',
     type: 'password',
-    hint: 'Get your key at console.anthropic.com',
+    hint: 'Get your key at console.anthropic.com — used when LLM Provider is set to "anthropic".',
+  },
+  {
+    label: 'MiniMax API Key',
+    key: 'MINIMAX_API_KEY',
+    type: 'password',
+    hint: 'Get your key at MiniMax — used by the MiniMax-M3 model to parse forwarded emails when LLM Provider is set to "minimax".',
   },
   {
     label: 'Resend API Key',

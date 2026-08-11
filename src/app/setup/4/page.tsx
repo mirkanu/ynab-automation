@@ -77,6 +77,29 @@ const S = {
     marginTop: '0.25rem',
     lineHeight: 1.4,
   },
+  providerGroup: {
+    display: 'flex' as const,
+    gap: '0.5rem',
+    marginBottom: '0.75rem',
+  },
+  providerBtn: {
+    flex: 1 as const,
+    padding: '0.625rem 0.75rem',
+    fontSize: '0.8125rem',
+    fontWeight: 600 as const,
+    backgroundColor: '#f3f4f6',
+    color: '#374151',
+    border: '1px solid #d1d5db',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    textAlign: 'center' as const,
+    transition: 'background-color 0.15s, border-color 0.15s, color 0.15s',
+  },
+  providerBtnActive: {
+    backgroundColor: '#2563eb',
+    color: '#fff',
+    borderColor: '#2563eb',
+  },
   actions: {
     display: 'flex' as const,
     gap: '0.75rem',
@@ -99,7 +122,6 @@ const S = {
   },
   btnSecondary: {
     display: 'inline-flex' as const,
-    alignItems: 'center' as const,
     padding: '0.5625rem 1.25rem',
     fontSize: '0.875rem',
     fontWeight: 600 as const,
@@ -131,8 +153,24 @@ const S = {
   },
 }
 
+type Provider = 'minimax' | 'anthropic'
+
+const PROVIDER_META: Record<Provider, { label: string; placeholder: string; hint: string }> = {
+  anthropic: {
+    label: 'Anthropic (Claude 3.5 Haiku)',
+    placeholder: 'sk-ant-...',
+    hint: 'Get your key at console.anthropic.com — the Claude Messages API is used to parse the email.',
+  },
+  minimax: {
+    label: 'MiniMax (MiniMax-M3)',
+    placeholder: 'eyJ...',
+    hint: 'Get your key at MiniMax — the MiniMax-M3 model is used to parse the email.',
+  },
+}
+
 export default function SetupStep4() {
   const router = useRouter()
+  const [provider, setProvider] = useState<Provider>('minimax')
   const [apiKey, setApiKey] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -143,10 +181,22 @@ export default function SetupStep4() {
     setSaving(true)
     setError('')
     try {
+      const trimmedKey = apiKey.trim()
       const res = await fetch('/api/setup/step', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ step: 4, settings: { ANTHROPIC_API_KEY: apiKey.trim() } }),
+        body: JSON.stringify({
+          step: 4,
+          settings: {
+            LLM_PROVIDER: provider,
+            // Both keys are sent — the chosen provider's key holds the real value,
+            // the other is empty. deriveWizardStep requires both to be non-empty
+            // for step 4 to count as done, so the user must fill the matching key
+            // to advance; the empty slot acts as a guard.
+            ANTHROPIC_API_KEY: provider === 'anthropic' ? trimmedKey : '',
+            MINIMAX_API_KEY: provider === 'minimax' ? trimmedKey : '',
+          },
+        }),
       })
       const data = await res.json() as { success?: boolean; nextStep?: number; error?: string }
       if (!res.ok || data.error) {
@@ -162,44 +212,58 @@ export default function SetupStep4() {
     }
   }
 
+  const meta = PROVIDER_META[provider]
+
   return (
     <div style={S.card}>
       <p style={S.stepLabel}>Step 4 of 6</p>
-      <h1 style={S.heading}>Anthropic Claude API Key</h1>
+      <h1 style={S.heading}>LLM Provider API Key</h1>
       <p style={S.why}>
-        Claude reads your forwarded emails and extracts the order details (retailer, amount, currency) so they can become YNAB transactions.
+        Choose which LLM provider reads your forwarded emails and extracts the order details (retailer, amount, currency) so they can become YNAB transactions. You can switch providers later from the Settings page — both keys are stored in the database.
       </p>
 
-      <ol style={S.howList}>
-        <li>Go to console.anthropic.com</li>
-        <li>Sign up or log in (a free account is fine to start)</li>
-        <li>Click &ldquo;API Keys&rdquo; in the left sidebar → &ldquo;Create Key&rdquo;</li>
-        <li>Give the key a name (e.g. &ldquo;YNAB Automation&rdquo;), copy it</li>
-        <li>You&apos;ll need to add a few dollars of credit under &ldquo;Billing&rdquo; — at household email volume this will last months</li>
-      </ol>
+      <div style={S.providerGroup}>
+        {(Object.keys(PROVIDER_META) as Provider[]).map((p) => {
+          const active = provider === p
+          return (
+            <button
+              key={p}
+              type="button"
+              onClick={() => setProvider(p)}
+              style={{
+                ...S.providerBtn,
+                ...(active ? S.providerBtnActive : {}),
+              }}
+              disabled={saving}
+            >
+              {PROVIDER_META[p].label}
+            </button>
+          )
+        })}
+      </div>
 
       <a
-        href="https://console.anthropic.com/settings/keys"
+        href={provider === 'anthropic' ? 'https://console.anthropic.com/settings/keys' : 'https://www.minimax.io'}
         target="_blank"
         rel="noopener noreferrer"
         style={S.linkBtn}
       >
-        Open Anthropic Console →
+        {provider === 'anthropic' ? 'Open Anthropic Console →' : 'Open MiniMax →'}
       </a>
 
       <div style={S.fieldRow}>
-        <label style={S.label} htmlFor="anthropic-key">API Key</label>
+        <label style={S.label} htmlFor="llm-api-key">API Key</label>
         <input
-          id="anthropic-key"
+          id="llm-api-key"
           type="password"
-          placeholder="sk-ant-..."
+          placeholder={meta.placeholder}
           value={apiKey}
           onChange={(e) => { setApiKey(e.target.value); setError('') }}
           style={S.input}
           disabled={saving}
           autoComplete="off"
         />
-        <p style={S.hint}>Your key is stored only in your Railway database.</p>
+        <p style={S.hint}>{meta.hint}</p>
       </div>
 
       {error && <div style={S.errorMsg}>{error}</div>}

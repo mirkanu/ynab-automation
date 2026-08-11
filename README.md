@@ -10,7 +10,7 @@ YNAB automatically categorizes transactions by payee — which works great until
 
 - **Email-to-YNAB:** Forward any order confirmation email and get a transaction created automatically with the right amount, date, and payee
 - **Gmail auto-forward support:** Set up Gmail auto-forwarding once and all future order emails are processed automatically — routes to your default account based on your Gmail address
-- **AI-powered parsing:** Claude reads the email and extracts what matters — handles Amazon, eBay, Apple, and most other retailers
+- **AI-powered parsing:** Pick between Anthropic (Claude 3.5 Haiku) or MiniMax (MiniMax-M3) from the Settings page — whichever you choose reads the email and extracts what matters; handles Amazon, eBay, Apple, and most other retailers
 - **Wise integration:** Syncs EUR bank transactions from Wise and reconciles them against YNAB
 - **Activity log:** Every processed email gets a row — green for success, red for failure, with full detail and one-click replay
 - **Settings UI:** Change any configuration from the browser — no server restarts, no editing files
@@ -24,7 +24,8 @@ YNAB automatically categorizes transactions by payee — which works great until
 2. **Set up a PostgreSQL database** and set `DATABASE_URL` in your environment
 3. **Run migrations:** `npx prisma migrate deploy`
 4. **Set required environment variables** (see `.env.example` for the full list):
-   - `MINIMAX_API_KEY` — from [MiniMax](https://www.minimax.io) (used to parse forwarded order emails)
+   - `LLM_PROVIDER` — `minimax` or `anthropic` (selects which API parses forwarded emails)
+   - `MINIMAX_API_KEY` — from [MiniMax](https://www.minimax.io) (used when `LLM_PROVIDER=minimax`); or set both this and `ANTHROPIC_API_KEY` later from the Settings UI and switch providers without redeploying
    - `YNAB_ACCESS_TOKEN` — from [YNAB Developer Settings](https://app.ynab.com/settings/developer)
    - `RESEND_API_KEY` — from [resend.com](https://resend.com) (for error alerts)
    - `IRON_SESSION_SECRET` — any 32+ character random string
@@ -39,7 +40,7 @@ YNAB automatically categorizes transactions by payee — which works great until
 | Framework | Next.js (App Router, TypeScript) |
 | Database | PostgreSQL 16 via Prisma |
 | Email inbound | Resend inbound webhook |
-| AI parsing | Anthropic Claude API |
+| AI parsing | Anthropic Claude API or MiniMax (selectable at runtime) |
 | Budget API | YNAB Personal Access Token |
 | Auth | iron-session |
 
