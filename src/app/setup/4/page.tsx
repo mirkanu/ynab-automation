@@ -79,26 +79,9 @@ const S = {
   },
   providerGroup: {
     display: 'flex' as const,
-    gap: '0.5rem',
+    flexDirection: 'column' as const,
+    gap: '0.375rem',
     marginBottom: '0.75rem',
-  },
-  providerBtn: {
-    flex: 1 as const,
-    padding: '0.625rem 0.75rem',
-    fontSize: '0.8125rem',
-    fontWeight: 600 as const,
-    backgroundColor: '#f3f4f6',
-    color: '#374151',
-    border: '1px solid #d1d5db',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    textAlign: 'center' as const,
-    transition: 'background-color 0.15s, border-color 0.15s, color 0.15s',
-  },
-  providerBtnActive: {
-    backgroundColor: '#2563eb',
-    color: '#fff',
-    borderColor: '#2563eb',
   },
   actions: {
     display: 'flex' as const,
@@ -223,23 +206,22 @@ export default function SetupStep4() {
       </p>
 
       <div style={S.providerGroup}>
-        {(Object.keys(PROVIDER_META) as Provider[]).map((p) => {
-          const active = provider === p
-          return (
-            <button
-              key={p}
-              type="button"
-              onClick={() => setProvider(p)}
-              style={{
-                ...S.providerBtn,
-                ...(active ? S.providerBtnActive : {}),
-              }}
-              disabled={saving}
-            >
-              {PROVIDER_META[p].label}
-            </button>
-          )
-        })}
+        <label style={S.label} htmlFor="llm-provider">LLM Provider</label>
+        <select
+          id="llm-provider"
+          value={provider}
+          onChange={(e) => setProvider(e.target.value as Provider)}
+          style={S.input}
+          disabled={saving}
+        >
+          {(Object.keys(PROVIDER_META) as Provider[]).map((p) => (
+            <option key={p} value={p}>{PROVIDER_META[p].label}</option>
+          ))}
+        </select>
+        <p style={S.hint}>
+          Selects which LLM reads your forwarded emails. MiniMax is the default;
+          switch to Anthropic if you have a Claude API key you'd prefer to use.
+        </p>
       </div>
 
       <a

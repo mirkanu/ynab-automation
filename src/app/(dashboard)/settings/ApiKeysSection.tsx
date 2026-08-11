@@ -5,18 +5,24 @@ import { useState, useEffect } from 'react'
 interface Field {
   label: string
   key: string
-  type: 'password' | 'text'
+  type: 'password' | 'text' | 'select'
   hint: string
   placeholder?: string
+  options?: Array<{ value: string; label: string }>
+  defaultValue?: string
 }
 
 const FIELDS: Field[] = [
   {
     label: 'LLM Provider',
     key: 'LLM_PROVIDER',
-    type: 'text',
-    placeholder: 'minimax or anthropic',
-    hint: 'Choose which provider parses forwarded emails. Set one of the two API keys below to match.',
+    type: 'select',
+    defaultValue: 'minimax',
+    options: [
+      { value: 'minimax', label: 'MiniMax (MiniMax-M3)' },
+      { value: 'anthropic', label: 'Anthropic (Claude 3.5 Haiku)' },
+    ],
+    hint: 'Choose which provider parses forwarded emails. Set the matching API key below.',
   },
   {
     label: 'Anthropic Claude API Key',
@@ -86,6 +92,25 @@ const S = {
   fieldRow: {
     marginBottom: '0.875rem',
   },
+  activeFieldRow: {
+    padding: '0.625rem 0.75rem',
+    backgroundColor: '#f0f9ff',
+    border: '1px solid #bae6fd',
+    borderRadius: '8px',
+  },
+  activeBadge: {
+    marginLeft: '0.5rem',
+    padding: '0.125rem 0.5rem',
+    fontSize: '0.6875rem',
+    fontWeight: 700 as const,
+    color: '#0369a1',
+    backgroundColor: '#e0f2fe',
+    border: '1px solid #7dd3fc',
+    borderRadius: '999px',
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.04em',
+    verticalAlign: 'middle' as const,
+  },
   hint: {
     fontSize: '0.75rem',
     color: '#9ca3af',
@@ -148,10 +173,12 @@ export default function ApiKeysSection() {
         const res = await fetch('/api/settings')
         if (res.ok) {
           const data = await res.json() as Record<string, string>
-          // Populate only the keys we manage
+          // Populate only the keys we manage; fall back to each field's default
+          // (e.g. 'minimax' for LLM_PROVIDER) so the UI is never in an
+          // ambiguous state on first visit.
           const populated: Record<string, string> = {}
           for (const f of FIELDS) {
-            populated[f.key] = data[f.key] ?? ''
+            populated[f.key] = data[f.key] ?? f.defaultValue ?? ''
           }
           setValues(populated)
         }
@@ -208,24 +235,49 @@ export default function ApiKeysSection() {
         <p style={S.hint}>Loading current values...</p>
       ) : (
         <>
-          {FIELDS.map((field) => (
-            <div key={field.key} style={S.fieldRow}>
-              <label style={S.label} htmlFor={`apikey-${field.key}`}>
-                {field.label}
-              </label>
-              <input
-                id={`apikey-${field.key}`}
-                type={field.type}
-                value={values[field.key] ?? ''}
-                onChange={(e) => handleChange(field.key, e.target.value)}
-                style={S.input}
-                placeholder={field.type === 'password' ? '••••••••••••' : (field.placeholder ?? '')}
-                disabled={saving}
-                autoComplete="off"
-              />
-              <p style={S.hint}>{field.hint}</p>
-            </div>
-          ))}
+          {FIELDS.map((field) => {
+            const isActive =
+              field.key === 'ANTHROPIC_API_KEY' && values['LLM_PROVIDER'] === 'anthropic'
+              || field.key === 'MINIMAX_API_KEY' && values['LLM_PROVIDER'] === 'minimax'
+            const rowStyle = isActive
+              ? { ...S.fieldRow, ...S.activeFieldRow }
+              : S.fieldRow
+            return (
+              <div key={field.key} style={rowStyle}>
+                <label style={S.label} htmlFor={`apikey-${field.key}`}>
+                  {field.label}
+                  {isActive && (
+                    <span style={S.activeBadge} title="Active provider">active</span>
+                  )}
+                </label>
+                {field.type === 'select' ? (
+                  <select
+                    id={`apikey-${field.key}`}
+                    value={values[field.key] ?? ''}
+                    onChange={(e) => handleChange(field.key, e.target.value)}
+                    style={S.input}
+                    disabled={saving}
+                  >
+                    {(field.options ?? []).map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    id={`apikey-${field.key}`}
+                    type={field.type}
+                    value={values[field.key] ?? ''}
+                    onChange={(e) => handleChange(field.key, e.target.value)}
+                    style={S.input}
+                    placeholder={field.type === 'password' ? '••••••••••••' : (field.placeholder ?? '')}
+                    disabled={saving}
+                    autoComplete="off"
+                  />
+                )}
+                <p style={S.hint}>{field.hint}</p>
+              </div>
+            )
+          })}
 
           <button
             onClick={() => void handleSave()}
