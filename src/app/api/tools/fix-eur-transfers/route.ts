@@ -26,10 +26,25 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function POST(_req: NextRequest) {
+export async function POST(req: NextRequest) {
   const session = await getAdminSession();
   if (!session.isLoggedIn) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // The body carries ONLY the selected eurTxnIds. Amounts, dates and gbpTxnIds
+  // are never read from the request — they always come from the server-detected
+  // pairs below, so a client cannot make this endpoint touch an arbitrary txn.
+  let requestedIds: string[] = [];
+  try {
+    const body = await req.json();
+    const raw = (body as { eurTxnIds?: unknown } | null)?.eurTxnIds;
+    if (Array.isArray(raw)) {
+      requestedIds = raw.filter((id): id is string => typeof id === 'string' && id.length > 0);
+    }
+  } catch {
+    // No body / empty body / non-JSON body → treated as "no selection supplied".
+    // This keeps the original no-body POST working.
   }
 
   try {
@@ -46,7 +61,27 @@ export async function POST(_req: NextRequest) {
       return NextResponse.json({ fixed: 0, pairs: [], results: [] });
     }
 
-    const results = await applyTransferFix(pairs);
+    let selected: TransferPair[];
+    if (requestedIds.length === 0) {
+      if (pairs.length > 1) {
+        return NextResponse.json(
+          { error: 'Multiple transfer pairs detected. Select which transfers to fix before running.' },
+          { status: 400 },
+        );
+      }
+      selected = pairs; // exactly one pair → original behaviour
+    } else {
+      const requested = new Set(requestedIds);
+      selected = pairs.filter(p => requested.has(p.eurTxnId));
+      if (selected.length === 0) {
+        return NextResponse.json(
+          { error: 'None of the selected transactions are a detected EUR→GBP transfer pair.' },
+          { status: 400 },
+        );
+      }
+    }
+
+    const results = await applyTransferFix(selected);
     const succeeded = results.filter(r => r.success);
     const failed    = results.filter(r => !r.success);
 
