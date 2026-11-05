@@ -118,6 +118,27 @@ const S = {
     color: '#111827',
     fontSize: '0.8125rem',
   },
+  btnGhost: {
+    display: 'inline-block' as const,
+    padding: '0.3125rem 0.625rem',
+    fontSize: '0.8125rem',
+    fontWeight: 600 as const,
+    backgroundColor: '#f3f4f6',
+    color: '#374151',
+    border: '1px solid #d1d5db',
+    borderRadius: '6px',
+    cursor: 'pointer',
+  },
+  helperText: {
+    fontSize: '0.8125rem',
+    color: '#6b7280',
+    margin: '0.5rem 0 0',
+  },
+  checkboxCell: {
+    width: '1.75rem',
+    padding: '0.5rem',
+    textAlign: 'center' as const,
+  },
 };
 
 export default function FixEurGbpTransfersCard() {
@@ -126,10 +147,33 @@ export default function FixEurGbpTransfersCard() {
   const [results, setResults] = useState<FixResult[]>([]);
   const [fixedCount, setFixed] = useState(0);
   const [errorMsg, setError] = useState('');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [errorStatus, setErrorStatus] = useState<number | null>(null);
+
+  // The selection UI only appears when there is a genuine choice to make.
+  const showSelection = pairs.length > 1;
+  const runDisabled = status === 'running' || (showSelection && selectedIds.size === 0);
+
+  function togglePair(eurTxnId: string) {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(eurTxnId)) next.delete(eurTxnId); else next.add(eurTxnId);
+      return next;
+    });
+  }
+
+  function selectAll() {
+    setSelectedIds(new Set(pairs.map(p => p.eurTxnId)));
+  }
+
+  function clearSelection() {
+    setSelectedIds(new Set());
+  }
 
   async function handleAnalyse() {
     setStatus('analysing');
     setError('');
+    setErrorStatus(null);
     try {
       const res = await fetch('/api/tools/fix-eur-transfers?dry=true');
       const data = await res.json() as { pairs?: TransferPair[]; error?: string };
@@ -142,6 +186,7 @@ export default function FixEurGbpTransfersCard() {
         setStatus('no-pairs');
         return;
       }
+      setSelectedIds(new Set());
       setPairs(data.pairs);
       setStatus('pairs');
     } catch (err) {
@@ -153,10 +198,19 @@ export default function FixEurGbpTransfersCard() {
   async function handleRun() {
     setStatus('running');
     setError('');
+    setErrorStatus(null);
     try {
-      const res = await fetch('/api/tools/fix-eur-transfers', { method: 'POST' });
+      // Only ids are sent — never amounts or dates. The server re-detects the
+      // pairs and uses its own values, so the selection cannot be forged.
+      const ids = pairs.length === 1 ? [pairs[0].eurTxnId] : Array.from(selectedIds);
+      const res = await fetch('/api/tools/fix-eur-transfers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eurTxnIds: ids }),
+      });
       const data = await res.json() as { fixed?: number; failed?: number; results?: FixResult[]; error?: string };
       if (!res.ok && !data.results) {
+        setErrorStatus(res.status);
         setError(data.error ?? `HTTP ${res.status}`);
         setStatus('error');
         return;
@@ -190,23 +244,28 @@ export default function FixEurGbpTransfersCard() {
 
         {(status === 'pairs' || status === 'running') && (
           <button
-            style={{ ...S.btnPrimary, backgroundColor: '#1d4ed8', opacity: status === 'running' ? 0.6 : 1 }}
+            style={{ ...S.btnPrimary, backgroundColor: '#1d4ed8', opacity: runDisabled ? 0.6 : 1, cursor: runDisabled ? 'not-allowed' : 'pointer' }}
             onClick={handleRun}
-            disabled={status === 'running'}
+            disabled={runDisabled}
           >
-            {status === 'running' ? 'Running...' : 'Run Fix'}
+            {status === 'running' ? 'Running...' : showSelection ? `Run Fix (${selectedIds.size})` : 'Run Fix'}
           </button>
         )}
 
         {(status === 'success' || status === 'no-pairs') && (
           <button
             style={S.btnSecondary}
-            onClick={() => { setStatus('idle'); setPairs([]); setResults([]); setFixed(0); setError(''); }}
+            onClick={() => { setStatus('idle'); setPairs([]); setResults([]); setFixed(0); setError(''); setSelectedIds(new Set()); }}
           >
             Reset
           </button>
         )}
       </div>
+
+      {/* Helper line — tells the user why Run Fix is disabled */}
+      {showSelection && (status === 'pairs' || status === 'running') && selectedIds.size === 0 && (
+        <p style={S.helperText}>Select at least one transfer to enable Run Fix.</p>
+      )}
 
       {/* Pairs table (shown when status === 'pairs') */}
       {status === 'pairs' && pairs.length > 0 && (
@@ -214,9 +273,19 @@ export default function FixEurGbpTransfersCard() {
           <p style={{ ...S.sectionDesc, marginTop: '1rem', marginBottom: '0.25rem' }}>
             <strong>Detected Transfer Pairs</strong>
           </p>
+          {showSelection && (
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap', marginTop: '0.75rem' }}>
+              <button type="button" style={S.btnGhost} onClick={selectAll}>Select all</button>
+              <button type="button" style={S.btnGhost} onClick={clearSelection}>Clear</button>
+              <span style={{ ...S.helperText, margin: 0 }}>
+                {selectedIds.size} of {pairs.length} selected
+              </span>
+            </div>
+          )}
           <table style={S.table}>
             <thead>
               <tr>
+                {showSelection && <th style={S.th}>Select</th>}
                 {['Date', 'EUR Out', 'From', 'GBP In', 'To', 'Confidence'].map(h => (
                   <th key={h} style={S.th}>{h}</th>
                 ))}
@@ -224,7 +293,24 @@ export default function FixEurGbpTransfersCard() {
             </thead>
             <tbody>
               {pairs.map((pair, i) => (
-                <tr key={pair.eurTxnId} style={{ backgroundColor: i % 2 === 1 ? '#f9fafb' : undefined }}>
+                <tr
+                  key={pair.eurTxnId}
+                  style={{
+                    backgroundColor: showSelection && selectedIds.has(pair.eurTxnId)
+                      ? '#eff6ff'
+                      : i % 2 === 1 ? '#f9fafb' : undefined,
+                  }}
+                >
+                  {showSelection && (
+                    <td style={S.checkboxCell}>
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(pair.eurTxnId)}
+                        onChange={() => togglePair(pair.eurTxnId)}
+                        aria-label={`Select transfer on ${pair.date}`}
+                      />
+                    </td>
+                  )}
                   <td style={S.td}>{pair.date}</td>
                   <td style={S.td}>EUR {toAmount(pair.eurAmountMilliunits)}</td>
                   <td style={S.td}>{accountName(pair.eurAccountId)}</td>
@@ -273,7 +359,9 @@ export default function FixEurGbpTransfersCard() {
         <div style={S.error}>
           {errorMsg}
           <br />
-          <small>Please check your YNAB PAT and try again.</small>
+          {errorStatus === 400
+            ? <small>Pick the transfers to fix and try again.</small>
+            : <small>Please check your YNAB PAT and try again.</small>}
         </div>
       )}
     </div>
