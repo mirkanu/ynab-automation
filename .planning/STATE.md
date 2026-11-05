@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v6.4
 milestone_name: Currency Tools & UI Consolidation
 status: planning
-stopped_at: Phase 32 UI-SPEC approved
-last_updated: "2026-07-21T09:25:02.887Z"
-last_activity: "2026-07-11 - EUR Wise reconciliation tool: real historical FX-rate lookup, band-gated auto-reconcile, sign-error fix in explained-% calc, and FX visibility in positive-gap review state. Also manually corrected a missing Hertz pre-auth transaction in YNAB (confirmed via Wise reservedAmount that holds are already deducted from reported balance)."
+stopped_at: Completed quick task 261105-bq0 (EUR→GBP transfer selection)
+last_updated: "2026-11-05T08:42:57.143Z"
+last_activity: 2026-11-05 - EUR→GBP Transfers tool requires an explicit transfer-pair selection before Run Fix mutates anything; server-side intersection of the selected eurTxnIds with freshly detected pairs, HTTP 400 on an invalid/missing multi-pair selection (quick task 261105-bq0). Deployed to production ynab-api container, health check passed.
 progress:
   total_phases: 15
   completed_phases: 11
@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 Phase: 33
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-08-11 - Made parseOrderEmail provider-aware (LLM_PROVIDER setting now switches between Anthropic Claude 3.5 Haiku and MiniMax-M3 at runtime, no redeploy); added LLM Provider field + per-provider API key fields to the settings UI and first-install wizard step 4; updated .env.example and README (quick task 260811-cbn). Deployed to production ynab-api container, health check passed.
+Last activity: 2026-11-05 - EUR→GBP Transfers tool requires an explicit transfer-pair selection before Run Fix mutates anything; server-side intersection of the selected eurTxnIds with freshly detected pairs, HTTP 400 on an invalid/missing multi-pair selection (quick task 261105-bq0). Deployed to production ynab-api container, health check passed.
 
 ## Roadmap Summary (v6.2)
 
@@ -156,6 +156,7 @@ Decisions logged in PROJECT.md Key Decisions table.
 - [Quick-260727-edb]: isNonPricedTrackingSubject scoped to both subject-prefix allow-list AND sender allow-list (TRACKING_ONLY_SENDERS) — avoids misclassifying an unrelated sender's similarly-worded subject as a non-priced tracking update
 - [Quick-260727-v4v]: rawUrl MIME fallback gated on `html === originalHtml` after the htmlUrl step — composes cleanly with the existing htmlUrl fallback without duplicating the truncation-length check; only fires when htmlUrl step produced no replacement content
 - [Quick-260727-v4v]: extractHtmlFromRawMime mocked directly in route.test.ts (not mailparser) since email.test.ts already unit-tests the mailparser integration in isolation
+- [Quick-261105-bq0]: EUR→GBP fix POST body carries only eurTxnIds; the server re-detects pairs and intersects the requested ids with its own results
 
 ### Pending Todos
 
@@ -181,9 +182,10 @@ None.
 | 260727-edb | Skip non-priced Amazon delivery-status tracking emails (Out for delivery/Delivered/Arriving today-tomorrow) before Claude parsing; new 'no_price_expected' ActivityLog status | 2026-07-27 | 06235c6 | Complete | [260727-edb-skip-non-priced-tracking-emails](./quick/260727-edb-skip-non-priced-tracking-emails/) |
 | 260727-v4v | Add rawUrl MIME-parsing fallback (mailparser) to webhook route for when htmlUrl is missing/failed and inline html is truncated | 2026-07-27 | 242644a | Complete | [260727-v4v-add-rawurl-mime-parsing-fallback-to-webh](./quick/260727-v4v-add-rawurl-mime-parsing-fallback-to-webh/) |
 | 260811-cbn | Make parseOrderEmail provider-aware (LLM_PROVIDER setting switches between Anthropic Claude 3.5 Haiku and MiniMax-M3 at runtime, no redeploy); add LLM Provider field + per-provider API key fields to settings UI and first-install wizard step 4; update .env.example and README | 2026-08-11 | 77b2167 | Complete | [260811-cbn-can-you-add-the-minimax-option-to-https-](./quick/260811-cbn-can-you-add-the-minimax-option-to-https-/) |
+| 261105-bq0 | Require an explicit transfer-pair selection before the EUR→GBP Run Fix button mutates anything (checkbox column, Select all / Clear, disabled-until-selected button); server-side intersection of the requested eurTxnIds with freshly detected pairs, HTTP 400 on an invalid or missing multi-pair selection | 2026-11-05 | 51898a6 | Complete | [261105-bq0](./quick/261105-bq0-eur-gbp-transfers-disable-run-fix-until-/) |
 
 ## Session Continuity
 
-Last session: 2026-07-21T09:23:40.188Z
-Stopped at: Phase 32 UI-SPEC approved
+Last session: 2026-11-05T08:40:21.000Z
+Stopped at: Completed quick task 261105-bq0 (EUR→GBP transfer selection)
 Resume file: None
