@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 Phase: 33
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-11-07 - EUR→GBP Transfers tool now writes a conversion memo to both sides of every pair it fixes: "-2,487.55 EUR (FX rate: 0.85515) · Converted 2,487.55 EUR to 2,127.23 GBP using GSDlabs (skipped)". The FX marker stops the third-party converter (ynab.rmillan.com) converting the pair again; the trailing "(skipped)" is the marker that converter writes for skipped transactions, so those rows are skipped automatically instead of by hand. EUR input derived from the raw EUR row before it is deleted (quick task 261107-k7m). Deployed to production ynab-api container, health check passed.
+Last activity: 2026-11-07 - EUR→GBP Transfers tool now writes a conversion memo to both sides of every pair it fixes: "-2,487.55 EUR (FX rate: 0.85515) · Converted 2,487.55 EUR to 2,127.23 GBP using GSDlabs (skipped)". The FX marker stops the third-party converter (ynab.rmillan.com) converting the pair again; the trailing "(skipped)" is the marker that converter writes for skipped transactions, so those rows are skipped automatically instead of by hand. EUR input derived from the raw EUR row before it is deleted. The dry-run response previews the memo that would be written. Pairing now also requires a plausible conversion amount (EUR/GBP ratio 0.9–1.35, at least GBP 50, no fee/interest payees) — the detector had paired a EUR 6.72 grocery spend with a GBP 3.11 interest payment on 2026-11-02, which the fix would have destroyed. All 19 existing conversion pairs (12 Feb – 4 Nov) backfilled with the new memo on both sides (quick task 261107-k7m). Deployed to production ynab-api container, health check passed.
 
 ## Roadmap Summary (v6.2)
 
