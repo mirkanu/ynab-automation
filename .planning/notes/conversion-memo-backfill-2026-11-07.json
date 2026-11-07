@@ -1,0 +1,173 @@
+[
+ {
+  "date": "2026-02-12",
+  "eurInput": 6000,
+  "gbp": 5200.44,
+  "oldEurMemo": "(skipped)",
+  "oldGbpMemo": "(skipped)",
+  "oldEurCleared": "reconciled",
+  "oldGbpCleared": "reconciled"
+ },
+ {
+  "date": "2026-03-18",
+  "eurInput": 1000,
+  "gbp": 860.52,
+  "oldEurMemo": "-860.52 EUR (FX rate: 0.86316)",
+  "oldGbpMemo": "-860.52 EUR (FX rate: 0.86316)",
+  "oldEurCleared": "reconciled",
+  "oldGbpCleared": "reconciled"
+ },
+ {
+  "date": "2026-03-20",
+  "eurInput": 5000,
+  "gbp": 4293.4,
+  "oldEurMemo": "-5,000.0 EUR (FX rate: 0.85868)",
+  "oldGbpMemo": "-5,000.0 EUR (FX rate: 0.85868)",
+  "oldEurCleared": "reconciled",
+  "oldGbpCleared": "reconciled"
+ },
+ {
+  "date": "2026-04-27",
+  "eurInput": 1990.45,
+  "gbp": 1723.63,
+  "oldEurMemo": "-1,990.45 EUR (FX rate: 0.87203)",
+  "oldGbpMemo": "-1,990.45 EUR (FX rate: 0.87203)",
+  "oldEurCleared": "reconciled",
+  "oldGbpCleared": "reconciled"
+ },
+ {
+  "date": "2026-05-05",
+  "eurInput": 1989.94,
+  "gbp": 1717.52,
+  "oldEurMemo": "-1,989.94 EUR (FX rate: 0.87203)",
+  "oldGbpMemo": "-1,989.94 EUR (FX rate: 0.87203)",
+  "oldEurCleared": "reconciled",
+  "oldGbpCleared": "reconciled"
+ },
+ {
+  "date": "2026-05-13",
+  "eurInput": 1200,
+  "gbp": 1033.57,
+  "oldEurMemo": "\u20ac1,200 (skipped)",
+  "oldGbpMemo": "\u20ac1,200 (skipped)",
+  "oldEurCleared": "reconciled",
+  "oldGbpCleared": "reconciled"
+ },
+ {
+  "date": "2026-05-15",
+  "eurInput": 1200,
+  "gbp": 1040.38,
+  "oldEurMemo": "(skipped)",
+  "oldGbpMemo": "(skipped)",
+  "oldEurCleared": "reconciled",
+  "oldGbpCleared": "reconciled"
+ },
+ {
+  "date": "2026-05-29",
+  "eurInput": 2500,
+  "gbp": 2158.32,
+  "oldEurMemo": "(skipped)",
+  "oldGbpMemo": "(skipped)",
+  "oldEurCleared": "reconciled",
+  "oldGbpCleared": "reconciled"
+ },
+ {
+  "date": "2026-05-29",
+  "eurInput": 1500,
+  "gbp": 1295.26,
+  "oldEurMemo": "(skipped)",
+  "oldGbpMemo": "(skipped)",
+  "oldEurCleared": "reconciled",
+  "oldGbpCleared": "reconciled"
+ },
+ {
+  "date": "2026-06-13",
+  "eurInput": 2000,
+  "gbp": 1717.36,
+  "oldEurMemo": "(skipped)",
+  "oldGbpMemo": "(skipped)",
+  "oldEurCleared": "reconciled",
+  "oldGbpCleared": "reconciled"
+ },
+ {
+  "date": "2026-06-16",
+  "eurInput": 2000,
+  "gbp": 1720.94,
+  "oldEurMemo": "(skipped)",
+  "oldGbpMemo": "(skipped)",
+  "oldEurCleared": "reconciled",
+  "oldGbpCleared": "reconciled"
+ },
+ {
+  "date": "2026-06-23",
+  "eurInput": 3980.38,
+  "gbp": 3434.27,
+  "oldEurMemo": "(skipped)",
+  "oldGbpMemo": "(skipped)",
+  "oldEurCleared": "reconciled",
+  "oldGbpCleared": "reconciled"
+ },
+ {
+  "date": "2026-07-05",
+  "eurInput": 5000,
+  "gbp": 4263.04,
+  "oldEurMemo": "(skipped)",
+  "oldGbpMemo": "(skipped)",
+  "oldEurCleared": "reconciled",
+  "oldGbpCleared": "reconciled"
+ },
+ {
+  "date": "2026-07-28",
+  "eurInput": 2487.55,
+  "gbp": 2127.23,
+  "oldEurMemo": "-2,127.23 EUR (FX rate: 0.85453)",
+  "oldGbpMemo": "-2,127.23 EUR (FX rate: 0.85453)",
+  "oldEurCleared": "reconciled",
+  "oldGbpCleared": "reconciled"
+ },
+ {
+  "date": "2026-07-30",
+  "eurInput": 5000,
+  "gbp": 4260.31,
+  "oldEurMemo": "-4,260.31 EUR (FX rate: 0.85453) \u00b7 Converted 5,000.00 EUR to 4,260.31 GBP",
+  "oldGbpMemo": "-4,260.31 EUR (FX rate: 0.85453) \u00b7 Converted 5,000.00 EUR to 4,260.31 GBP",
+  "oldEurCleared": "reconciled",
+  "oldGbpCleared": "reconciled"
+ },
+ {
+  "date": "2026-09-09",
+  "eurInput": 5000,
+  "gbp": 4272.99,
+  "oldEurMemo": "(skipped)",
+  "oldGbpMemo": "(skipped)",
+  "oldEurCleared": "reconciled",
+  "oldGbpCleared": "reconciled"
+ },
+ {
+  "date": "2026-09-28",
+  "eurInput": 2985.16,
+  "gbp": 2561.72,
+  "oldEurMemo": "-2,561.72 EUR (FX rate: 0.84824)",
+  "oldGbpMemo": "-2,561.72 EUR (FX rate: 0.84824)",
+  "oldEurCleared": "cleared",
+  "oldGbpCleared": "reconciled"
+ },
+ {
+  "date": "2026-10-30",
+  "eurInput": 2985.14,
+  "gbp": 2489.46,
+  "oldEurMemo": null,
+  "oldGbpMemo": null,
+  "oldEurCleared": "cleared",
+  "oldGbpCleared": "cleared"
+ },
+ {
+  "date": "2026-11-04",
+  "eurInput": 2500,
+  "gbp": 2076.78,
+  "oldEurMemo": null,
+  "oldGbpMemo": null,
+  "oldEurCleared": "cleared",
+  "oldGbpCleared": "reconciled"
+ }
+]
