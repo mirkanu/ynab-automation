@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v6.4
 milestone_name: Currency Tools & UI Consolidation
 status: planning
-stopped_at: Completed quick task 261105-bq0 (EUR→GBP transfer selection)
-last_updated: "2026-11-05T08:42:57.143Z"
-last_activity: 2026-11-05 - EUR→GBP Transfers tool requires an explicit transfer-pair selection before Run Fix mutates anything; server-side intersection of the selected eurTxnIds with freshly detected pairs, HTTP 400 on an invalid/missing multi-pair selection (quick task 261105-bq0). Deployed to production ynab-api container, health check passed.
+stopped_at: Completed quick task 261107-k7m (EUR→GBP conversion memo)
+last_updated: "2026-11-07T14:30:00.000Z"
+last_activity: 2026-11-07 - EUR→GBP Transfers tool now writes a conversion memo to both sides of every pair it fixes: "-2,487.55 EUR (FX rate: 0.85515) · Converted 2,487.55 EUR to 2,127.23 GBP using GSDlabs (skipped)". The FX marker stops the third-party converter (ynab.rmillan.com) converting the pair again; the trailing "(skipped)" is the marker that converter writes for skipped transactions, so those rows are skipped automatically instead of by hand. EUR input derived from the raw EUR row before it is deleted (quick task 261107-k7m). Deployed to production ynab-api container, health check passed.
 progress:
   total_phases: 15
   completed_phases: 11
@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 Phase: 33
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-11-05 - EUR→GBP Transfers tool requires an explicit transfer-pair selection before Run Fix mutates anything; server-side intersection of the selected eurTxnIds with freshly detected pairs, HTTP 400 on an invalid/missing multi-pair selection (quick task 261105-bq0). Deployed to production ynab-api container, health check passed.
+Last activity: 2026-11-07 - EUR→GBP Transfers tool now writes a conversion memo to both sides of every pair it fixes: "-2,487.55 EUR (FX rate: 0.85515) · Converted 2,487.55 EUR to 2,127.23 GBP using GSDlabs (skipped)". The FX marker stops the third-party converter (ynab.rmillan.com) converting the pair again; the trailing "(skipped)" is the marker that converter writes for skipped transactions, so those rows are skipped automatically instead of by hand. EUR input derived from the raw EUR row before it is deleted (quick task 261107-k7m). Deployed to production ynab-api container, health check passed.
 
 ## Roadmap Summary (v6.2)
 
