@@ -300,13 +300,16 @@ Plans:
 
 ### Phase 33: EUR Multi-Currency Converter
 **Milestone:** v6.4
-**Goal:** A new Currency > EUR Conversion tool detects all unreconciled, unconverted EUR transactions in the €Wise Euro YNAB account, fetches the historical EUR→GBP rate for each transaction date from Frankfurter, shows a preview table, and bulk-applies conversions — updating each transaction's GBP amount and appending a conversion memo marker.
+**Goal:** A new Currency > EUR Conversion tool detects all unreconciled, unconverted EUR transactions in the €Wise Euro YNAB account, fetches the historical EUR→GBP rate for each transaction date from Frankfurter, shows a preview table, and bulk-applies conversions — updating each transaction's GBP amount and appending a conversion memo marker. Split-category transactions are converted by delete-and-recreate, with every sub-amount scaled by the same rate. This phase replaces the third-party converter at `ynab.rmillan.com`; its reference behaviour and the live API findings it produced are recorded in `.planning/notes/eur-converter-reference.md`.
 **Depends on:** Phase 31 (Currency nav section and EUR Conversion route must exist before content can be built)
-**Requirements:** CONV-01, CONV-02, CONV-03, CONV-04, CONV-05
+**Requirements:** CONV-01, CONV-02, CONV-03, CONV-04, CONV-05, CONV-06, CONV-07
 **Success Criteria** (what must be TRUE):
   1. Admin opens Currency > EUR Conversion and sees a table of all unreconciled EUR transactions that have no conversion memo marker — showing date, payee, EUR amount, historical EUR→GBP rate, and calculated GBP result for each.
   2. Already-reconciled transactions are absent from the table and cannot be selected or modified.
-  3. Admin clicks "Apply Conversions" and each listed transaction is updated in YNAB with the correct GBP amount and a memo appended in the format `EUR X.XX @ Y.YYYY` — confirmed by re-opening the tool and seeing an empty pending list.
+  3. Admin clicks "Apply Conversions" and each listed transaction is updated in YNAB with the correct GBP amount and a memo appended in the format `-X EUR (FX rate: Y.YYYY) · Converted X EUR to Y GBP using GSDlabs` — confirmed by re-opening the tool and seeing an empty pending list.
+  4. The 549 already-marked rows in the €Wise Euro account — in all four legacy memo dialects (`EUR (FX rate: …)`, the GSDlabs marker, `(skipped)`, `€X`) — are never offered for conversion.
+  5. A split-category transaction in the pending list converts successfully: the row is deleted and recreated with the same category assignments, every sub-amount is its EUR sub scaled by the same rate, and the parent equals the sum of the scaled subs (the YNAB API refuses an in-place amount change on a split).
+  6. The rate applied to each row is visible in the preview before applying, and the admin can override it — Wise's standing-order conversions ran ~0.6% below Frankfurter's mid-market rate.
 **Plans:** TBD
 
 ### Phase 34: Currency Workflow Integration

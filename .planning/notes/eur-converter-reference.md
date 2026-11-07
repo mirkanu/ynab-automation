@@ -48,6 +48,21 @@ A detector that only looks for one dialect will offer already-converted rows for
 The `EUR (FX rate:` marker covers 530 of the 549 marked rows; `€X` and `(skipped)` need their
 own rules.
 
+## The memo format the converter writes
+
+`-X EUR (FX rate: r) · Converted X EUR to Y GBP using GSDlabs`
+
+Rules that go with it:
+
+- **No `(skipped)`.** That marker means "rmillan, leave this row alone" — it only makes sense
+  while rmillan is still in use. The converter *is* the replacement, so it must not write it.
+  The EUR→GBP Transfers tool keeps writing it until rmillan is retired; after that it goes too.
+- **The EUR figure is negative**, so the Phase 33 reconciliation can sum EUR out of memos.
+- **The FX marker must hold the EUR *input*, not the GBP output.** rmillan sometimes writes the
+  GBP figure there (its own bug), which makes the marker unrecoverable. Our format must satisfy:
+  re-applying the recorded rate reproduces the GBP amount exactly — `input × rate = output`.
+  This is asserted in `src/lib/ynab-transfers.test.ts`.
+
 ## YNAB API behaviour on split transactions (probed live)
 
 Probed on 2026-11-07 with throwaway splits in the €Wise Euro account (created, probed, deleted;
