@@ -16,7 +16,9 @@ export default async function TransfersPage() {
         EUR→GBP Transfers
       </h1>
       <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: '0 0 1.5rem' }}>
-        Detect and fix unmatched EUR→GBP transfer pairs in YNAB.
+        Detect and fix unmatched EUR→GBP transfer pairs in YNAB. Each fixed pair gets a memo
+        explaining the conversion, e.g. &ldquo;-5,000.00 EUR (FX rate: 0.85206) · Converted
+        5,000.00 EUR to 4,260.31 GBP using GSDlabs (skipped)&rdquo;.
       </p>
       <FixEurGbpTransfersCard />
     </div>

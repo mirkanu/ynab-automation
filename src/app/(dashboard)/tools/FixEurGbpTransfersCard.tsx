@@ -20,6 +20,7 @@ interface FixResult {
   date: string;
   success: boolean;
   error?: string;
+  memo?: string;
 }
 
 type Status = 'idle' | 'analysing' | 'pairs' | 'no-pairs' | 'running' | 'success' | 'error';
@@ -343,6 +344,9 @@ export default function FixEurGbpTransfersCard() {
             {results.filter(r => r.success).map(r => (
               <li key={r.eurTxnId} style={{ fontSize: '0.8125rem', lineHeight: 1.5 }}>
                 EUR {toAmount(r.eurAmountMilliunits)} → GBP {toAmount(r.gbpAmountMilliunits)} ({r.date})
+                {r.memo && (
+                  <div style={{ color: '#6b7280', fontStyle: 'italic' }}>Memo: {r.memo}</div>
+                )}
               </li>
             ))}
             {results.filter(r => !r.success).map(r => (
