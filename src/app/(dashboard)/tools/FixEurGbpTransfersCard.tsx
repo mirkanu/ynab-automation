@@ -10,6 +10,7 @@ interface TransferPair {
   gbpAccountId: string;
   date: string;
   confidence: number;
+  memo?: string;
 }
 
 interface FixResult {
@@ -287,7 +288,7 @@ export default function FixEurGbpTransfersCard() {
             <thead>
               <tr>
                 {showSelection && <th style={S.th}>Select</th>}
-                {['Date', 'EUR Out', 'From', 'GBP In', 'To', 'Confidence'].map(h => (
+                {['Date', 'EUR Out', 'From', 'GBP In', 'To', 'Confidence', 'Memo to be written'].map(h => (
                   <th key={h} style={S.th}>{h}</th>
                 ))}
               </tr>
@@ -319,6 +320,9 @@ export default function FixEurGbpTransfersCard() {
                   <td style={S.td}>{accountName(pair.gbpAccountId)}</td>
                   <td style={{ ...S.td, color: pair.confidence >= 80 ? '#166534' : '#b45309', fontWeight: 700 }}>
                     {pair.confidence}%
+                  </td>
+                  <td style={{ ...S.td, fontStyle: 'italic', color: '#6b7280', maxWidth: '22rem' }}>
+                    {pair.memo ?? '—'}
                   </td>
                 </tr>
               ))}

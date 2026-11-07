@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminSession } from '@/lib/admin-session';
-import { detectTransferPairs, applyTransferFix, TransferPair } from '@/lib/ynab-transfers';
+import {
+  detectTransferPairs,
+  applyTransferFix,
+  buildConversionMemo,
+  TransferPair,
+} from '@/lib/ynab-transfers';
 import { saveSettings } from '@/lib/settings';
 
 // GET ?dry=true  → detect pairs, no mutations
@@ -19,7 +24,17 @@ export async function GET(req: NextRequest) {
 
   try {
     const pairs = await detectTransferPairs();
-    return NextResponse.json({ pairs });
+    // Show the memo that would be written, so the outcome is visible before
+    // anything is changed.
+    const pairsWithMemo = pairs.map(pair => ({
+      ...pair,
+      memo: buildConversionMemo({
+        eurAmountMilliunits: pair.eurAmountMilliunits,
+        eurMemo: pair.eurMemo ?? null,
+        gbpAmountMilliunits: pair.gbpAmountMilliunits,
+      }),
+    }));
+    return NextResponse.json({ pairs: pairsWithMemo });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
     return NextResponse.json({ error: message }, { status: 500 });

@@ -7,11 +7,13 @@ const {
   mockGetAdminSession,
   mockDetectTransferPairs,
   mockApplyTransferFix,
+  mockBuildConversionMemo,
   mockSaveSettings,
 } = vi.hoisted(() => ({
   mockGetAdminSession: vi.fn(),
   mockDetectTransferPairs: vi.fn(),
   mockApplyTransferFix: vi.fn(),
+  mockBuildConversionMemo: vi.fn(),
   mockSaveSettings: vi.fn(),
 }));
 
@@ -20,11 +22,12 @@ vi.mock('@/lib/admin-session', () => ({ getAdminSession: mockGetAdminSession }))
 vi.mock('@/lib/ynab-transfers', () => ({
   detectTransferPairs: mockDetectTransferPairs,
   applyTransferFix: mockApplyTransferFix,
+  buildConversionMemo: mockBuildConversionMemo,
 }));
 
 vi.mock('@/lib/settings', () => ({ saveSettings: mockSaveSettings }));
 
-import { POST } from './route';
+import { POST, GET } from './route';
 
 // --- Fixtures ---
 
@@ -37,6 +40,7 @@ const pairA = {
   gbpAccountId: 'acc-gbp',
   date: '2026-11-01',
   confidence: 95,
+  eurMemo: null,
 };
 
 const pairB = {
@@ -48,6 +52,7 @@ const pairB = {
   gbpAccountId: 'acc-gbp',
   date: '2026-11-03',
   confidence: 80,
+  eurMemo: null,
 };
 
 function postReq(body?: unknown): NextRequest {
@@ -64,7 +69,35 @@ beforeEach(() => {
   mockGetAdminSession.mockResolvedValue({ isLoggedIn: true });
   mockDetectTransferPairs.mockResolvedValue([pairA]);
   mockApplyTransferFix.mockResolvedValue([]);
+  mockBuildConversionMemo.mockReturnValue('-100.00 EUR (FX rate: 0.85000) · Converted 100.00 EUR to 85.00 GBP using GSDlabs (skipped)');
   mockSaveSettings.mockResolvedValue(undefined);
+});
+
+describe('GET /api/tools/fix-eur-transfers — dry run', () => {
+  it('returns the detected pairs with the memo that would be written', async () => {
+    const res = await GET(new NextRequest('http://localhost/api/tools/fix-eur-transfers?dry=true'));
+
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data.pairs).toHaveLength(1);
+    expect(data.pairs[0].memo).toContain('using GSDlabs');
+    expect(mockBuildConversionMemo).toHaveBeenCalledWith({
+      eurAmountMilliunits: pairA.eurAmountMilliunits,
+      eurMemo: pairA.eurMemo ?? null,
+      gbpAmountMilliunits: pairA.gbpAmountMilliunits,
+    });
+  });
+
+  it('changes nothing', async () => {
+    await GET(new NextRequest('http://localhost/api/tools/fix-eur-transfers?dry=true'));
+    expect(mockApplyTransferFix).not.toHaveBeenCalled();
+  });
+
+  it('returns 401 when the caller is not logged in', async () => {
+    mockGetAdminSession.mockResolvedValue({ isLoggedIn: false });
+    const res = await GET(new NextRequest('http://localhost/api/tools/fix-eur-transfers?dry=true'));
+    expect(res.status).toBe(401);
+  });
 });
 
 describe('POST /api/tools/fix-eur-transfers — selection handling', () => {
