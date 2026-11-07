@@ -176,6 +176,36 @@ function daysAgo(n: number): string {
   return d.toISOString().slice(0, 10);
 }
 
+// Fees and interest are never the EUR side of a conversion, and a fee or
+// interest credit on the GBP side is never the other half of one.
+const FEE_OR_INTEREST_PATTERNS = ['fee', 'interest'];
+
+export function isFeeOrInterest(payeeName: string | null): boolean {
+  const payee = (payeeName ?? '').toLowerCase();
+  return FEE_OR_INTEREST_PATTERNS.some(p => payee.includes(p));
+}
+
+// Smallest conversion worth pairing, in milliunits (£50). The smallest real
+// conversion on record is £860.
+const CONVERSION_MIN_MILLIUNITS = 50_000;
+
+// A EUR→GBP conversion moves money at the EUR→GBP rate, so the EUR side is
+// either the unconverted EUR amount (≈1.17× the GBP side) or an already
+// converted GBP amount (≈1.0×).
+const CONVERSION_RATIO_MIN = 0.9;
+const CONVERSION_RATIO_MAX = 1.35;
+
+export function isPlausibleConversionAmount(
+  eurMilliunits: number,
+  gbpMilliunits: number,
+): boolean {
+  const gbp = Math.abs(gbpMilliunits);
+  const eur = Math.abs(eurMilliunits);
+  if (gbp < CONVERSION_MIN_MILLIUNITS) return false;
+  const ratio = eur / gbp;
+  return ratio >= CONVERSION_RATIO_MIN && ratio <= CONVERSION_RATIO_MAX;
+}
+
 export async function detectTransferPairs(): Promise<TransferPair[]> {
   const token = await getSetting('YNAB_ACCESS_TOKEN');
   if (!token) throw new Error('YNAB_ACCESS_TOKEN not configured in settings');
@@ -203,7 +233,7 @@ export async function detectTransferPairs(): Promise<TransferPair[]> {
     !t.deleted &&
     t.amount < 0 &&
     t.transfer_account_id === null &&
-    !(t.payee_name ?? '').toLowerCase().includes('wise fee')
+    !isFeeOrInterest(t.payee_name)
   );
 
   if (eurOutgoing.length === 0) return [];
@@ -217,7 +247,7 @@ export async function detectTransferPairs(): Promise<TransferPair[]> {
   const gbpTxns = [
     ...((ukData?.data?.transactions ?? []) as YnabTxn[]).map(t => ({ ...t, accountId: UK_CURRENT_ID })),
     ...((gbpWiseData?.data?.transactions ?? []) as YnabTxn[]).map(t => ({ ...t, accountId: GBP_WISE_ID })),
-  ].filter(t => !t.deleted && t.amount > 0 && t.transfer_account_id === null);
+  ].filter(t => !t.deleted && t.amount > 0 && t.transfer_account_id === null && !isFeeOrInterest(t.payee_name));
 
   const pairs: TransferPair[] = [];
   const usedGbpIds = new Set<string>();
@@ -225,6 +255,15 @@ export async function detectTransferPairs(): Promise<TransferPair[]> {
   for (const eur of eurOutgoing) {
     const matchingGbp = gbpTxns.find(g => g.date === eur.date && !usedGbpIds.has(g.id));
     if (!matchingGbp) continue;
+
+    // Guard against pairing two unrelated transactions that happen to share a
+    // date. A EUR→GBP conversion always moves money at the EUR→GBP rate, so
+    // the EUR side is either the unconverted EUR amount (≈1.17× the GBP side)
+    // or an already converted GBP amount (≈1.0×). Anything outside that band
+    // is not a conversion — e.g. a €6.72 grocery spend next to a £3.11
+    // interest payment. Fixing such a pair would delete a real transaction.
+    if (!isPlausibleConversionAmount(eur.amount, matchingGbp.amount)) continue;
+
     usedGbpIds.add(matchingGbp.id);
 
     const payee = (eur.payee_name ?? '').toLowerCase();

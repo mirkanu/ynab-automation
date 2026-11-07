@@ -8,6 +8,8 @@ import {
   buildConversionMemo,
   deriveEurInputAmount,
   applyTransferFix,
+  isPlausibleConversionAmount,
+  isFeeOrInterest,
   TransferPair,
 } from './ynab-transfers';
 
@@ -133,6 +135,33 @@ describe('buildConversionMemo', () => {
     const input = Number(eurFigure![1].replace(/,/g, ''));
     // Re-applying the recorded rate must reproduce the GBP amount exactly.
     expect(Math.round(input * rate * 100) / 100).toBe(2_127.23);
+  });
+});
+
+describe('pairing guards', () => {
+  it('rejects a grocery spend paired with an interest payment', () => {
+    // €6.72 Spar on 2026-11-02 vs £3.11 interest on the same day.
+    expect(isPlausibleConversionAmount(-6_720, 3_110)).toBe(false);
+  });
+
+  it('rejects amounts below the smallest sensible conversion', () => {
+    expect(isPlausibleConversionAmount(-120_00, 100_00)).toBe(false);
+  });
+
+  it('accepts an unconverted EUR amount (≈1.17× the GBP side)', () => {
+    expect(isPlausibleConversionAmount(-5_000_000, 4_260_310)).toBe(true);
+  });
+
+  it('accepts an already converted EUR amount (≈1.0× the GBP side)', () => {
+    expect(isPlausibleConversionAmount(-2_127_230, 2_127_230)).toBe(true);
+  });
+
+  it('recognises fees and interest as never being part of a conversion', () => {
+    expect(isFeeOrInterest('Wise Fee')).toBe(true);
+    expect(isFeeOrInterest('Assets Service Fee')).toBe(true);
+    expect(isFeeOrInterest('Interest payment')).toBe(true);
+    expect(isFeeOrInterest('Transfer : Wise (GBP)')).toBe(false);
+    expect(isFeeOrInterest(null)).toBe(false);
   });
 });
 
