@@ -329,6 +329,30 @@ describe('parseOrderEmail', () => {
     const payload = sentPrompt.split('EMAIL TEXT:\n\n')[1] ?? '';
     expect(payload.length).toBeLessThan(100);
   });
+
+  it('uses the caller-supplied reference date as the "no date in the email" fallback', async () => {
+    // A deferred retry re-parses an email hours or days later. The email itself carries no
+    // date, so the model must fall back to the date the email ARRIVED — not to today.
+    mockFetch.mockResolvedValueOnce(minimaxResponse('{"amount": 16.5, "description": "Southern Comfort Original", "retailer": "Amazon", "currency": "GBP", "date": "2026-11-10"}'));
+
+    await parseOrderEmail(sampleHtml, 'Emily-Kate', '2026-11-10');
+
+    const sentPrompt = JSON.parse(mockFetch.mock.calls[0][1].body as string).messages[1].content as string;
+
+    expect(sentPrompt).toContain('use this date: 2026-11-10');
+    expect(sentPrompt).not.toContain("use today's date");
+  });
+
+  it('falls back to today when no reference date is supplied', async () => {
+    mockFetch.mockResolvedValueOnce(minimaxResponse('{"amount": 16.5, "description": "d", "retailer": "Amazon", "currency": "GBP", "date": "2026-11-12"}'));
+
+    await parseOrderEmail(sampleHtml, 'Alice');
+
+    const sentPrompt = JSON.parse(mockFetch.mock.calls[0][1].body as string).messages[1].content as string;
+    const today = new Date().toISOString().split('T')[0];
+
+    expect(sentPrompt).toContain(`use this date: ${today}`);
+  });
 });
 
 describe('parseOrderEmail — provider=anthropic', () => {

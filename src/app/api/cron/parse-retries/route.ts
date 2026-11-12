@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
     ownerAccountId: string | null
     retryCount: number
     retryAt: Date | null
+    receivedAt: Date
   }>
   try {
     due = await prisma.activityLog.findMany({
@@ -109,7 +110,12 @@ export async function POST(req: NextRequest) {
       }
 
       // 3. Re-parse with the configured provider (no provider fallback).
-      const parseResult = await parseOrderEmail(row.rawBody, row.ownerName ?? '')
+      // Parse with the date the email ARRIVED as the "no date in the email" fallback.
+      // Amazon order emails contain no date at all, so without this the transaction would
+      // be dated to the moment of the retry (hours or days later) instead of the day the
+      // order was placed — which would silently shift it into the wrong budget period.
+      const referenceDate = row.receivedAt.toISOString().split('T')[0]
+      const parseResult = await parseOrderEmail(row.rawBody, row.ownerName ?? '', referenceDate)
 
       // 4. The quota is STILL exhausted — keep the email queued, tell the admin.
       if (!parseResult.ok && parseResult.reason === 'quota_exceeded') {

@@ -83,6 +83,9 @@ const dueRow = {
   ownerAccountId: 'acct-owner',
   retryCount: 0,
   retryAt: new Date(Date.now() - 1000),
+  // The email arrived on 2026-11-10 — the reference date handed to the parser so a
+  // dateless email is not dated to the moment of the retry instead.
+  receivedAt: new Date('2026-11-10T23:14:38.854Z'),
 };
 
 const parsedOrder = {
@@ -191,6 +194,20 @@ describe('POST /api/cron/parse-retries - processing due rows', () => {
     expect(patch.ynabResult.transactionId).toBe('txn-retry');
     expect(patch.ynabResult.amount).toBe(-16500);
     expect(patch.retryAt).toBeNull();
+  });
+
+  it('parses with the email arrival date, not the date of the retry', async () => {
+    const { POST } = await import('./route');
+
+    await POST(makeRequest({ 'x-cron-secret': 'test-secret' }));
+
+    // The email arrived 2026-11-10. A retry that runs on a later day must still treat
+    // "no date in the email" as 2026-11-10, or the transaction lands in the wrong budget period.
+    expect(mockParseOrderEmail).toHaveBeenCalledWith(
+      dueRow.rawBody,
+      'Emily-Kate',
+      '2026-11-10',
+    );
   });
 
   it('does not create a transaction when the order number already has a success row', async () => {

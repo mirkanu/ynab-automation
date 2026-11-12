@@ -34,8 +34,10 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  // 3. Parse email
-  const parseResult = await parseOrderEmail(entry.rawBody, senderInfo.name)
+  // 3. Parse email. Use the date the email ARRIVED as the "no date in the email" fallback —
+  // a replay runs long after arrival, and "today" would date the transaction wrongly.
+  const referenceDate = entry.receivedAt.toISOString().split('T')[0]
+  const parseResult = await parseOrderEmail(entry.rawBody, senderInfo.name, referenceDate)
   if (!parseResult.ok) {
     await writeActivityLog({
       messageId: `replay-${messageId}-${Date.now()}`,

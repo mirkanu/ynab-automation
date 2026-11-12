@@ -54,14 +54,19 @@ export type ParseResult = ParseSuccess | ParseFailure
 // The prompt carries the VISIBLE TEXT of the email, not its raw HTML: the raw body
 // is ~119 KB (≈33k prompt tokens) of which only ~1.3 KB is content, and sending the
 // raw body is what exhausted the MiniMax token plan.
-function buildExtractionPrompt(html: string): string {
+function buildExtractionPrompt(html: string, referenceDate?: string): string {
   const text = htmlToPlainText(html)
+  // Many retailer emails (Amazon included) contain no date anywhere in the body, so the
+  // model falls back to the date we give it here. That must be the date the EMAIL ARRIVED,
+  // not the date the code happens to be running: a deferred retry parses hours or days
+  // later, and "today" would then shift the transaction's date and corrupt budget periods.
+  const fallbackDate = referenceDate ?? new Date().toISOString().split('T')[0]
   return (
     `Extract the total order amount, a brief item description, the retailer/merchant name, the currency, the order date, and any custom note from this order confirmation email. ` +
     `For multi-item orders, summarize as '2 items: Item1, Item2' (max 2 item names). ` +
     `For currency: set to "EUR" ONLY if the total amount is exclusively in Euros (€) with no conversion to GBP or another currency shown. ` +
     `If the email shows a Euro amount AND a GBP/sterling equivalent, or if the amount is in any non-Euro currency, set currency to "GBP". ` +
-    `For date: extract the order date from the email and format as YYYY-MM-DD. If no date is found, use today's date: ${new Date().toISOString().split('T')[0]}. ` +
+    `For date: extract the order date from the email and format as YYYY-MM-DD. If no date is found, use this date: ${fallbackDate}. ` +
     `For amount: only extract a total that is EXPLICITLY shown as a price/total in the HTML (e.g. "Total: £12.99", "Order total", a line-item price). ` +
     `The email body may be a truncated fragment that cuts off before the pricing section — if so, no real total will appear anywhere in the text. ` +
     `Never guess, estimate, or infer an amount from item names, other numbers (order IDs, quantities), or general knowledge of typical prices. ` +
@@ -121,6 +126,10 @@ function parseAndValidate(rawText: string): ParsedOrder | null {
  *
  * @param html - Raw HTML string (trigger.event.body.html from Pipedream)
  * @param senderName - Display name of the person who forwarded (e.g. "Alice")
+ * @param referenceDate - YYYY-MM-DD date to use when the email itself contains no date.
+ *   Callers that re-parse a stored email later (the retry worker, the replay route) MUST
+ *   pass the date the email arrived, otherwise the transaction is dated to the moment of
+ *   the re-parse instead of the day the order was placed.
  * @returns A discriminated result: `{ ok: true, order }` on success, or
  *          `{ ok: false, reason, detail }` describing WHY the parse failed.
  *          `reason: 'quota_exceeded'` means the provider's token plan is exhausted
@@ -129,6 +138,7 @@ function parseAndValidate(rawText: string): ParsedOrder | null {
 export async function parseOrderEmail(
   html: string,
   senderName: string,
+  referenceDate?: string,
 ): Promise<ParseResult> {
   try {
     // Read provider choice from DB. Default to "minimax" to preserve existing
@@ -165,7 +175,7 @@ export async function parseOrderEmail(
           system:
             'You are a data extraction assistant. Extract order information from order confirmation emails from any retailer. Return ONLY valid JSON with no markdown, no explanation.',
           messages: [
-            { role: 'user', content: buildExtractionPrompt(html) },
+            { role: 'user', content: buildExtractionPrompt(html, referenceDate) },
           ],
         }),
       })
@@ -244,7 +254,7 @@ export async function parseOrderEmail(
           },
           {
             role: 'user',
-            content: buildExtractionPrompt(html),
+            content: buildExtractionPrompt(html, referenceDate),
           },
         ],
       }),
