@@ -41,11 +41,14 @@ vi.mock('@/lib/email', () => ({
 }));
 
 const mockParseOrderEmail = vi.fn().mockResolvedValue({
-  retailer: 'Amazon',
-  amount: 12.99,
-  date: '2024-03-15',
-  currency: 'GBP',
-  description: 'AirPods case',
+  ok: true,
+  order: {
+    retailer: 'Amazon',
+    amount: 12.99,
+    date: '2024-03-15',
+    currency: 'GBP',
+    description: 'AirPods case',
+  },
 });
 vi.mock('@/lib/claude', () => ({
   parseOrderEmail: mockParseOrderEmail,
@@ -118,9 +121,7 @@ describe('POST /api/webhook - activity logging', () => {
     mockActivityLogFindFirst.mockResolvedValue(null);
     mockExtractOrderNumber.mockReturnValue(null);
     mockIsNonPricedTrackingSubject.mockReturnValue(false);
-    mockParseOrderEmail.mockResolvedValue({
-      retailer: 'Amazon', amount: 12.99, date: '2024-03-15', currency: 'GBP', description: 'AirPods case',
-    });
+    mockParseOrderEmail.mockResolvedValue({ ok: true, order: { retailer: 'Amazon', amount: 12.99, date: '2024-03-15', currency: 'GBP', description: 'AirPods case', } });
     mockCreateYnabTransaction.mockResolvedValue('txn-456');
     mockGetSenderByEmail.mockReturnValue(mockSenderInfo);
   });
@@ -155,7 +156,7 @@ describe('POST /api/webhook - activity logging', () => {
   });
 
   it('logs parse_error when Claude fails', async () => {
-    mockParseOrderEmail.mockResolvedValue(null);
+    mockParseOrderEmail.mockResolvedValue({ ok: false, reason: 'api_error', detail: 'boom' });
 
     const { POST } = await import('./route');
     await POST(makeRequest(webhookBody));
@@ -164,6 +165,38 @@ describe('POST /api/webhook - activity logging', () => {
     const entry = mockWriteActivityLog.mock.calls[0][0];
     expect(entry.status).toBe('parse_error');
     expect(entry.errorType).toBe('parse_failed');
+    expect(entry.errorMessage).toContain('api_error');
+  });
+
+  it('queues the email for retry and sends NO admin email when the provider quota is exhausted', async () => {
+    mockParseOrderEmail.mockResolvedValue({ ok: false, reason: 'quota_exceeded', detail: 'Token Plan usage limit reached' });
+    mockExtractOrderNumber.mockReturnValue('204-6619432-1614766');
+
+    const { POST } = await import('./route');
+    const { sendErrorNotification } = await import('@/lib/notify');
+    const res = await POST(makeRequest(webhookBody));
+
+    expect(res.status).toBe(200);
+
+    // No admin email and no transaction on the quota path.
+    expect(sendErrorNotification).not.toHaveBeenCalled();
+    expect(mockCreateYnabTransaction).not.toHaveBeenCalled();
+
+    // Exactly one log entry, carrying the retry state and the resolved owner.
+    expect(mockWriteActivityLog).toHaveBeenCalledOnce();
+    const entry = mockWriteActivityLog.mock.calls[0][0];
+    expect(entry.status).toBe('retry_pending');
+    expect(entry.errorType).toBe('quota_exceeded');
+    expect(entry.ownerName).toBe('Alice');
+    expect(entry.ownerAccountId).toBe('acct-789');
+    expect(entry.retryCount).toBe(0);
+    expect(entry.orderNumber).toBe('204-6619432-1614766');
+
+    // The next attempt is scheduled roughly 6 hours out.
+    const retryAt = entry.retryAt as Date;
+    const hoursOut = (retryAt.getTime() - Date.now()) / (60 * 60 * 1000);
+    expect(hoursOut).toBeGreaterThan(5);
+    expect(hoursOut).toBeLessThan(7);
   });
 
   it('logs ynab_error when YNAB API fails', async () => {
@@ -311,9 +344,7 @@ describe('POST /api/webhook - DB rules override', () => {
     mockExtractMessageId.mockReturnValue('msg-db-rules');
     mockExtractOriginalSender.mockReturnValue('emily@example.com');
     mockFindUnique.mockResolvedValue(null);
-    mockParseOrderEmail.mockResolvedValue({
-      retailer: 'ASOS', amount: 25.00, date: '2024-04-01', currency: 'GBP', description: 'Dress',
-    });
+    mockParseOrderEmail.mockResolvedValue({ ok: true, order: { retailer: 'ASOS', amount: 25.00, date: '2024-04-01', currency: 'GBP', description: 'Dress', } });
     mockCreateYnabTransaction.mockResolvedValue('txn-emily');
     // Env-var config has Emily with wrong name and wrong account
     mockGetSenderByEmail.mockReturnValue({ email: 'emily@example.com', name: 'Manuel', accountId: 'acct-manuel' });
@@ -362,9 +393,7 @@ describe('POST /api/webhook - DB rules override', () => {
 
   it('uses DB currency rule accountId when currency matches', async () => {
     mockGetSenderByEmail.mockReturnValue({ email: 'emily@example.com', name: 'Emily-Kate', accountId: 'acct-gbp' });
-    mockParseOrderEmail.mockResolvedValue({
-      retailer: 'Zalando', amount: 30.00, date: '2024-04-01', currency: 'EUR', description: 'Jacket',
-    });
+    mockParseOrderEmail.mockResolvedValue({ ok: true, order: { retailer: 'Zalando', amount: 30.00, date: '2024-04-01', currency: 'EUR', description: 'Jacket', } });
     const dbCurrencyRules = JSON.stringify([
       { currency: 'EUR', accountId: 'acct-eur' },
     ]);
@@ -405,9 +434,7 @@ describe('POST /api/webhook - htmlUrl truncation fallback', () => {
     mockFindUnique.mockResolvedValue(null);
     mockActivityLogFindFirst.mockResolvedValue(null);
     mockExtractOrderNumber.mockReturnValue(null);
-    mockParseOrderEmail.mockResolvedValue({
-      retailer: 'Amazon', amount: 12.99, date: '2024-03-15', currency: 'GBP', description: 'AirPods case',
-    });
+    mockParseOrderEmail.mockResolvedValue({ ok: true, order: { retailer: 'Amazon', amount: 12.99, date: '2024-03-15', currency: 'GBP', description: 'AirPods case', } });
     mockCreateYnabTransaction.mockResolvedValue('txn-456');
     mockGetSenderByEmail.mockReturnValue(mockSenderInfo);
   });
@@ -496,9 +523,7 @@ describe('POST /api/webhook - rawUrl MIME fallback', () => {
     mockActivityLogFindFirst.mockResolvedValue(null);
     mockExtractOrderNumber.mockReturnValue(null);
     mockExtractHtmlFromRawMime.mockResolvedValue(null);
-    mockParseOrderEmail.mockResolvedValue({
-      retailer: 'Amazon', amount: 12.99, date: '2024-03-15', currency: 'GBP', description: 'AirPods case',
-    });
+    mockParseOrderEmail.mockResolvedValue({ ok: true, order: { retailer: 'Amazon', amount: 12.99, date: '2024-03-15', currency: 'GBP', description: 'AirPods case', } });
     mockCreateYnabTransaction.mockResolvedValue('txn-456');
     mockGetSenderByEmail.mockReturnValue(mockSenderInfo);
   });

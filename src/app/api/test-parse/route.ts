@@ -21,12 +21,12 @@ export async function POST(req: NextRequest) {
   }
 
   const result = await parseOrderEmail(html, senderName || 'Test')
-  if (!result) {
+  if (!result.ok) {
     return NextResponse.json(
-      { error: 'Could not parse the email. Claude returned no result.' },
+      { error: `Could not parse the email (${result.reason}).`, detail: result.detail },
       { status: 422 },
     )
   }
 
-  return NextResponse.json({ result })
+  return NextResponse.json({ result: result.order })
 }

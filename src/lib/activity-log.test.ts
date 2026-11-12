@@ -2,11 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { ActivityLogEntry } from './activity-log';
 
 const mockCreate = vi.fn().mockResolvedValue({ id: 1 });
+const mockUpdate = vi.fn().mockResolvedValue({ id: 1 });
 
 vi.mock('@/lib/db', () => ({
   prisma: {
     activityLog: {
       create: mockCreate,
+      update: mockUpdate,
     },
   },
 }));
@@ -95,6 +97,91 @@ describe('writeActivityLog', () => {
 
     await expect(
       writeActivityLog({ messageId: 'msg-fail', status: 'success' }),
+    ).resolves.not.toThrow();
+  });
+
+  it('passes the retry state and resolved owner through', async () => {
+    const { writeActivityLog } = await import('./activity-log');
+    const retryAt = new Date('2026-11-12T15:00:00.000Z');
+
+    await writeActivityLog({
+      messageId: 'msg-retry',
+      status: 'retry_pending',
+      sender: 'auto-confirm@amazon.co.uk',
+      rawBody: '<html>...</html>',
+      orderNumber: '202-9090378-7968332',
+      retryAt,
+      retryCount: 0,
+      ownerName: 'Emily-Kate',
+      ownerAccountId: 'acct-789',
+      errorType: 'quota_exceeded',
+      errorMessage: 'Token Plan usage limit reached',
+    });
+
+    const data = mockCreate.mock.calls[0][0].data;
+    expect(data.status).toBe('retry_pending');
+    expect(data.retryAt).toEqual(retryAt);
+    expect(data.retryCount).toBe(0);
+    expect(data.ownerName).toBe('Emily-Kate');
+    expect(data.ownerAccountId).toBe('acct-789');
+    expect(data.errorType).toBe('quota_exceeded');
+  });
+});
+
+describe('updateActivityLog', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('updates the row in place by messageId', async () => {
+    const { updateActivityLog } = await import('./activity-log');
+    const retryAt = new Date('2026-11-13T15:00:00.000Z');
+
+    await updateActivityLog('msg-123', {
+      status: 'retry_pending',
+      retryCount: 1,
+      retryAt,
+      errorType: 'quota_exceeded',
+      errorMessage: 'still exhausted',
+    });
+
+    expect(mockUpdate).toHaveBeenCalledOnce();
+    const call = mockUpdate.mock.calls[0][0];
+    expect(call.where).toEqual({ messageId: 'msg-123' });
+    expect(call.data.status).toBe('retry_pending');
+    expect(call.data.retryCount).toBe(1);
+    expect(call.data.retryAt).toEqual(retryAt);
+    expect(call.data.errorType).toBe('quota_exceeded');
+  });
+
+  it('leaves untouched fields undefined so Prisma keeps their value', async () => {
+    const { updateActivityLog } = await import('./activity-log');
+
+    await updateActivityLog('msg-123', { status: 'success' });
+
+    const data = mockUpdate.mock.calls[0][0].data;
+    expect(data.errorType).toBeUndefined();
+    expect(data.parseResult).toBeUndefined();
+    expect(data.ynabResult).toBeUndefined();
+    expect(data.retryAt).toBeUndefined();
+  });
+
+  it('clears a stale errorType when passed an explicit null', async () => {
+    const { updateActivityLog } = await import('./activity-log');
+
+    await updateActivityLog('msg-123', { status: 'success', errorType: null, errorMessage: null });
+
+    const data = mockUpdate.mock.calls[0][0].data;
+    expect(data.errorType).toBeNull();
+    expect(data.errorMessage).toBeNull();
+  });
+
+  it('does not throw when the database rejects the update', async () => {
+    mockUpdate.mockRejectedValueOnce(new Error('DB connection lost'));
+    const { updateActivityLog } = await import('./activity-log');
+
+    await expect(
+      updateActivityLog('msg-fail', { status: 'success' }),
     ).resolves.not.toThrow();
   });
 });

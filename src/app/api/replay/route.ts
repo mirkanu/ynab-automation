@@ -35,22 +35,24 @@ export async function POST(req: NextRequest) {
   }
 
   // 3. Parse email
-  const parsed = await parseOrderEmail(entry.rawBody, senderInfo.name)
-  if (!parsed) {
+  const parseResult = await parseOrderEmail(entry.rawBody, senderInfo.name)
+  if (!parseResult.ok) {
     await writeActivityLog({
       messageId: `replay-${messageId}-${Date.now()}`,
       status: 'parse_error',
       sender: entry.sender ?? undefined,
       subject: `REPLAY: ${entry.subject ?? ''}`,
       rawBody: entry.rawBody,
-      errorType: 'parse_error',
-      errorMessage: 'Claude could not re-parse this email',
+      errorType: parseResult.reason,
+      errorMessage: parseResult.detail ?? 'Claude could not re-parse this email',
     })
     return NextResponse.json(
       { error: 'Claude could not parse this email' },
       { status: 422 },
     )
   }
+
+  const parsed = parseResult.order
 
   // 4. Resolve YNAB budget
   const budgetId = await getSetting('YNAB_BUDGET_ID')

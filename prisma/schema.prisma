@@ -45,7 +45,14 @@ model ActivityLog {
   // Cross-email (confirmation + dispatch) order-number dedup (ORDER-DEDUP-01)
   orderNumber  String?
 
+  // Deferred retry state (LLM provider quota exhaustion) — RETRY-01
+  retryAt        DateTime?
+  retryCount     Int       @default(0)
+  ownerName      String?
+  ownerAccountId String?
+
   createdAt    DateTime @default(now())
 
   @@index([orderNumber])
+  @@index([status, retryAt])
 }

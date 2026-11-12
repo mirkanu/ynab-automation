@@ -7,12 +7,13 @@
 // can switch providers without redeploying.
 
 import { getSetting } from '@/lib/settings'
+import { htmlToPlainText } from '@/lib/html-text'
 
 const MINIMAX_API_URL = 'https://api.minimax.io/v1/chat/completions'
 const MINIMAX_MODEL = 'MiniMax-M3'
 
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages'
-const ANTHROPIC_MODEL = 'claude-3-5-haiku-latest'
+const ANTHROPIC_MODEL = 'claude-haiku-5-5'
 const ANTHROPIC_VERSION = '2023-06-01'
 
 export interface ParsedOrder {
@@ -24,22 +25,50 @@ export interface ParsedOrder {
   customNote?: string;  // Optional free-text note the forwarder typed at the very top of the email body
 }
 
+/**
+ * Why a parse failed.
+ *
+ * - `quota_exceeded` — the provider's token plan is exhausted (HTTP 429). This is
+ *   transient and recoverable: the email must be queued for a retry, NOT dropped.
+ * - `api_error` — transport/auth/provider failure. Usually permanent for this call.
+ * - `invalid_response` — the provider answered, but the answer was not usable order JSON.
+ */
+export type ParseFailureReason = 'quota_exceeded' | 'api_error' | 'invalid_response'
+
+export interface ParseSuccess {
+  ok: true
+  order: ParsedOrder
+}
+
+export interface ParseFailure {
+  ok: false
+  reason: ParseFailureReason
+  detail?: string
+}
+
+export type ParseResult = ParseSuccess | ParseFailure
+
 // Shared extraction prompt — provider branches differ only in API plumbing, not in
 // the instructions we send to the model.
+//
+// The prompt carries the VISIBLE TEXT of the email, not its raw HTML: the raw body
+// is ~119 KB (≈33k prompt tokens) of which only ~1.3 KB is content, and sending the
+// raw body is what exhausted the MiniMax token plan.
 function buildExtractionPrompt(html: string): string {
+  const text = htmlToPlainText(html)
   return (
-    `Extract the total order amount, a brief item description, the retailer/merchant name, the currency, the order date, and any custom note from this order confirmation email HTML. ` +
+    `Extract the total order amount, a brief item description, the retailer/merchant name, the currency, the order date, and any custom note from this order confirmation email. ` +
     `For multi-item orders, summarize as '2 items: Item1, Item2' (max 2 item names). ` +
     `For currency: set to "EUR" ONLY if the total amount is exclusively in Euros (€) with no conversion to GBP or another currency shown. ` +
     `If the email shows a Euro amount AND a GBP/sterling equivalent, or if the amount is in any non-Euro currency, set currency to "GBP". ` +
     `For date: extract the order date from the email and format as YYYY-MM-DD. If no date is found, use today's date: ${new Date().toISOString().split('T')[0]}. ` +
     `For amount: only extract a total that is EXPLICITLY shown as a price/total in the HTML (e.g. "Total: £12.99", "Order total", a line-item price). ` +
     `The email body may be a truncated fragment that cuts off before the pricing section — if so, no real total will appear anywhere in the text. ` +
-    `Never guess, estimate, or infer an amount from item names, other numbers (order IDs, quantities, CSS/class values), or general knowledge of typical prices. ` +
-    `If no explicit total or price is present anywhere in the HTML, return amount: 0. ` +
+    `Never guess, estimate, or infer an amount from item names, other numbers (order IDs, quantities), or general knowledge of typical prices. ` +
+    `If no explicit total or price is present anywhere in the text, return amount: 0. ` +
     `For customNote: the user sometimes types a short free-text comment at the very top of the email body BEFORE the forwarded order confirmation content (above any "---------- Forwarded message ----------" separator, quoted reply block, or "From:" header). If such a note exists, return its verbatim text (trimmed, single-line). If there is no such note — i.e. the body starts directly with the forwarded content — return an empty string "". Do NOT invent a note from the order content itself. ` +
     `Return JSON: {"amount": 12.99, "description": "brief description", "retailer": "Amazon", "currency": "GBP", "date": "2024-03-15", "customNote": ""}. ` +
-    `HTML:\n\n${html}`
+    `EMAIL TEXT:\n\n${text}`
   )
 }
 
@@ -92,12 +121,15 @@ function parseAndValidate(rawText: string): ParsedOrder | null {
  *
  * @param html - Raw HTML string (trigger.event.body.html from Pipedream)
  * @param senderName - Display name of the person who forwarded (e.g. "Alice")
- * @returns ParsedOrder with amount (number), description, and retailer, or null on any failure
+ * @returns A discriminated result: `{ ok: true, order }` on success, or
+ *          `{ ok: false, reason, detail }` describing WHY the parse failed.
+ *          `reason: 'quota_exceeded'` means the provider's token plan is exhausted
+ *          and the call should be retried later — never silently dropped.
  */
 export async function parseOrderEmail(
   html: string,
   senderName: string,
-): Promise<ParsedOrder | null> {
+): Promise<ParseResult> {
   try {
     // Read provider choice from DB. Default to "minimax" to preserve existing
     // behavior for installs that pre-date the provider selector.
@@ -113,7 +145,11 @@ export async function parseOrderEmail(
     if (provider === 'anthropic') {
       if (!anthropicKey) {
         console.error(`parseOrderEmail error: ANTHROPIC_API_KEY not configured for provider=anthropic`)
-        return null
+        return {
+          ok: false,
+          reason: 'api_error',
+          detail: 'ANTHROPIC_API_KEY not configured for provider=anthropic',
+        }
       }
 
       const res = await fetch(ANTHROPIC_API_URL, {
@@ -137,7 +173,16 @@ export async function parseOrderEmail(
       if (!res.ok) {
         const errBody = await res.text().catch(() => '')
         console.error('parseOrderEmail error: Anthropic API returned', res.status, errBody)
-        return null
+        // The 429 check must come BEFORE the generic non-2xx branch: an exhausted
+        // token plan is recoverable, a generic API error is not.
+        if (res.status === 429) {
+          return { ok: false, reason: 'quota_exceeded', detail: errBody.slice(0, 500) }
+        }
+        return {
+          ok: false,
+          reason: 'api_error',
+          detail: `HTTP ${res.status}: ${errBody.slice(0, 500)}`,
+        }
       }
 
       const data = (await res.json()) as {
@@ -149,10 +194,22 @@ export async function parseOrderEmail(
       const textBlock = data.content?.find((b) => b?.type === 'text')
       const textContent = textBlock?.text
       if (!textContent) {
-        return null
+        return {
+          ok: false,
+          reason: 'invalid_response',
+          detail: 'no text block in Anthropic response',
+        }
       }
 
-      return parseAndValidate(textContent)
+      const parsed = parseAndValidate(textContent)
+      if (!parsed) {
+        return {
+          ok: false,
+          reason: 'invalid_response',
+          detail: 'LLM response was not valid order JSON',
+        }
+      }
+      return { ok: true, order: parsed }
     }
 
     // Default / "minimax" path — preserves the pre-selector behavior byte-for-byte
@@ -160,7 +217,11 @@ export async function parseOrderEmail(
     const apiKey = minimaxKey ?? process.env.MINIMAX_API_KEY
     if (!apiKey) {
       console.error(`parseOrderEmail error: MINIMAX_API_KEY not configured for provider=${provider}`)
-      return null
+      return {
+        ok: false,
+        reason: 'api_error',
+        detail: `MINIMAX_API_KEY not configured for provider=${provider}`,
+      }
     }
 
     const res = await fetch(MINIMAX_API_URL, {
@@ -192,7 +253,15 @@ export async function parseOrderEmail(
     if (!res.ok) {
       const errBody = await res.text().catch(() => '')
       console.error('parseOrderEmail error: MiniMax API returned', res.status, errBody)
-      return null
+      // Same ordering rule as the Anthropic branch: 429 means "retry later".
+      if (res.status === 429) {
+        return { ok: false, reason: 'quota_exceeded', detail: errBody.slice(0, 500) }
+      }
+      return {
+        ok: false,
+        reason: 'api_error',
+        detail: `HTTP ${res.status}: ${errBody.slice(0, 500)}`,
+      }
     }
 
     const data = (await res.json()) as {
@@ -200,18 +269,34 @@ export async function parseOrderEmail(
     }
     const textContent = data.choices?.[0]?.message?.content
     if (!textContent) {
-      return null
+      return {
+        ok: false,
+        reason: 'invalid_response',
+        detail: 'no choices in MiniMax response',
+      }
     }
 
     // MiniMax-M3 is a reasoning model and prefixes its answer with a <think>...</think>
     // block; strip it before looking at the actual JSON payload.
-    let rawText = textContent.replace(/<think>[\s\S]*?<\/think>/, '').trim()
+    const rawText = textContent.replace(/<think>[\s\S]*?<\/think>/, '').trim()
 
-    return parseAndValidate(rawText)
+    const parsed = parseAndValidate(rawText)
+    if (!parsed) {
+      return {
+        ok: false,
+        reason: 'invalid_response',
+        detail: 'LLM response was not valid order JSON',
+      }
+    }
+    return { ok: true, order: parsed }
   } catch (err) {
-    // Any failure (network error, JSON parse error) → return null
+    // Any failure (network error, JSON parse error) → report it as an API error
     console.error('parseOrderEmail error:', err)
-    return null
+    return {
+      ok: false,
+      reason: 'api_error',
+      detail: err instanceof Error ? err.message : String(err),
+    }
   }
 }
 

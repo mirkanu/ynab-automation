@@ -10,11 +10,17 @@ import {
   extractHtmlFromRawMime,
 } from '@/lib/email';
 import { parseOrderEmail } from '@/lib/claude';
-import { createYnabTransaction, getCategories, findCategory, getAccountName, formatMemo } from '@/lib/ynab';
+import { createYnabTransaction, getAccountName, formatMemo } from '@/lib/ynab';
 import { sendErrorNotification } from '@/lib/notify';
-import { loadConfig, getSenderByEmail, getAccountForCurrency, notificationSuffix } from '@/lib/config';
+import { loadConfig, getSenderByEmail, notificationSuffix } from '@/lib/config';
 import { writeActivityLog } from '@/lib/activity-log';
 import { getSetting } from '@/lib/settings';
+import {
+  FIRST_RETRY_DELAY_MS,
+  loadCurrencyRules,
+  resolveAccountId,
+  resolveCategory,
+} from '@/lib/order-processing';
 
 export async function GET() {
   return NextResponse.json({ status: 'ok' });
@@ -146,14 +152,9 @@ export async function POST(req: NextRequest) {
 
     // Step 5: Resolve sender to display name and YNAB account ID
     // DB rules (configured via /rules UI) take precedence over env-var config
-    const [senderRulesRaw, currencyRulesRaw] = await Promise.all([
-      getSetting('SENDER_RULES'),
-      getSetting('CURRENCY_RULES'),
-    ]);
+    const senderRulesRaw = await getSetting('SENDER_RULES');
     const dbSenderRules: Array<{ email: string; name: string; accountId: string }> =
       senderRulesRaw ? (JSON.parse(senderRulesRaw) as Array<{ email: string; name: string; accountId: string }>) : [];
-    const dbCurrencyRules: Array<{ currency: string; accountId: string }> =
-      currencyRulesRaw ? (JSON.parse(currencyRulesRaw) as Array<{ currency: string; accountId: string }>) : [];
 
     // Try to match 'from' header first (manual forwards)
     let dbSenderMatch = dbSenderRules.find(r => r.email.toLowerCase() === senderKey);
@@ -239,8 +240,30 @@ ${contentForNotification}
 
     // Step 6: Extract HTML body and parse with Claude
     const categoryHint = extractCategoryHint(html);
-    const parsed = await parseOrderEmail(html, senderInfo.name);
-    if (!parsed) {
+    const parseResult = await parseOrderEmail(html, senderInfo.name);
+    if (!parseResult.ok) {
+      if (parseResult.reason === 'quota_exceeded') {
+        // LLM provider token plan exhausted — queue for an automatic retry instead of
+        // losing the order. No admin email on this path: the admin is only told if the
+        // retry ALSO fails.
+        console.warn('LLM provider quota exhausted — queuing for retry:', messageId);
+        await writeActivityLog({
+          messageId,
+          status: 'retry_pending',
+          sender: sender ?? undefined,
+          subject: subject ?? undefined,
+          rawBody: html || undefined,
+          orderNumber: extractOrderNumber(html) ?? undefined,
+          retryAt: new Date(Date.now() + FIRST_RETRY_DELAY_MS),
+          retryCount: 0,
+          ownerName: senderInfo.name,
+          ownerAccountId: senderInfo.accountId,
+          errorType: 'quota_exceeded',
+          errorMessage: parseResult.detail,
+        });
+        return NextResponse.json({ received: true, queued: true }, { status: 200 });
+      }
+
       console.error('Claude parsing failed for messageId:', messageId);
       const appUrl = process.env.YNAB_APP_URL ?? '';
       await sendErrorNotification({
@@ -260,10 +283,12 @@ ${contentForNotification}
         subject: subject ?? undefined,
         rawBody: html || undefined,
         errorType: 'parse_failed',
-        errorMessage: `Claude failed to parse email from ${sender ?? 'unknown'}`,
+        errorMessage: `${parseResult.reason}: ${parseResult.detail ?? 'failed to extract order details'}`,
       });
       return NextResponse.json({ received: true }, { status: 200 });
     }
+
+    const parsed = parseResult.order;
 
     // Step 6a: Reject unusable amounts (e.g. shipping/dispatch emails with no price shown,
     // which Claude may extract as amount: 0). Zero and NaN both pass `typeof === 'number'`
@@ -338,24 +363,11 @@ ${contentForNotification}
 
     // Step 6b: Resolve category hint to YNAB category ID (if hint was present)
     const budgetId = (await getSetting('YNAB_BUDGET_ID')) ?? '';
-    let categoryId: string | undefined;
-    let categoryName: string | undefined;
-    if (categoryHint) {
-      try {
-        const categories = await getCategories(budgetId);
-        const matched = findCategory(categories, categoryHint);
-        if (matched) {
-          categoryId = matched.id;
-          categoryName = matched.name;
-        }
-      } catch (err) {
-        console.error('getCategories failed, continuing without category:', err);
-      }
-    }
+    const { categoryId, categoryName } = await resolveCategory(budgetId, categoryHint);
 
     // Step 7: Create YNAB transaction (or skip in test mode)
-    const dbCurrencyMatch = dbCurrencyRules.find(r => r.currency.toUpperCase() === parsed.currency.toUpperCase());
-    const accountId = dbCurrencyMatch?.accountId ?? getAccountForCurrency(config, senderInfo.accountId, parsed.currency);
+    const currencyRules = await loadCurrencyRules();
+    const accountId = resolveAccountId(config, currencyRules, senderInfo.accountId, parsed.currency);
     // Read test mode from the DB setting (set via settings UI).
     const testModeValue = await getSetting('TEST_MODE');
     const testMode = testModeValue === 'true';
