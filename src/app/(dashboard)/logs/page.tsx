@@ -68,6 +68,7 @@ export default async function LogsPage({ searchParams }: Props) {
                 ynabResult: log.ynabResult as Record<string, unknown> | null,
                 errorType: log.errorType,
                 errorMessage: log.errorMessage,
+                retryAt: log.retryAt?.toISOString() ?? null,
               }}
             />
           ))

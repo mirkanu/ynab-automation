@@ -13,6 +13,7 @@ const statuses = [
   { value: 'duplicate_order', label: 'Duplicate Order' },
   { value: 'no_price_expected', label: 'No Price Expected' },
   { value: 'no_message_id', label: 'No Message ID' },
+  { value: 'retry_pending', label: 'Retry Pending' },
 ];
 
 const inputStyle = {

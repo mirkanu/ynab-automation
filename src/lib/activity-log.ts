@@ -24,6 +24,7 @@ export interface ActivityLogEntry {
     memo?: string
     categoryId?: string | null
     categoryName?: string | null
+    orderNumber?: string
   }
   errorType?: string
   errorMessage?: string
@@ -90,6 +91,7 @@ export interface ActivityLogPatch {
     memo?: string
     categoryId?: string | null
     categoryName?: string | null
+    orderNumber?: string
   }
   orderNumber?: string | null
   retryAt?: Date | null

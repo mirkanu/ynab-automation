@@ -14,6 +14,7 @@ interface LogEntry {
   ynabResult: Record<string, unknown> | null;
   errorType: string | null;
   errorMessage: string | null;
+  retryAt: string | null; // ISO string from server — next scheduled retry
 }
 
 const statusColors: Record<string, { bg: string; text: string }> = {
@@ -26,6 +27,7 @@ const statusColors: Record<string, { bg: string; text: string }> = {
   no_message_id: { bg: '#f3f4f6', text: '#6b7280' },
   duplicate_order: { bg: '#f3f4f6', text: '#6b7280' },
   no_price_expected: { bg: '#f3f4f6', text: '#6b7280' },
+  retry_pending: { bg: '#fef3c7', text: '#92400e' },
 };
 
 const statusLabels: Record<string, string> = {
@@ -38,6 +40,7 @@ const statusLabels: Record<string, string> = {
   no_message_id: 'No ID',
   duplicate_order: 'Duplicate Order',
   no_price_expected: 'No Price Expected',
+  retry_pending: 'Retry Pending',
 };
 
 type ReplayStatus = 'idle' | 'confirm' | 'confirm-live' | 'loading' | 'success' | 'error';
@@ -183,6 +186,20 @@ export default function LogRow({ entry, testMode }: { entry: LogEntry; testMode?
               <Section label="Error">
                 {entry.errorType && <KV label="Type" value={entry.errorType} />}
                 {entry.errorMessage && <KV label="Message" value={entry.errorMessage} />}
+              </Section>
+            )}
+
+            {entry.status === 'retry_pending' && entry.retryAt && (
+              <Section label="Retry">
+                <KV
+                  label="Next attempt"
+                  value={new Date(entry.retryAt).toLocaleString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                />
               </Section>
             )}
 
