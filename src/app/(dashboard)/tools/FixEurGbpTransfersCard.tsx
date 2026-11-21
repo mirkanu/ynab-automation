@@ -230,7 +230,7 @@ export default function FixEurGbpTransfersCard() {
     <div style={S.section}>
       <h2 style={S.sectionTitle}>Fix EUR→GBP Transfers</h2>
       <p style={S.sectionDesc}>
-        Detected transfer pairs from the last 7 days are analysed below.
+        Detected transfer pairs from the last 30 days are analysed below.
         Click Analyse to find matches, then Run Fix to apply corrections.
       </p>
 

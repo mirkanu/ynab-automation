@@ -176,13 +176,37 @@ function daysAgo(n: number): string {
   return d.toISOString().slice(0, 10);
 }
 
+// Wise appends a parenthesised qualifier to some payees saying where a
+// fee was taken, e.g. "Converted Eur Gbp (fee Eur)". That qualifier must
+// not turn a conversion row into a fee row, so it is stripped before any
+// payee matching happens.
+function stripPayeeQualifier(payeeName: string): string {
+  return payeeName.replace(/\s*\([^)]*\)\s*$/, '').trim();
+}
+
 // Fees and interest are never the EUR side of a conversion, and a fee or
 // interest credit on the GBP side is never the other half of one.
-const FEE_OR_INTEREST_PATTERNS = ['fee', 'interest'];
+// Word boundaries keep "Coffee" — which contains the letters "fee" — out.
+const FEE_OR_INTEREST_PATTERN = /\bfees?\b|\binterests?\b/;
 
 export function isFeeOrInterest(payeeName: string | null): boolean {
-  const payee = (payeeName ?? '').toLowerCase();
-  return FEE_OR_INTEREST_PATTERNS.some(p => payee.includes(p));
+  const payee = stripPayeeQualifier(payeeName ?? '').toLowerCase();
+  return FEE_OR_INTEREST_PATTERN.test(payee);
+}
+
+// The EUR side of a conversion is a money-out, never a spend. Only payees
+// that read as a conversion or a transfer may be paired — otherwise an
+// ordinary spend that happens to sit near a GBP inflow would be deleted.
+const CONVERSION_PAYEE_PATTERNS = [
+  /convert/i,
+  /sent money/i,
+  /money transfer/i,
+  /^transfer\s*:/i,
+];
+
+export function isConversionPayee(payeeName: string | null): boolean {
+  const payee = stripPayeeQualifier(payeeName ?? '').trim();
+  return CONVERSION_PAYEE_PATTERNS.some(p => p.test(payee));
 }
 
 // Smallest conversion worth pairing, in milliunits (£50). The smallest real
@@ -222,7 +246,7 @@ export async function detectTransferPairs(): Promise<TransferPair[]> {
   const eurAccountId = currencyAccounts['EUR'];
   if (!eurAccountId) throw new Error('EUR account not found in CURRENCY_ACCOUNTS');
 
-  const sinceDate = daysAgo(7);
+  const sinceDate = daysAgo(30);
 
   // Fetch EUR outgoing txns
   const eurData = await ynabFetch(token, `/budgets/${budgetId}/accounts/${eurAccountId}/transactions?since_date=${sinceDate}`);
@@ -233,7 +257,8 @@ export async function detectTransferPairs(): Promise<TransferPair[]> {
     !t.deleted &&
     t.amount < 0 &&
     t.transfer_account_id === null &&
-    !isFeeOrInterest(t.payee_name)
+    !isFeeOrInterest(t.payee_name) &&
+    isConversionPayee(t.payee_name)
   );
 
   if (eurOutgoing.length === 0) return [];
@@ -247,22 +272,34 @@ export async function detectTransferPairs(): Promise<TransferPair[]> {
   const gbpTxns = [
     ...((ukData?.data?.transactions ?? []) as YnabTxn[]).map(t => ({ ...t, accountId: UK_CURRENT_ID })),
     ...((gbpWiseData?.data?.transactions ?? []) as YnabTxn[]).map(t => ({ ...t, accountId: GBP_WISE_ID })),
-  ].filter(t => !t.deleted && t.amount > 0 && t.transfer_account_id === null && !isFeeOrInterest(t.payee_name));
+  ].filter(t =>
+    !t.deleted &&
+    t.amount > 0 &&
+    (t.transfer_account_id === null || t.transfer_account_id === eurAccountId) &&
+    !isFeeOrInterest(t.payee_name)
+  );
 
   const pairs: TransferPair[] = [];
   const usedGbpIds = new Set<string>();
 
   for (const eur of eurOutgoing) {
-    const matchingGbp = gbpTxns.find(g => g.date === eur.date && !usedGbpIds.has(g.id));
-    if (!matchingGbp) continue;
-
+    // Scan every same-date, unused GBP candidate and take the first one whose
+    // amount fits the conversion band — giving up after the first same-date
+    // candidate would lose a real pair whenever an unrelated inflow happens
+    // to land on the same day.
+    //
     // Guard against pairing two unrelated transactions that happen to share a
     // date. A EUR→GBP conversion always moves money at the EUR→GBP rate, so
     // the EUR side is either the unconverted EUR amount (≈1.17× the GBP side)
     // or an already converted GBP amount (≈1.0×). Anything outside that band
     // is not a conversion — e.g. a €6.72 grocery spend next to a £3.11
     // interest payment. Fixing such a pair would delete a real transaction.
-    if (!isPlausibleConversionAmount(eur.amount, matchingGbp.amount)) continue;
+    const matchingGbp = gbpTxns.find(g =>
+      g.date === eur.date &&
+      !usedGbpIds.has(g.id) &&
+      isPlausibleConversionAmount(eur.amount, g.amount)
+    );
+    if (!matchingGbp) continue;
 
     usedGbpIds.add(matchingGbp.id);
 
